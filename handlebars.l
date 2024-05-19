@@ -4,7 +4,7 @@ class HandlebarsLexer
 %{
 
 function strip(start, end) {
-  return yytext = yytext.substring(start, yyleng - end + start);
+  return text = text.substring(start, yyleng - end + start);
 }
 
 %}
@@ -28,16 +28,16 @@ ID    [^\s!"\#%-,\.\/;->@\[-\^`\{-~]+(?:{LOOKAHEAD})
 rule
 
 [^\x00]*?(?:{{)                {
-                                   if(yytext.slice(-2) === "\\\\")
+                                   if(text.slice(-2) === "\\\\")
                                      strip(0,1);
                                      state = :MU
-                                   elsif(yytext.slice(-1) === "\\")
+                                   elsif(text.slice(-1) === "\\")
                                      strip(0,1);
                                      state = :EMU
                                    else
                                      state = :MU
                                    end
-                                   'CONTENT' if(yytext)
+                                   'CONTENT' if(text)
                                  }
 
 [^\x00]+                         { 'CONTENT' }
@@ -85,7 +85,7 @@ rule
 :MU {{{LEFT_STRIP}?{             { 'OPEN_UNESCAPED' }
 :MU {{{LEFT_STRIP}?&             { 'OPEN' }
 :MU {{{LEFT_STRIP}?!-- {
-  this.unput(yytext);
+  this.unput(text);
   this.popState();
   state = :COM
 }
@@ -102,8 +102,8 @@ rule
 :MU \s+                          // ignore whitespace
 :MU }{RIGHT_STRIP}?}}            { this.popState(); 'CLOSE_UNESCAPED'; }
 :MU {RIGHT_STRIP}?}}             { this.popState(); 'CLOSE'; }
-:MU "(\\"|[^"])*"                { yytext = handle_stringescape('"'); 'STRING'; }
-:MU '(\\'|[^'])*'                { yytext = handle_stringescape("'"); 'STRING'; }
+:MU "(\\"|[^"])*"                { text = handle_stringescape('"'); 'STRING'; }
+:MU '(\\'|[^'])*'                { text = handle_stringescape("'"); 'STRING'; }
 :MU @                            { 'DATA' }
 :MU true(?:{LIT_LOOKAHEAD})      { 'BOOLEAN'; }
 :MU false(?:{LIT_LOOKAHEAD})     { 'BOOLEAN'; }
@@ -115,7 +115,7 @@ rule
 
 :MU {ID}                         { 'ID' }
 
-:MU \[(\\\]|[^\]])*\]            { yytext = yytext.gsub(/\\([\\\]])/,'$1'); 'ID'; }
+:MU \[(\\\]|[^\]])*\]            { text = text.gsub(/\\([\\\]])/,'$1'); 'ID'; }
 :MU .                            { 'INVALID' }
 
 <INITIAL,mu><<EOF>>              { 'EOF' }
