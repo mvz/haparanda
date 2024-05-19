@@ -43,14 +43,14 @@ rule
 [^\x00]+                         return 'CONTENT';
 
 // marks CONTENT up to the next mustache or escaped mustache
-<emu>[^\x00]{2,}?/("{{"|"\\{{"|"\\\\{{"|<<EOF>>) {
+:EMU [^\x00]{2,}?/("{{"|"\\{{"|"\\\\{{"|<<EOF>>) {
                                    this.popState();
                                    return 'CONTENT';
                                  }
 
 // nested raw block will create stacked 'raw' condition
-<raw>"{{{{"/[^/]                 this.begin('raw'); return 'CONTENT';
-<raw>"{{{{/"[^\s!"#%-,\.\/;->@\[-\^`\{-~]+/[=}\s\/.]"}}}}" {
+:RAW "{{{{"/[^/]                 this.begin('raw'); return 'CONTENT';
+:RAW "{{{{/"[^\s!"#%-,\.\/;->@\[-\^`\{-~]+/[=}\s\/.]"}}}}" {
                                   this.popState();
                                   // Should be using `this.topState()` below, but it currently
                                   // returns the second top instead of the first top. Opened an
@@ -62,65 +62,65 @@ rule
                                     return 'END_RAW_BLOCK';
                                   }
                                  }
-<raw>[^\x00]+?/("{{{{")          { return 'CONTENT'; }
+:RAW [^\x00]+?/("{{{{")          { return 'CONTENT'; }
 
-<com>[\s\S]*?"--"{RIGHT_STRIP}?"}}" {
+:COM [\s\S]*?"--"{RIGHT_STRIP}?"}}" {
   this.popState();
   return 'COMMENT';
 }
 
-<mu>"("                          return 'OPEN_SEXPR';
-<mu>")"                          return 'CLOSE_SEXPR';
+:MU "("                          return 'OPEN_SEXPR';
+:MU ")"                          return 'CLOSE_SEXPR';
 
-<mu>"{{{{"                       { return 'OPEN_RAW_BLOCK'; }
-<mu>"}}}}"                       {
+:MU "{{{{"                       { return 'OPEN_RAW_BLOCK'; }
+:MU "}}}}"                       {
                                   this.popState();
                                   this.begin('raw');
                                   return 'CLOSE_RAW_BLOCK';
                                  }
-<mu>"{{"{LEFT_STRIP}?">"         return 'OPEN_PARTIAL';
-<mu>"{{"{LEFT_STRIP}?"#>"        return 'OPEN_PARTIAL_BLOCK';
-<mu>"{{"{LEFT_STRIP}?"#""*"?     return 'OPEN_BLOCK';
-<mu>"{{"{LEFT_STRIP}?"/"         return 'OPEN_ENDBLOCK';
-<mu>"{{"{LEFT_STRIP}?"^"\s*{RIGHT_STRIP}?"}}"        this.popState(); return 'INVERSE';
-<mu>"{{"{LEFT_STRIP}?\s*"else"\s*{RIGHT_STRIP}?"}}"  this.popState(); return 'INVERSE';
-<mu>"{{"{LEFT_STRIP}?"^"         return 'OPEN_INVERSE';
-<mu>"{{"{LEFT_STRIP}?\s*"else"   return 'OPEN_INVERSE_CHAIN';
-<mu>"{{"{LEFT_STRIP}?"{"         return 'OPEN_UNESCAPED';
-<mu>"{{"{LEFT_STRIP}?"&"         return 'OPEN';
-<mu>"{{"{LEFT_STRIP}?"!--" {
+:MU "{{"{LEFT_STRIP}?">"         return 'OPEN_PARTIAL';
+:MU "{{"{LEFT_STRIP}?"#>"        return 'OPEN_PARTIAL_BLOCK';
+:MU "{{"{LEFT_STRIP}?"#""*"?     return 'OPEN_BLOCK';
+:MU "{{"{LEFT_STRIP}?"/"         return 'OPEN_ENDBLOCK';
+:MU "{{"{LEFT_STRIP}?"^"\s*{RIGHT_STRIP}?"}}"        this.popState(); return 'INVERSE';
+:MU "{{"{LEFT_STRIP}?\s*"else"\s*{RIGHT_STRIP}?"}}"  this.popState(); return 'INVERSE';
+:MU "{{"{LEFT_STRIP}?"^"         return 'OPEN_INVERSE';
+:MU "{{"{LEFT_STRIP}?\s*"else"   return 'OPEN_INVERSE_CHAIN';
+:MU "{{"{LEFT_STRIP}?"{"         return 'OPEN_UNESCAPED';
+:MU "{{"{LEFT_STRIP}?"&"         return 'OPEN';
+:MU "{{"{LEFT_STRIP}?"!--" {
   this.unput(yytext);
   this.popState();
   this.begin('com');
 }
-<mu>"{{"{LEFT_STRIP}?"!"[\s\S]*?"}}" {
+:MU "{{"{LEFT_STRIP}?"!"[\s\S]*?"}}" {
   this.popState();
   return 'COMMENT';
 }
-<mu>"{{"{LEFT_STRIP}?"*"?        return 'OPEN';
+:MU "{{"{LEFT_STRIP}?"*"?        return 'OPEN';
 
-<mu>"="                          return 'EQUALS';
-<mu>".."                         return 'ID';
-<mu>"."/{LOOKAHEAD}              return 'ID';
-<mu>[\/.]                        return 'SEP';
-<mu>\s+                          // ignore whitespace
-<mu>"}"{RIGHT_STRIP}?"}}"        this.popState(); return 'CLOSE_UNESCAPED';
-<mu>{RIGHT_STRIP}?"}}"           this.popState(); return 'CLOSE';
-<mu>'"'("\\"["]|[^"])*'"'        yytext = strip(1,2).replace(/\\"/g,'"'); return 'STRING';
-<mu>"'"("\\"[']|[^'])*"'"        yytext = strip(1,2).replace(/\\'/g,"'"); return 'STRING';
-<mu>"@"                          return 'DATA';
-<mu>"true"/{LITERAL_LOOKAHEAD}   return 'BOOLEAN';
-<mu>"false"/{LITERAL_LOOKAHEAD}  return 'BOOLEAN';
-<mu>"undefined"/{LITERAL_LOOKAHEAD} return 'UNDEFINED';
-<mu>"null"/{LITERAL_LOOKAHEAD}   return 'NULL';
-<mu>\-?[0-9]+(?:\.[0-9]+)?/{LITERAL_LOOKAHEAD} return 'NUMBER';
-<mu>"as"\s+"|"                   return 'OPEN_BLOCK_PARAMS';
-<mu>"|"                          return 'CLOSE_BLOCK_PARAMS';
+:MU "="                          return 'EQUALS';
+:MU ".."                         return 'ID';
+:MU "."/{LOOKAHEAD}              return 'ID';
+:MU [\/.]                        return 'SEP';
+:MU \s+                          // ignore whitespace
+:MU "}"{RIGHT_STRIP}?"}}"        this.popState(); return 'CLOSE_UNESCAPED';
+:MU {RIGHT_STRIP}?"}}"           this.popState(); return 'CLOSE';
+:MU '"'("\\"["]|[^"])*'"'        yytext = strip(1,2).replace(/\\"/g,'"'); return 'STRING';
+:MU "'"("\\"[']|[^'])*"'"        yytext = strip(1,2).replace(/\\'/g,"'"); return 'STRING';
+:MU "@"                          return 'DATA';
+:MU "true"/{LITERAL_LOOKAHEAD}   return 'BOOLEAN';
+:MU "false"/{LITERAL_LOOKAHEAD}  return 'BOOLEAN';
+:MU "undefined"/{LITERAL_LOOKAHEAD} return 'UNDEFINED';
+:MU "null"/{LITERAL_LOOKAHEAD}   return 'NULL';
+:MU \-?[0-9]+(?:\.[0-9]+)?/{LITERAL_LOOKAHEAD} return 'NUMBER';
+:MU "as"\s+"|"                   return 'OPEN_BLOCK_PARAMS';
+:MU "|"                          return 'CLOSE_BLOCK_PARAMS';
 
-<mu>{ID}                         return 'ID';
+:MU {ID}                         return 'ID';
 
-<mu>'['('\\]'|[^\]])*']'         yytext = yytext.replace(/\\([\\\]])/g,'$1'); return 'ID';
-<mu>.                            return 'INVALID';
+:MU '['('\\]'|[^\]])*']'         yytext = yytext.replace(/\\([\\\]])/g,'$1'); return 'ID';
+:MU .                            return 'INVALID';
 
 <INITIAL,mu><<EOF>>              return 'EOF';
 end
