@@ -42,9 +42,9 @@ rule
 
 [^\x00]+                         { 'CONTENT' }
 
-# marks CONTENT up to the next mustache or escaped mustache
-:EMU [^\x00]{2,}?/("{{"|"\\{{"|"\\\\{{"|<<EOF>>) {
-                                   this.popState();
+# consume escaped mustache
+:EMU {{                          {
+                                   state = nil
                                    'CONTENT'
                                  }
 
