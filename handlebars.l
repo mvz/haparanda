@@ -48,21 +48,18 @@ rule
                                    'CONTENT'
                                  }
 
-# nested raw block will create stacked 'raw' condition
-:RAW "{{{{"/[^/]                 { state = :RAW; 'CONTENT' }
-:RAW "{{{{/"[^\s!"#%-,\.\/;->@\[-\^`\{-~]+/[=}\s\/.]"}}}}" {
-                                  this.popState();
-                                  // Should be using `this.topState()` below, but it currently
-                                  // returns the second top instead of the first top. Opened an
-                                  // issue about it at https://github.com/zaach/jison/issues/291
-                                  if (this.conditionStack[this.conditionStack.length-1] === 'raw') {
-                                    'CONTENT';
-                                  } else {
-                                    strip(5, 9);
+# End of raw block if delimiter text matches opening text
+:RAW {{{{\/[^\s!"#%-,\.\/;->@\[-\^`\{-~]+}}}} {
+                                  ending_delimiter = text[5...-4]
+                                  if ending_delimiter == @raw_delimiter
+                                    state = nil
+                                    text = ""
                                     'END_RAW_BLOCK';
-                                  }
+                                  else
+                                    'CONTENT';
+                                  end
                                  }
-:RAW [^\x00]+?/("{{{{")          { 'CONTENT' }
+:RAW [^\x00]+?(?:{{{{)          { 'CONTENT' }
 
 :COM [\s\S]*?"--"{RIGHT_STRIP}?"}}" {
   this.popState();
@@ -72,11 +69,10 @@ rule
 :MU "("                          { 'OPEN_SEXPR' }
 :MU ")"                          { 'CLOSE_SEXPR' }
 
-:MU "{{{{"                       { 'OPEN_RAW_BLOCK'; }
-:MU "}}}}"                       {
-                                  this.popState();
+:MU {{{{[^\s!"#%-,\.\/;->@\[-\^`\{-~]+}}}}    {
+                                  @raw_delimiter = text[4...-4]
                                   state = :RAW
-                                  'CLOSE_RAW_BLOCK';
+                                  'START_RAW_BLOCK';
                                  }
 :MU "{{"{LEFT_STRIP}?">"         { 'OPEN_PARTIAL' }
 :MU "{{"{LEFT_STRIP}?"#>"        { 'OPEN_PARTIAL_BLOCK' }
