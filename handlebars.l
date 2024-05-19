@@ -30,12 +30,12 @@ rule
 [^\x00]*?(?={{)                {
                                    if(text.slice(-2) === "\\\\")
                                      strip(0,1);
-                                     state = :MU
+                                     @state = :MU
                                    elsif(text.slice(-1) === "\\")
                                      strip(0,1);
-                                     state = :EMU
+                                     @state = :EMU
                                    else
-                                     state = :MU
+                                     @state = :MU
                                    end
                                    'CONTENT' if(text)
                                  }
@@ -44,7 +44,7 @@ rule
 
 # consume escaped mustache
 :EMU {{                          {
-                                   state = nil
+                                   @state = nil
                                    'CONTENT'
                                  }
 
@@ -52,7 +52,7 @@ rule
 :RAW {{{{\/[^\s!"#%-,\.\/;->@\[-\^`\{-~]+}}}} {
                                   ending_delimiter = text[5...-4]
                                   if ending_delimiter == @raw_delimiter
-                                    state = nil
+                                    @state = nil
                                     text = ""
                                     'END_RAW_BLOCK';
                                   else
@@ -71,7 +71,7 @@ rule
 
 :MU {{{{[^\s!"#%-,\.\/;->@\[-\^`\{-~]+}}}}    {
                                   @raw_delimiter = text[4...-4]
-                                  state = :RAW
+                                  @state = :RAW
                                   'START_RAW_BLOCK';
                                  }
 :MU {{{LEFT_STRIP}?>             { 'OPEN_PARTIAL' }
@@ -87,7 +87,7 @@ rule
 :MU {{{LEFT_STRIP}?!-- {
   this.unput(text);
   this.popState();
-  state = :COM
+  @state = :COM
 }
 :MU {{{LEFT_STRIP}?![\s\S]*?}} {
   this.popState();
