@@ -66,7 +66,7 @@ rule
 
 :COM [\s\S]*?"--"{RIGHT_STRIP}?"}}" {
   this.popState();
-  return 'COMMENT';
+  'COMMENT';
 }
 
 :MU "("                          { 'OPEN_SEXPR' }
@@ -95,7 +95,7 @@ rule
 }
 :MU "{{"{LEFT_STRIP}?"!"[\s\S]*?"}}" {
   this.popState();
-  return 'COMMENT';
+  'COMMENT';
 }
 :MU "{{"{LEFT_STRIP}?"*"?        { 'OPEN' }
 
@@ -104,10 +104,10 @@ rule
 :MU "."/{LOOKAHEAD}              { 'ID' }
 :MU [\/.]                        { 'SEP' }
 :MU \s+                          // ignore whitespace
-:MU "}"{RIGHT_STRIP}?"}}"        { this.popState(); return 'CLOSE_UNESCAPED'; }
-:MU {RIGHT_STRIP}?"}}"           { this.popState(); return 'CLOSE'; }
-:MU '"'("\\"["]|[^"])*'"'        { yytext = strip(1,2).replace(/\\"/g,'"'); return 'STRING'; }
-:MU "'"("\\"[']|[^'])*"'"        { yytext = strip(1,2).replace(/\\'/g,"'"); return 'STRING'; }
+:MU "}"{RIGHT_STRIP}?"}}"        { this.popState(); 'CLOSE_UNESCAPED'; }
+:MU {RIGHT_STRIP}?"}}"           { this.popState(); 'CLOSE'; }
+:MU '"'("\\"["]|[^"])*'"'        { yytext = strip(1,2).replace(/\\"/g,'"'); 'STRING'; }
+:MU "'"("\\"[']|[^'])*"'"        { yytext = strip(1,2).replace(/\\'/g,"'"); 'STRING'; }
 :MU "@"                          { 'DATA' }
 :MU "true"/{LITERAL_LOOKAHEAD}   { 'BOOLEAN'; }
 :MU "false"/{LITERAL_LOOKAHEAD}  { 'BOOLEAN'; }
