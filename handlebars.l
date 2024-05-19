@@ -9,6 +9,12 @@ function strip(start, end) {
 
 %}
 
+inner
+
+    def handle_stringescape(str, delimiter)
+      str
+    end
+
 macro
 LEFT_STRIP    ~
 RIGHT_STRIP   ~
@@ -92,8 +98,8 @@ rule
 :MU \s+                          // ignore whitespace
 :MU }{RIGHT_STRIP}?}}            { @state = nil; 'CLOSE_UNESCAPED'; }
 :MU {RIGHT_STRIP}?}}             { @state = nil; 'CLOSE'; }
-:MU "(\\"|[^"])*"                { text = handle_stringescape('"'); 'STRING'; }
-:MU '(\\'|[^'])*'                { text = handle_stringescape("'"); 'STRING'; }
+:MU "(\\"|[^"])*"                { text = handle_stringescape(text, '"'); 'STRING'; }
+:MU '(\\'|[^'])*'                { text = handle_stringescape(text, "'"); 'STRING'; }
 :MU @                            { 'DATA' }
 :MU true(?={LIT_LOOKAHEAD})      { 'BOOLEAN'; }
 :MU false(?={LIT_LOOKAHEAD})     { 'BOOLEAN'; }
