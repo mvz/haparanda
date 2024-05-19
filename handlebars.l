@@ -27,29 +27,29 @@ ID    [^\s!"#%-,\.\/;->@\[-\^`\{-~]+/{LOOKAHEAD}
 
 rule
 
-[^\x00]*?/("{{")                {
+[^\x00]*?(?:{{)                {
                                    if(yytext.slice(-2) === "\\\\") {
                                      strip(0,1);
-                                     this.begin("mu");
+                                     state = :MU
                                    } else if(yytext.slice(-1) === "\\") {
                                      strip(0,1);
-                                     this.begin("emu");
+                                     state = :EMU
                                    } else {
-                                     this.begin("mu");
+                                     state = :MU
                                    }
                                    if(yytext) return 'CONTENT';
                                  }
 
 [^\x00]+                         return 'CONTENT';
 
-// marks CONTENT up to the next mustache or escaped mustache
+# marks CONTENT up to the next mustache or escaped mustache
 :EMU [^\x00]{2,}?/("{{"|"\\{{"|"\\\\{{"|<<EOF>>) {
                                    this.popState();
                                    return 'CONTENT';
                                  }
 
-// nested raw block will create stacked 'raw' condition
-:RAW "{{{{"/[^/]                 this.begin('raw'); return 'CONTENT';
+# nested raw block will create stacked 'raw' condition
+:RAW "{{{{"/[^/]                 state = :RAW return 'CONTENT';
 :RAW "{{{{/"[^\s!"#%-,\.\/;->@\[-\^`\{-~]+/[=}\s\/.]"}}}}" {
                                   this.popState();
                                   // Should be using `this.topState()` below, but it currently
@@ -75,7 +75,7 @@ rule
 :MU "{{{{"                       { return 'OPEN_RAW_BLOCK'; }
 :MU "}}}}"                       {
                                   this.popState();
-                                  this.begin('raw');
+                                  state = :RAW
                                   return 'CLOSE_RAW_BLOCK';
                                  }
 :MU "{{"{LEFT_STRIP}?">"         return 'OPEN_PARTIAL';
@@ -91,7 +91,7 @@ rule
 :MU "{{"{LEFT_STRIP}?"!--" {
   this.unput(yytext);
   this.popState();
-  this.begin('com');
+  state = :COM
 }
 :MU "{{"{LEFT_STRIP}?"!"[\s\S]*?"}}" {
   this.popState();
