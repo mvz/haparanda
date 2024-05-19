@@ -102,8 +102,8 @@ rule
 :MU \s+                          // ignore whitespace
 :MU "}"{RIGHT_STRIP}?"}}"        { this.popState(); 'CLOSE_UNESCAPED'; }
 :MU {RIGHT_STRIP}?"}}"           { this.popState(); 'CLOSE'; }
-:MU '"'("\\"["]|[^"])*'"'        { yytext = strip(1,2).replace(/\\"/g,'"'); 'STRING'; }
-:MU "'"("\\"[']|[^'])*"'"        { yytext = strip(1,2).replace(/\\'/g,"'"); 'STRING'; }
+:MU '"'("\\"["]|[^"])*'"'        { yytext = handle_stringescape('"'); 'STRING'; }
+:MU "'"("\\"[']|[^'])*"'"        { yytext = handle_stringescape("'"); 'STRING'; }
 :MU "@"                          { 'DATA' }
 :MU "true"/{LITERAL_LOOKAHEAD}   { 'BOOLEAN'; }
 :MU "false"/{LITERAL_LOOKAHEAD}  { 'BOOLEAN'; }
