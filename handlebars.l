@@ -1,4 +1,4 @@
-
+class HandlebarsLexer
 %x mu emu com raw
 
 %{
@@ -9,24 +9,23 @@ function strip(start, end) {
 
 %}
 
+macro
 LEFT_STRIP    "~"
 RIGHT_STRIP   "~"
 
 LOOKAHEAD           [=~}\s\/.)|]
 LITERAL_LOOKAHEAD   [~}\s)]
 
-/*
-ID is the inverse of control characters.
-Control characters ranges:
-  [\s]          Whitespace
-  [!"#%-,\./]   !, ", #, %, &, ', (, ), *, +, ,, ., /,  Exceptions in range: $, -
-  [;->@]        ;, <, =, >, @,                          Exceptions in range: :, ?
-  [\[-\^`]      [, \, ], ^, `,                          Exceptions in range: _
-  [\{-~]        {, |, }, ~
-*/
+# ID is the inverse of control characters.
+# Control characters ranges:
+#   [\s]          Whitespace
+#   [!"#%-,\./]   !, ", #, %, &, ', (, ), *, +, ,, ., /,  Exceptions in range: $, -
+#   [;->@]        ;, <, =, >, @,                          Exceptions in range: :, ?
+#   [\[-\^`]      [, \, ], ^, `,                          Exceptions in range: _
+#   [\{-~]        {, |, }, ~
 ID    [^\s!"#%-,\.\/;->@\[-\^`\{-~]+/{LOOKAHEAD}
 
-%%
+rule
 
 [^\x00]*?/("{{")                {
                                    if(yytext.slice(-2) === "\\\\") {
@@ -124,3 +123,4 @@ ID    [^\s!"#%-,\.\/;->@\[-\^`\{-~]+/{LOOKAHEAD}
 <mu>.                            return 'INVALID';
 
 <INITIAL,mu><<EOF>>              return 'EOF';
+end
