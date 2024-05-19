@@ -23,11 +23,11 @@ LIT_LOOKAHEAD       [~}\s)]
 #   [;->@]        ;, <, =, >, @,                          Exceptions in range: :, ?
 #   [\[-\^`]      [, \, ], ^, `,                          Exceptions in range: _
 #   [\{-~]        {, |, }, ~
-ID    [^\s!"\#%-,\.\/;->@\[-\^`\{-~]+(?:{LOOKAHEAD})
+ID    [^\s!"\#%-,\.\/;->@\[-\^`\{-~]+(?={LOOKAHEAD})
 
 rule
 
-[^\x00]*?(?:{{)                {
+[^\x00]*?(?={{)                {
                                    if(text.slice(-2) === "\\\\")
                                      strip(0,1);
                                      state = :MU
@@ -59,7 +59,7 @@ rule
                                     'CONTENT';
                                   end
                                  }
-:RAW [^\x00]+?(?:{{{{)          { 'CONTENT' }
+:RAW [^\x00]+?(?={{{{)          { 'CONTENT' }
 
 :COM [\s\S]*?"--"{RIGHT_STRIP}?"}}" {
   this.popState();
@@ -97,7 +97,7 @@ rule
 
 :MU =                            { 'EQUALS' }
 :MU \.\.                         { 'ID' }
-:MU \.(?:{LOOKAHEAD})            { 'ID' }
+:MU \.(?={LOOKAHEAD})            { 'ID' }
 :MU [\/.]                        { 'SEP' }
 :MU \s+                          // ignore whitespace
 :MU }{RIGHT_STRIP}?}}            { this.popState(); 'CLOSE_UNESCAPED'; }
@@ -105,11 +105,11 @@ rule
 :MU "(\\"|[^"])*"                { text = handle_stringescape('"'); 'STRING'; }
 :MU '(\\'|[^'])*'                { text = handle_stringescape("'"); 'STRING'; }
 :MU @                            { 'DATA' }
-:MU true(?:{LIT_LOOKAHEAD})      { 'BOOLEAN'; }
-:MU false(?:{LIT_LOOKAHEAD})     { 'BOOLEAN'; }
-:MU undefined(?:{LIT_LOOKAHEAD}) { 'UNDEFINED'; }
-:MU null(?:{LIT_LOOKAHEAD})      { 'NULL'; }
-:MU \-?[0-9]+(?:\.[0-9]+)?(?:{LIT_LOOKAHEAD}) { 'NUMBER'; }
+:MU true(?={LIT_LOOKAHEAD})      { 'BOOLEAN'; }
+:MU false(?={LIT_LOOKAHEAD})     { 'BOOLEAN'; }
+:MU undefined(?={LIT_LOOKAHEAD}) { 'UNDEFINED'; }
+:MU null(?={LIT_LOOKAHEAD})      { 'NULL'; }
+:MU \-?[0-9]+(?=\.[0-9]+)?(?={LIT_LOOKAHEAD}) { 'NUMBER'; }
 :MU as\s+\|                      { 'OPEN_BLOCK_PARAMS' }
 :MU \|                           { 'CLOSE_BLOCK_PARAMS' }
 
