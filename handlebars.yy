@@ -64,15 +64,15 @@ start root
     ;
 
   openBlock
-    : OPEN_BLOCK helperName exprs hash blockParams? CLOSE { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_BLOCK helperName exprs hash blockParams CLOSE { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   openInverse
-    : OPEN_INVERSE helperName exprs hash blockParams? CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE helperName exprs hash blockParams CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   openInverseChain
-    : OPEN_INVERSE_CHAIN helperName exprs hash blockParams? CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE_CHAIN helperName exprs hash blockParams CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   optInverseAndProgram
@@ -161,7 +161,8 @@ start root
     ;
 
   blockParams
-    : OPEN_BLOCK_PARAMS ID+ CLOSE_BLOCK_PARAMS { yy.id($2) }
+    : none
+    | OPEN_BLOCK_PARAMS ID+ CLOSE_BLOCK_PARAMS { yy.id($2) }
     ;
 
   helperName
