@@ -11,8 +11,13 @@ start root
     ;
 
   program
-    : statement* -> yy.prepareProgram($1)
+    : statements -> yy.prepareProgram($1)
     ;
+
+  statements
+    : none
+    | statement
+    | statements statement
 
   statement
     : mustache -> $1
@@ -40,12 +45,17 @@ start root
       };
     };
 
+  contents:
+    : none
+    | content
+    | contents content
+
   rawBlock
-    : openRawBlock content* END_RAW_BLOCK -> yy.prepareRawBlock($1, $2, $3, @$)
+    : openRawBlock contents END_RAW_BLOCK -> yy.prepareRawBlock($1, $2, $3, @$)
     ;
 
   openRawBlock
-    : OPEN_RAW_BLOCK helperName expr* hash? CLOSE_RAW_BLOCK -> { path: $2, params: $3, hash: $4 }
+    : OPEN_RAW_BLOCK helperName exprs hash? CLOSE_RAW_BLOCK -> { path: $2, params: $3, hash: $4 }
     ;
 
   block
@@ -54,15 +64,15 @@ start root
     ;
 
   openBlock
-    : OPEN_BLOCK helperName expr* hash? blockParams? CLOSE -> { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_BLOCK helperName exprs hash? blockParams? CLOSE -> { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   openInverse
-    : OPEN_INVERSE helperName expr* hash? blockParams? CLOSE -> { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE helperName exprs hash? blockParams? CLOSE -> { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   openInverseChain
-    : OPEN_INVERSE_CHAIN helperName expr* hash? blockParams? CLOSE -> { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE_CHAIN helperName exprs hash? blockParams? CLOSE -> { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   inverseAndProgram
@@ -87,12 +97,12 @@ start root
   mustache
     // Parsing out the '&' escape token at AST level saves ~500 bytes after min due to the removal of one parser node.
     // This also allows for handler unification as all mustache node instances can utilize the same handler
-    : OPEN expr expr* hash? CLOSE -> yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$)
-    | OPEN_UNESCAPED expr expr* hash? CLOSE_UNESCAPED -> yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$)
+    : OPEN expr exprs hash? CLOSE -> yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$)
+    | OPEN_UNESCAPED expr exprs hash? CLOSE_UNESCAPED -> yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$)
     ;
 
   partial
-    : OPEN_PARTIAL expr expr* hash? CLOSE {
+    : OPEN_PARTIAL expr exprs hash? CLOSE {
       $$ = {
         type: 'PartialStatement',
         name: $2,
@@ -108,7 +118,7 @@ start root
     : openPartialBlock program closeBlock -> yy.preparePartialBlock($1, $2, $3, @$)
     ;
   openPartialBlock
-    : OPEN_PARTIAL_BLOCK expr expr* hash? CLOSE -> { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) }
+    : OPEN_PARTIAL_BLOCK expr exprs hash? CLOSE -> { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) }
     ;
 
   expr
@@ -116,8 +126,13 @@ start root
     | sexpr -> $1
     ;
 
+  exprs
+    : none
+    | expr
+    | exprs expr
+
   sexpr
-    : OPEN_SEXPR expr expr* hash? CLOSE_SEXPR {
+    : OPEN_SEXPR expr exprs hash? CLOSE_SEXPR {
       $$ = {
         type: 'SubExpression',
         path: $2,
