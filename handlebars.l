@@ -33,7 +33,7 @@ ID    [^\s!"\#%-,\.\/;->@\[-\^`\{-~]+(?={LOOKAHEAD})
 
 rule
 
-[^\x00]*?(?={{)                {
+[^\x00]*?(?={{)                  {
                                    if(text.slice(-2) === "\\\\")
                                      strip(0,1);
                                      @state = :MU
@@ -43,16 +43,13 @@ rule
                                    else
                                      @state = :MU
                                    end
-                                   'CONTENT' if(text)
+                                   [:CONTENT, text] if(text)
                                  }
 
-[^\x00]+                         { 'CONTENT' }
+[^\x00]+                         { [:CONTENT, text] }
 
 # consume escaped mustache
-:EMU {{                          {
-                                   @state = nil
-                                   'CONTENT'
-                                 }
+:EMU {{                          { @state = nil; [:CONTENT, text] }
 
 # End of raw block if delimiter text matches opening text
 :RAW {{{{\/[^\s!"#%-,\.\/;->@\[-\^`\{-~]+}}}} {
@@ -60,59 +57,59 @@ rule
                                   if ending_delimiter == @raw_delimiter
                                     @state = nil
                                     text = ""
-                                    'END_RAW_BLOCK';
+                                    [:END_RAW_BLOCK, text]
                                   else
-                                    'CONTENT';
+                                    [:CONTENT, text]
                                   end
                                  }
-:RAW [^\x00]+?(?={{{{)           { 'CONTENT' }
+:RAW [^\x00]+?(?={{{{)           { [:CONTENT, text] }
 
-:COM [\s\S]*?"--"{RIGHT_STRIP}?"}}" { @state = nil; 'COMMENT' }
+:COM [\s\S]*?"--"{RIGHT_STRIP}?"}}" { @state = nil; [:COMMENT, text] }
 
-:MU \(                           { 'OPEN_SEXPR' }
-:MU \)                           { 'CLOSE_SEXPR' }
+:MU \(                           { [:OPEN_SEXPR, text] }
+:MU \)                           { [:CLOSE_SEXPR, text] }
 
 :MU {{{{[^\s!"#%-,\.\/;->@\[-\^`\{-~]+}}}}    {
                                   @raw_delimiter = text[4...-4]
                                   @state = :RAW
-                                  'START_RAW_BLOCK';
+                                  [:START_RAW_BLOCK, text]
                                  }
-:MU {{{LEFT_STRIP}?>             { 'OPEN_PARTIAL' }
-:MU {{{LEFT_STRIP}?#>            { 'OPEN_PARTIAL_BLOCK' }
-:MU {{{LEFT_STRIP}?#\*?          { 'OPEN_BLOCK' }
-:MU {{{LEFT_STRIP}?\/            { 'OPEN_ENDBLOCK' }
-:MU {{{LEFT_STRIP}?^\s*{RIGHT_STRIP}?}}       { @state = nil; 'INVERSE' }
-:MU {{{LEFT_STRIP}?\s*else\s*{RIGHT_STRIP}?}} { @state = nil; 'INVERSE' }
-:MU {{{LEFT_STRIP}?^             { 'OPEN_INVERSE' }
-:MU {{{LEFT_STRIP}?\s*else       { 'OPEN_INVERSE_CHAIN' }
-:MU {{{LEFT_STRIP}?{             { 'OPEN_UNESCAPED' }
-:MU {{{LEFT_STRIP}?&             { 'OPEN' }
-:MU {{{LEFT_STRIP}?!--           { @state = :COM; 'COMMENT' }
-:MU {{{LEFT_STRIP}?![\s\S]*?}}   { @state = nil; 'COMMENT' }
-:MU {{{LEFT_STRIP}?\*?           { 'OPEN' }
+:MU {{{LEFT_STRIP}?>             { [:OPEN_PARTIAL, text] }
+:MU {{{LEFT_STRIP}?#>            { [:OPEN_PARTIAL_BLOCK, text] }
+:MU {{{LEFT_STRIP}?#\*?          { [:OPEN_BLOCK, text] }
+:MU {{{LEFT_STRIP}?\/            { [:OPEN_ENDBLOCK, text] }
+:MU {{{LEFT_STRIP}?^\s*{RIGHT_STRIP}?}}       { @state = nil; [:INVERSE, text] }
+:MU {{{LEFT_STRIP}?\s*else\s*{RIGHT_STRIP}?}} { @state = nil; [:INVERSE, text] }
+:MU {{{LEFT_STRIP}?^             { [:OPEN_INVERSE, text] }
+:MU {{{LEFT_STRIP}?\s*else       { [:OPEN_INVERSE_CHAIN, text] }
+:MU {{{LEFT_STRIP}?{             { [:OPEN_UNESCAPED, text] }
+:MU {{{LEFT_STRIP}?&             { [:OPEN, text] }
+:MU {{{LEFT_STRIP}?!--           { @state = :COM; [:COMMENT, text] }
+:MU {{{LEFT_STRIP}?![\s\S]*?}}   { @state = nil; [:COMMENT, text] }
+:MU {{{LEFT_STRIP}?\*?           { [:OPEN, text] }
 
-:MU =                            { 'EQUALS' }
-:MU \.\.                         { 'ID' }
-:MU \.(?={LOOKAHEAD})            { 'ID' }
-:MU [\/.]                        { 'SEP' }
+:MU =                            { [:EQUALS, text] }
+:MU \.\.                         { [:ID, text] }
+:MU \.(?={LOOKAHEAD})            { [:ID, text] }
+:MU [\/.]                        { [:SEP, text] }
 :MU \s+                          // ignore whitespace
-:MU }{RIGHT_STRIP}?}}            { @state = nil; 'CLOSE_UNESCAPED' }
-:MU {RIGHT_STRIP}?}}             { @state = nil; 'CLOSE' }
-:MU "(\\"|[^"])*"                { text = handle_stringescape(text, '"'); 'STRING' }
-:MU '(\\'|[^'])*'                { text = handle_stringescape(text, "'"); 'STRING' }
-:MU @                            { 'DATA' }
-:MU true(?={LIT_LOOKAHEAD})      { 'BOOLEAN' }
-:MU false(?={LIT_LOOKAHEAD})     { 'BOOLEAN' }
-:MU undefined(?={LIT_LOOKAHEAD}) { 'UNDEFINED' }
-:MU null(?={LIT_LOOKAHEAD})      { 'NULL' }
-:MU \-?[0-9]+(?=\.[0-9]+)?(?={LIT_LOOKAHEAD}) { 'NUMBER' }
-:MU as\s+\|                      { 'OPEN_BLOCK_PARAMS' }
-:MU \|                           { 'CLOSE_BLOCK_PARAMS' }
+:MU }{RIGHT_STRIP}?}}            { @state = nil; [:CLOSE_UNESCAPED, text] }
+:MU {RIGHT_STRIP}?}}             { @state = nil; [:CLOSE, text] }
+:MU "(\\"|[^"])*"                { text = handle_stringescape(text, '"'); [:STRING, text] }
+:MU '(\\'|[^'])*'                { text = handle_stringescape(text, "'"); [:STRING, text] }
+:MU @                            { [:DATA, text] }
+:MU true(?={LIT_LOOKAHEAD})      { [:BOOLEAN, text] }
+:MU false(?={LIT_LOOKAHEAD})     { [:BOOLEAN, text] }
+:MU undefined(?={LIT_LOOKAHEAD}) { [:UNDEFINED, text] }
+:MU null(?={LIT_LOOKAHEAD})      { [:NULL, text] }
+:MU \-?[0-9]+(?=\.[0-9]+)?(?={LIT_LOOKAHEAD}) { [:NUMBER, text] }
+:MU as\s+\|                      { [:OPEN_BLOCK_PARAMS, text] }
+:MU \|                           { [:CLOSE_BLOCK_PARAMS, text] }
 
-:MU {ID}                         { 'ID' }
+:MU {ID}                         { [:ID, text] }
 
-:MU \[(\\\]|[^\]])*\]            { text = text.gsub(/\\([\\\]])/,'$1'); 'ID' }
-:MU .                            { 'INVALID' }
+:MU \[(\\\]|[^\]])*\]            { text = text.gsub(/\\([\\\]])/,'$1'); [:ID, text] }
+:MU .                            { [:INVALID, text] }
 
-<INITIAL,mu><<EOF>>              { 'EOF' }
+<INITIAL,mu><<EOF>>              { [:EOF, text] }
 end
