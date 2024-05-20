@@ -162,8 +162,12 @@ start root
 
   blockParams
     : none
-    | OPEN_BLOCK_PARAMS ID+ CLOSE_BLOCK_PARAMS { yy.id($2) }
+    | OPEN_BLOCK_PARAMS idSequence CLOSE_BLOCK_PARAMS { yy.id($2) }
     ;
+
+  idSequence
+    : ID
+    | idSequence ID
 
   helperName
     : path { $1 }
