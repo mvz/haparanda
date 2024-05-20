@@ -55,7 +55,7 @@ start root
     ;
 
   openRawBlock
-    : OPEN_RAW_BLOCK helperName exprs hash? CLOSE_RAW_BLOCK { path: $2, params: $3, hash: $4 }
+    : OPEN_RAW_BLOCK helperName exprs hash CLOSE_RAW_BLOCK { path: $2, params: $3, hash: $4 }
     ;
 
   block
@@ -64,15 +64,15 @@ start root
     ;
 
   openBlock
-    : OPEN_BLOCK helperName exprs hash? blockParams? CLOSE { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_BLOCK helperName exprs hash blockParams? CLOSE { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   openInverse
-    : OPEN_INVERSE helperName exprs hash? blockParams? CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE helperName exprs hash blockParams? CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   openInverseChain
-    : OPEN_INVERSE_CHAIN helperName exprs hash? blockParams? CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE_CHAIN helperName exprs hash blockParams? CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   inverseAndProgram
@@ -97,12 +97,12 @@ start root
   mustache
     // Parsing out the '&' escape token at AST level saves ~500 bytes after min due to the removal of one parser node.
     // This also allows for handler unification as all mustache node instances can utilize the same handler
-    : OPEN expr exprs hash? CLOSE { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
-    | OPEN_UNESCAPED expr exprs hash? CLOSE_UNESCAPED { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
+    : OPEN expr exprs hash CLOSE { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
+    | OPEN_UNESCAPED expr exprs hash CLOSE_UNESCAPED { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
     ;
 
   partial
-    : OPEN_PARTIAL expr exprs hash? CLOSE {
+    : OPEN_PARTIAL expr exprs hash CLOSE {
       $$ = {
         type: 'PartialStatement',
         name: $2,
@@ -118,7 +118,7 @@ start root
     : openPartialBlock program closeBlock { yy.preparePartialBlock($1, $2, $3, @$) }
     ;
   openPartialBlock
-    : OPEN_PARTIAL_BLOCK expr exprs hash? CLOSE { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) }
+    : OPEN_PARTIAL_BLOCK expr exprs hash CLOSE { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) }
     ;
 
   expr
@@ -132,7 +132,7 @@ start root
     | exprs expr
 
   sexpr
-    : OPEN_SEXPR expr exprs hash? CLOSE_SEXPR {
+    : OPEN_SEXPR expr exprs hash CLOSE_SEXPR {
       $$ = {
         type: 'SubExpression',
         path: $2,
@@ -143,8 +143,13 @@ start root
     };
 
   hash
-    : hashSegment+ {type: 'Hash', pairs: $1, loc: yy.locInfo(@$)}
+    : hashSegments {type: 'Hash', pairs: $1, loc: yy.locInfo(@$)}
     ;
+
+  hashSegments
+    : none
+    | hashSegment
+    | hashSegments hashSegment
 
   hashSegment
     : ID EQUALS expr {type: 'HashPair', key: yy.id($1), value: $3, loc: yy.locInfo(@$)}
