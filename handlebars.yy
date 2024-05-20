@@ -60,7 +60,7 @@ start root
 
   block
     : openBlock program inverseChain closeBlock { yy.prepareBlock($1, $2, $3, $4, false, @$) }
-    | openInverse program inverseAndProgram? closeBlock { yy.prepareBlock($1, $2, $3, $4, true, @$) }
+    | openInverse program optInverseAndProgram closeBlock { yy.prepareBlock($1, $2, $3, $4, true, @$) }
     ;
 
   openBlock
@@ -74,6 +74,10 @@ start root
   openInverseChain
     : OPEN_INVERSE_CHAIN helperName exprs hash blockParams? CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
+
+  optInverseAndProgram
+    : none
+    | inverseAndProgram
 
   inverseAndProgram
     : INVERSE program { strip: yy.stripFlags($1, $1), program: $2 }
