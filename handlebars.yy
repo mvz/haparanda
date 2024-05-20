@@ -100,8 +100,8 @@ start root
     ;
 
   mustache
-    // Parsing out the '&' escape token at AST level saves ~500 bytes after min due to the removal of one parser node.
-    // This also allows for handler unification as all mustache node instances can utilize the same handler
+    # Parsing out the '&' escape token at AST level saves ~500 bytes after min due to the removal of one parser node.
+    # This also allows for handler unification as all mustache node instances can utilize the same handler
     : OPEN expr exprs hash CLOSE { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
     | OPEN_UNESCAPED expr exprs hash CLOSE_UNESCAPED { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
     ;
