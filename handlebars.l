@@ -67,7 +67,7 @@ rule
                                  }
 :RAW [^\x00]+?(?={{{{)           { 'CONTENT' }
 
-:COM [\s\S]*?"--"{RIGHT_STRIP}?"}}" { @state = nil; 'COMMENT'; }
+:COM [\s\S]*?"--"{RIGHT_STRIP}?"}}" { @state = nil; 'COMMENT' }
 
 :MU \(                           { 'OPEN_SEXPR' }
 :MU \)                           { 'CLOSE_SEXPR' }
@@ -81,14 +81,14 @@ rule
 :MU {{{LEFT_STRIP}?#>            { 'OPEN_PARTIAL_BLOCK' }
 :MU {{{LEFT_STRIP}?#\*?          { 'OPEN_BLOCK' }
 :MU {{{LEFT_STRIP}?\/            { 'OPEN_ENDBLOCK' }
-:MU {{{LEFT_STRIP}?^\s*{RIGHT_STRIP}?}}       { @state = nil; 'INVERSE'; }
-:MU {{{LEFT_STRIP}?\s*else\s*{RIGHT_STRIP}?}} { @state = nil; 'INVERSE'; }
+:MU {{{LEFT_STRIP}?^\s*{RIGHT_STRIP}?}}       { @state = nil; 'INVERSE' }
+:MU {{{LEFT_STRIP}?\s*else\s*{RIGHT_STRIP}?}} { @state = nil; 'INVERSE' }
 :MU {{{LEFT_STRIP}?^             { 'OPEN_INVERSE' }
 :MU {{{LEFT_STRIP}?\s*else       { 'OPEN_INVERSE_CHAIN' }
 :MU {{{LEFT_STRIP}?{             { 'OPEN_UNESCAPED' }
 :MU {{{LEFT_STRIP}?&             { 'OPEN' }
 :MU {{{LEFT_STRIP}?!--           { @state = :COM; 'COMMENT' }
-:MU {{{LEFT_STRIP}?![\s\S]*?}}   { @state = nil; 'COMMENT'; }
+:MU {{{LEFT_STRIP}?![\s\S]*?}}   { @state = nil; 'COMMENT' }
 :MU {{{LEFT_STRIP}?\*?           { 'OPEN' }
 
 :MU =                            { 'EQUALS' }
@@ -96,22 +96,22 @@ rule
 :MU \.(?={LOOKAHEAD})            { 'ID' }
 :MU [\/.]                        { 'SEP' }
 :MU \s+                          // ignore whitespace
-:MU }{RIGHT_STRIP}?}}            { @state = nil; 'CLOSE_UNESCAPED'; }
-:MU {RIGHT_STRIP}?}}             { @state = nil; 'CLOSE'; }
-:MU "(\\"|[^"])*"                { text = handle_stringescape(text, '"'); 'STRING'; }
-:MU '(\\'|[^'])*'                { text = handle_stringescape(text, "'"); 'STRING'; }
+:MU }{RIGHT_STRIP}?}}            { @state = nil; 'CLOSE_UNESCAPED' }
+:MU {RIGHT_STRIP}?}}             { @state = nil; 'CLOSE' }
+:MU "(\\"|[^"])*"                { text = handle_stringescape(text, '"'); 'STRING' }
+:MU '(\\'|[^'])*'                { text = handle_stringescape(text, "'"); 'STRING' }
 :MU @                            { 'DATA' }
-:MU true(?={LIT_LOOKAHEAD})      { 'BOOLEAN'; }
-:MU false(?={LIT_LOOKAHEAD})     { 'BOOLEAN'; }
-:MU undefined(?={LIT_LOOKAHEAD}) { 'UNDEFINED'; }
-:MU null(?={LIT_LOOKAHEAD})      { 'NULL'; }
-:MU \-?[0-9]+(?=\.[0-9]+)?(?={LIT_LOOKAHEAD}) { 'NUMBER'; }
+:MU true(?={LIT_LOOKAHEAD})      { 'BOOLEAN' }
+:MU false(?={LIT_LOOKAHEAD})     { 'BOOLEAN' }
+:MU undefined(?={LIT_LOOKAHEAD}) { 'UNDEFINED' }
+:MU null(?={LIT_LOOKAHEAD})      { 'NULL' }
+:MU \-?[0-9]+(?=\.[0-9]+)?(?={LIT_LOOKAHEAD}) { 'NUMBER' }
 :MU as\s+\|                      { 'OPEN_BLOCK_PARAMS' }
 :MU \|                           { 'CLOSE_BLOCK_PARAMS' }
 
 :MU {ID}                         { 'ID' }
 
-:MU \[(\\\]|[^\]])*\]            { text = text.gsub(/\\([\\\]])/,'$1'); 'ID'; }
+:MU \[(\\\]|[^\]])*\]            { text = text.gsub(/\\([\\\]])/,'$1'); 'ID' }
 :MU .                            { 'INVALID' }
 
 <INITIAL,mu><<EOF>>              { 'EOF' }
