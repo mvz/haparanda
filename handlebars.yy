@@ -31,7 +31,7 @@ start root
         type: 'CommentStatement',
         value: yy.stripComment($1),
         strip: yy.stripFlags($1, $1),
-        loc: yy.locInfo(@$)
+        loc: yy.locInfo(self.lexer.lineno)
       };
     };
 
@@ -41,7 +41,7 @@ start root
         type: 'ContentStatement',
         original: $1,
         value: $1,
-        loc: yy.locInfo(@$)
+        loc: yy.locInfo(self.lexer.lineno)
       };
     };
 
@@ -51,7 +51,7 @@ start root
     | contents content
 
   rawBlock
-    : openRawBlock contents END_RAW_BLOCK { yy.prepareRawBlock($1, $2, $3, @$) }
+    : openRawBlock contents END_RAW_BLOCK { yy.prepareRawBlock($1, $2, $3, self.lexer.lineno) }
     ;
 
   openRawBlock
@@ -59,8 +59,8 @@ start root
     ;
 
   block
-    : openBlock program inverseChain closeBlock { yy.prepareBlock($1, $2, $3, $4, false, @$) }
-    | openInverse program optInverseAndProgram closeBlock { yy.prepareBlock($1, $2, $3, $4, true, @$) }
+    : openBlock program inverseChain closeBlock { yy.prepareBlock($1, $2, $3, $4, false, self.lexer.lineno) }
+    | openInverse program optInverseAndProgram closeBlock { yy.prepareBlock($1, $2, $3, $4, true, self.lexer.lineno) }
     ;
 
   openBlock
@@ -86,7 +86,7 @@ start root
   inverseChain
     : none
     | openInverseChain program inverseChain {
-      var inverse = yy.prepareBlock($1, $2, $3, $3, false, @$),
+      var inverse = yy.prepareBlock($1, $2, $3, $3, false, self.lexer.lineno),
           program = yy.prepareProgram([inverse], $2.loc);
       program.chained = true;
 
@@ -102,8 +102,8 @@ start root
   mustache
     # Parsing out the '&' escape token at AST level saves ~500 bytes after min due to the removal of one parser node.
     # This also allows for handler unification as all mustache node instances can utilize the same handler
-    : OPEN expr exprs hash CLOSE { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
-    | OPEN_UNESCAPED expr exprs hash CLOSE_UNESCAPED { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
+    : OPEN expr exprs hash CLOSE { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), self.lexer.lineno) }
+    | OPEN_UNESCAPED expr exprs hash CLOSE_UNESCAPED { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), self.lexer.lineno) }
     ;
 
   partial
@@ -115,12 +115,12 @@ start root
         hash: $4,
         indent: '',
         strip: yy.stripFlags($1, $5),
-        loc: yy.locInfo(@$)
+        loc: yy.locInfo(self.lexer.lineno)
       };
     }
     ;
   partialBlock
-    : openPartialBlock program closeBlock { yy.preparePartialBlock($1, $2, $3, @$) }
+    : openPartialBlock program closeBlock { yy.preparePartialBlock($1, $2, $3, self.lexer.lineno) }
     ;
   openPartialBlock
     : OPEN_PARTIAL_BLOCK expr exprs hash CLOSE { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) }
@@ -143,12 +143,12 @@ start root
         path: $2,
         params: $3,
         hash: $4,
-        loc: yy.locInfo(@$)
+        loc: yy.locInfo(self.lexer.lineno)
       };
     };
 
   hash
-    : hashSegments {type: 'Hash', pairs: $1, loc: yy.locInfo(@$)}
+    : hashSegments {type: 'Hash', pairs: $1, loc: yy.locInfo(self.lexer.lineno)}
     ;
 
   hashSegments
@@ -157,7 +157,7 @@ start root
     | hashSegments hashSegment
 
   hashSegment
-    : ID EQUALS expr {type: 'HashPair', key: yy.id($1), value: $3, loc: yy.locInfo(@$)}
+    : ID EQUALS expr {type: 'HashPair', key: yy.id($1), value: $3, loc: yy.locInfo(self.lexer.lineno)}
     ;
 
   blockParams
@@ -172,20 +172,20 @@ start root
   helperName
     : path { $1 }
     | dataName { $1 }
-    | STRING {type: 'StringLiteral', value: $1, original: $1, loc: yy.locInfo(@$)}
-    | NUMBER {type: 'NumberLiteral', value: Number($1), original: Number($1), loc: yy.locInfo(@$)}
-    | BOOLEAN {type: 'BooleanLiteral', value: $1 === 'true', original: $1 === 'true', loc: yy.locInfo(@$)}
-    | UNDEFINED {type: 'UndefinedLiteral', original: undefined, value: undefined, loc: yy.locInfo(@$)}
-    | NULL {type: 'NullLiteral', original: null, value: null, loc: yy.locInfo(@$)}
+    | STRING {type: 'StringLiteral', value: $1, original: $1, loc: yy.locInfo(self.lexer.lineno)}
+    | NUMBER {type: 'NumberLiteral', value: Number($1), original: Number($1), loc: yy.locInfo(self.lexer.lineno)}
+    | BOOLEAN {type: 'BooleanLiteral', value: $1 === 'true', original: $1 === 'true', loc: yy.locInfo(self.lexer.lineno)}
+    | UNDEFINED {type: 'UndefinedLiteral', original: undefined, value: undefined, loc: yy.locInfo(self.lexer.lineno)}
+    | NULL {type: 'NullLiteral', original: null, value: null, loc: yy.locInfo(self.lexer.lineno)}
     ;
 
   dataName
-    : DATA pathSegments { yy.preparePath(true, false, $2, @$) }
+    : DATA pathSegments { yy.preparePath(true, false, $2, self.lexer.lineno) }
     ;
 
   path
-    : sexpr SEP pathSegments { yy.preparePath(false, $1, $3, @$) }
-    | pathSegments { yy.preparePath(false, false, $1, @$) }
+    : sexpr SEP pathSegments { yy.preparePath(false, $1, $3, self.lexer.lineno) }
+    | pathSegments { yy.preparePath(false, false, $1, self.lexer.lineno) }
     ;
 
   pathSegments
