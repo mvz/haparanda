@@ -11,7 +11,7 @@ start root
     ;
 
   program
-    : statements -> yy.prepareProgram($1)
+    : statements { yy.prepareProgram($1) }
     ;
 
   statements
@@ -20,12 +20,12 @@ start root
     | statements statement
 
   statement
-    : mustache -> $1
-    | block -> $1
-    | rawBlock -> $1
-    | partial -> $1
-    | partialBlock -> $1
-    | content -> $1
+    : mustache { $1 }
+    | block { $1 }
+    | rawBlock { $1 }
+    | partial { $1 }
+    | partialBlock { $1 }
+    | content { $1 }
     | COMMENT {
       $$ = {
         type: 'CommentStatement',
@@ -51,32 +51,32 @@ start root
     | contents content
 
   rawBlock
-    : openRawBlock contents END_RAW_BLOCK -> yy.prepareRawBlock($1, $2, $3, @$)
+    : openRawBlock contents END_RAW_BLOCK { yy.prepareRawBlock($1, $2, $3, @$) }
     ;
 
   openRawBlock
-    : OPEN_RAW_BLOCK helperName exprs hash? CLOSE_RAW_BLOCK -> { path: $2, params: $3, hash: $4 }
+    : OPEN_RAW_BLOCK helperName exprs hash? CLOSE_RAW_BLOCK { path: $2, params: $3, hash: $4 }
     ;
 
   block
-    : openBlock program inverseChain? closeBlock -> yy.prepareBlock($1, $2, $3, $4, false, @$)
-    | openInverse program inverseAndProgram? closeBlock -> yy.prepareBlock($1, $2, $3, $4, true, @$)
+    : openBlock program inverseChain? closeBlock { yy.prepareBlock($1, $2, $3, $4, false, @$) }
+    | openInverse program inverseAndProgram? closeBlock { yy.prepareBlock($1, $2, $3, $4, true, @$) }
     ;
 
   openBlock
-    : OPEN_BLOCK helperName exprs hash? blockParams? CLOSE -> { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_BLOCK helperName exprs hash? blockParams? CLOSE { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   openInverse
-    : OPEN_INVERSE helperName exprs hash? blockParams? CLOSE -> { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE helperName exprs hash? blockParams? CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   openInverseChain
-    : OPEN_INVERSE_CHAIN helperName exprs hash? blockParams? CLOSE -> { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE_CHAIN helperName exprs hash? blockParams? CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
     ;
 
   inverseAndProgram
-    : INVERSE program -> { strip: yy.stripFlags($1, $1), program: $2 }
+    : INVERSE program { strip: yy.stripFlags($1, $1), program: $2 }
     ;
 
   inverseChain
@@ -87,18 +87,18 @@ start root
 
       $$ = { strip: $1.strip, program: program, chain: true };
     }
-    | inverseAndProgram -> $1
+    | inverseAndProgram { $1 }
     ;
 
   closeBlock
-    : OPEN_ENDBLOCK helperName CLOSE -> {path: $2, strip: yy.stripFlags($1, $3)}
+    : OPEN_ENDBLOCK helperName CLOSE {path: $2, strip: yy.stripFlags($1, $3)}
     ;
 
   mustache
     // Parsing out the '&' escape token at AST level saves ~500 bytes after min due to the removal of one parser node.
     // This also allows for handler unification as all mustache node instances can utilize the same handler
-    : OPEN expr exprs hash? CLOSE -> yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$)
-    | OPEN_UNESCAPED expr exprs hash? CLOSE_UNESCAPED -> yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$)
+    : OPEN expr exprs hash? CLOSE { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
+    | OPEN_UNESCAPED expr exprs hash? CLOSE_UNESCAPED { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), @$) }
     ;
 
   partial
@@ -115,15 +115,15 @@ start root
     }
     ;
   partialBlock
-    : openPartialBlock program closeBlock -> yy.preparePartialBlock($1, $2, $3, @$)
+    : openPartialBlock program closeBlock { yy.preparePartialBlock($1, $2, $3, @$) }
     ;
   openPartialBlock
-    : OPEN_PARTIAL_BLOCK expr exprs hash? CLOSE -> { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) }
+    : OPEN_PARTIAL_BLOCK expr exprs hash? CLOSE { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) }
     ;
 
   expr
-    : helperName -> $1
-    | sexpr -> $1
+    : helperName { $1 }
+    | sexpr { $1 }
     ;
 
   exprs
@@ -143,38 +143,38 @@ start root
     };
 
   hash
-    : hashSegment+ -> {type: 'Hash', pairs: $1, loc: yy.locInfo(@$)}
+    : hashSegment+ {type: 'Hash', pairs: $1, loc: yy.locInfo(@$)}
     ;
 
   hashSegment
-    : ID EQUALS expr -> {type: 'HashPair', key: yy.id($1), value: $3, loc: yy.locInfo(@$)}
+    : ID EQUALS expr {type: 'HashPair', key: yy.id($1), value: $3, loc: yy.locInfo(@$)}
     ;
 
   blockParams
-    : OPEN_BLOCK_PARAMS ID+ CLOSE_BLOCK_PARAMS -> yy.id($2)
+    : OPEN_BLOCK_PARAMS ID+ CLOSE_BLOCK_PARAMS { yy.id($2) }
     ;
 
   helperName
-    : path -> $1
-    | dataName -> $1
-    | STRING -> {type: 'StringLiteral', value: $1, original: $1, loc: yy.locInfo(@$)}
-    | NUMBER -> {type: 'NumberLiteral', value: Number($1), original: Number($1), loc: yy.locInfo(@$)}
-    | BOOLEAN -> {type: 'BooleanLiteral', value: $1 === 'true', original: $1 === 'true', loc: yy.locInfo(@$)}
-    | UNDEFINED -> {type: 'UndefinedLiteral', original: undefined, value: undefined, loc: yy.locInfo(@$)}
-    | NULL -> {type: 'NullLiteral', original: null, value: null, loc: yy.locInfo(@$)}
+    : path { $1 }
+    | dataName { $1 }
+    | STRING {type: 'StringLiteral', value: $1, original: $1, loc: yy.locInfo(@$)}
+    | NUMBER {type: 'NumberLiteral', value: Number($1), original: Number($1), loc: yy.locInfo(@$)}
+    | BOOLEAN {type: 'BooleanLiteral', value: $1 === 'true', original: $1 === 'true', loc: yy.locInfo(@$)}
+    | UNDEFINED {type: 'UndefinedLiteral', original: undefined, value: undefined, loc: yy.locInfo(@$)}
+    | NULL {type: 'NullLiteral', original: null, value: null, loc: yy.locInfo(@$)}
     ;
 
   dataName
-    : DATA pathSegments -> yy.preparePath(true, false, $2, @$)
+    : DATA pathSegments { yy.preparePath(true, false, $2, @$) }
     ;
 
   path
-    : sexpr SEP pathSegments -> yy.preparePath(false, $1, $3, @$)
-    | pathSegments -> yy.preparePath(false, false, $1, @$)
+    : sexpr SEP pathSegments { yy.preparePath(false, $1, $3, @$) }
+    | pathSegments { yy.preparePath(false, false, $1, @$) }
     ;
 
   pathSegments
     : pathSegments SEP ID { $1.push({part: yy.id($3), original: $3, separator: $2}); $$ = $1; }
-    | ID -> [{part: yy.id($1), original: $1}]
+    | ID { [{part: yy.id($1), original: $1}] }
     ;
 end
