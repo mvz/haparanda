@@ -55,7 +55,7 @@ start root
     ;
 
   openRawBlock
-    : OPEN_RAW_BLOCK helperName exprs hash CLOSE_RAW_BLOCK { path: $2, params: $3, hash: $4 }
+    : OPEN_RAW_BLOCK helperName exprs hash CLOSE_RAW_BLOCK { { path: $2, params: $3, hash: $4 } }
     ;
 
   block
@@ -64,15 +64,15 @@ start root
     ;
 
   openBlock
-    : OPEN_BLOCK helperName exprs hash blockParams CLOSE { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_BLOCK helperName exprs hash blockParams CLOSE { { open: $1, path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) } }
     ;
 
   openInverse
-    : OPEN_INVERSE helperName exprs hash blockParams CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE helperName exprs hash blockParams CLOSE { { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) } }
     ;
 
   openInverseChain
-    : OPEN_INVERSE_CHAIN helperName exprs hash blockParams CLOSE { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) }
+    : OPEN_INVERSE_CHAIN helperName exprs hash blockParams CLOSE { { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) } }
     ;
 
   optInverseAndProgram
@@ -80,7 +80,7 @@ start root
     | inverseAndProgram
 
   inverseAndProgram
-    : INVERSE program { strip: yy.stripFlags($1, $1), program: $2 }
+    : INVERSE program { { strip: yy.stripFlags($1, $1), program: $2 } }
     ;
 
   inverseChain
@@ -96,7 +96,7 @@ start root
     ;
 
   closeBlock
-    : OPEN_ENDBLOCK helperName CLOSE {path: $2, strip: yy.stripFlags($1, $3)}
+    : OPEN_ENDBLOCK helperName CLOSE { {path: $2, strip: yy.stripFlags($1, $3)} }
     ;
 
   mustache
@@ -123,7 +123,7 @@ start root
     : openPartialBlock program closeBlock { yy.preparePartialBlock($1, $2, $3, self.lexer.lineno) }
     ;
   openPartialBlock
-    : OPEN_PARTIAL_BLOCK expr exprs hash CLOSE { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) }
+    : OPEN_PARTIAL_BLOCK expr exprs hash CLOSE { { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) } }
     ;
 
   expr
@@ -148,7 +148,7 @@ start root
     };
 
   hash
-    : hashSegments {type: 'Hash', pairs: $1, loc: yy.locInfo(self.lexer.lineno)}
+    : hashSegments { {type: 'Hash', pairs: $1, loc: yy.locInfo(self.lexer.lineno)} }
     ;
 
   hashSegments
@@ -157,7 +157,7 @@ start root
     | hashSegments hashSegment
 
   hashSegment
-    : ID EQUALS expr {type: 'HashPair', key: yy.id($1), value: $3, loc: yy.locInfo(self.lexer.lineno)}
+    : ID EQUALS expr { {type: 'HashPair', key: yy.id($1), value: $3, loc: yy.locInfo(self.lexer.lineno)} }
     ;
 
   blockParams
@@ -172,11 +172,11 @@ start root
   helperName
     : path { $1 }
     | dataName { $1 }
-    | STRING {type: 'StringLiteral', value: $1, original: $1, loc: yy.locInfo(self.lexer.lineno)}
-    | NUMBER {type: 'NumberLiteral', value: Number($1), original: Number($1), loc: yy.locInfo(self.lexer.lineno)}
-    | BOOLEAN {type: 'BooleanLiteral', value: $1 === 'true', original: $1 === 'true', loc: yy.locInfo(self.lexer.lineno)}
-    | UNDEFINED {type: 'UndefinedLiteral', original: undefined, value: undefined, loc: yy.locInfo(self.lexer.lineno)}
-    | NULL {type: 'NullLiteral', original: null, value: null, loc: yy.locInfo(self.lexer.lineno)}
+    | STRING { {type: 'StringLiteral', value: $1, original: $1, loc: yy.locInfo(self.lexer.lineno)} }
+    | NUMBER { {type: 'NumberLiteral', value: Number($1), original: Number($1), loc: yy.locInfo(self.lexer.lineno)} }
+    | BOOLEAN { {type: 'BooleanLiteral', value: $1 === 'true', original: $1 === 'true', loc: yy.locInfo(self.lexer.lineno)} }
+    | UNDEFINED { {type: 'UndefinedLiteral', original: undefined, value: undefined, loc: yy.locInfo(self.lexer.lineno)} }
+    | NULL { {type: 'NullLiteral', original: null, value: null, loc: yy.locInfo(self.lexer.lineno)} }
     ;
 
   dataName
