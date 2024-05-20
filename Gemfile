@@ -2,6 +2,7 @@
 
 source "https://rubygems.org"
 
+gem "racc"
 gem "rake"
 gem "rexical"
 gem "rubocop"
