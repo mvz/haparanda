@@ -59,7 +59,7 @@ start root
     ;
 
   block
-    : openBlock program inverseChain? closeBlock { yy.prepareBlock($1, $2, $3, $4, false, @$) }
+    : openBlock program inverseChain closeBlock { yy.prepareBlock($1, $2, $3, $4, false, @$) }
     | openInverse program inverseAndProgram? closeBlock { yy.prepareBlock($1, $2, $3, $4, true, @$) }
     ;
 
@@ -80,7 +80,8 @@ start root
     ;
 
   inverseChain
-    : openInverseChain program inverseChain? {
+    : none
+    | openInverseChain program inverseChain {
       var inverse = yy.prepareBlock($1, $2, $3, $3, false, @$),
           program = yy.prepareProgram([inverse], $2.loc);
       program.chained = true;
