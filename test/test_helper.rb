@@ -2,3 +2,4 @@
 
 require "minitest/autorun"
 require "handlebars_lexer"
+require "handlebars_parser"

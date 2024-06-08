@@ -7,11 +7,11 @@ start root
 # %%
 
   root
-    : program EOF { return $1; }
+    : program
     ;
 
   program
-    : statements { yy.prepareProgram($1) }
+    : statements
     ;
 
   statements
@@ -37,11 +37,11 @@ start root
 
   content
     : CONTENT {
-      $$ = {
+      result = {
         type: 'ContentStatement',
-        original: $1,
-        value: $1,
-        loc: yy.locInfo(self.lexer.lineno)
+        original: val,
+        value: val,
+        loc: self.lexer.lineno
       };
     };
 
@@ -193,3 +193,21 @@ start root
     | ID { [{part: yy.id($1), original: $1}] }
     ;
 end
+
+---- inner
+  attr_reader :lexer
+
+  def parse(str)
+    @lexer = HandlebarsLexer.new
+    lexer.scan_setup(str)
+    do_parse
+  end
+
+  def next_token
+    lexer.next_token
+  end
+
+  # Use pure ruby racc imlementation for debugging
+  def do_parse
+    _racc_do_parse_rb(_racc_setup(), false)
+  end

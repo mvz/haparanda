@@ -12,11 +12,11 @@ file "lib/handlebars_lexer.rb" => "lib/handlebars_lexer.rex" do
   sh "rex lib/handlebars_lexer.rex --independent -o lib/handlebars_lexer.rb"
 end
 
-file "handlebars.tab.rb" => "handlebars.y" do
-  sh "racc handlebars.y"
+file "lib/handlebars_parser.rb" => "lib/handlebars_parser.y" do
+  sh "racc lib/handlebars_parser.y -F -o lib/handlebars_parser.rb"
 end
 
-task generate: ["lib/handlebars_lexer.rb", "handlebars.tab.rb"]
+task generate: ["lib/handlebars_lexer.rb", "lib/handlebars_parser.rb"]
 
 task test: :generate
 
