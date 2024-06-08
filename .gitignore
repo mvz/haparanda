@@ -1,3 +1,3 @@
-handlebars.l.rb
+lib/handlebars_lexer.rb
 handlebars.tab.rb
 Gemfile.lock

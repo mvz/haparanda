@@ -11,6 +11,14 @@ function strip(start, end) {
 
 inner
 
+    def do_parse
+      result = []
+      while token = next_token
+        result << token
+      end
+      result
+    end
+
     def handle_stringescape(str, delimiter)
       str
     end
