@@ -79,6 +79,10 @@ describe HandlebarsParser do
     equals(astFor('{{@foo}}'), '{{ @PATH:foo [] }}\n');
   end
 
+  it 'parses simple mustaches with data paths' do
+    equals(astFor('{{@../foo}}'), '{{ @PATH:foo [] }}\n');
+  end
+
   it 'parses mustaches with paths' do
     equals(astFor('{{foo/bar}}'), '{{ PATH:foo/bar [] }}\n');
   end
