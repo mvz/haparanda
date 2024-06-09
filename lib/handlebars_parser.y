@@ -11,12 +11,12 @@ start root
     ;
 
   program
-    : statements
+    : none
+    | statements
     ;
 
   statements
-    : none
-    | statement
+    : statement
     | statements statement { result = s(:statements, *val) }
 
   statement
