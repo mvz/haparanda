@@ -48,6 +48,16 @@ class PrintingProcessor < SexpProcessor
     printed_vals = vals.map { print _1 }
     s(:print, "[#{printed_vals.join(', ')}]")
   end
+
+  def process_undefined(expr)
+    expr.shift
+    s(:print, "UNDEFINED")
+  end
+
+  def process_null(expr)
+    expr.shift
+    s(:print, "NULL")
+  end
 end
 
 describe HandlebarsParser do
@@ -131,12 +141,10 @@ describe HandlebarsParser do
   end
 
   it 'parses mustaches with undefined and null paths' do
-    skip
     equals(astFor('{{undefined}}'), '{{ UNDEFINED [] }}\n');
     equals(astFor('{{null}}'), '{{ NULL [] }}\n');
   end
   it 'parses mustaches with undefined and null parameters' do
-    skip
     equals(
       astFor('{{foo undefined null}}'),
       '{{ PATH:foo [UNDEFINED, NULL] }}\n'
