@@ -21,6 +21,11 @@ class PrintingProcessor < SexpProcessor
     s(:print, "NUMBER{#{val}}")
   end
 
+  def process_boolean(expr)
+    _, val = expr.shift(2)
+    s(:print, "BOOLEAN{#{val}}")
+  end
+
   def process_string(expr)
     _, val = expr.shift(2)
     s(:print, val.inspect)
@@ -30,6 +35,8 @@ end
 describe HandlebarsParser do
   let(:parser) { HandlebarsParser.new }
 
+  # Helper methods to make assertions most similar to original
+  # handlebars-parser test assertions.
   def equals(act, exp)
     _(act).must_equal exp
   end
@@ -48,5 +55,7 @@ describe HandlebarsParser do
   it "parses simple mustaches" do
     equals(astFor('{{123}}'), '{{ NUMBER{123} [] }}')
     equals(astFor('{{"foo"}}'), '{{ "foo" [] }}')
+    equals(astFor('{{false}}'), '{{ BOOLEAN{false} [] }}')
+    equals(astFor('{{true}}'), '{{ BOOLEAN{true} [] }}')
   end
 end

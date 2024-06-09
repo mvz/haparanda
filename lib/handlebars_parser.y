@@ -171,7 +171,7 @@ start root
     | dataName { $1 }
     | STRING { result = s(:string, val[0]).line(self.lexer.lineno) }
     | NUMBER { result = s(:number, process_number(val[0])).line(self.lexer.lineno) }
-    | BOOLEAN { {type: 'BooleanLiteral', value: $1 === 'true', original: $1 === 'true', loc: yy.locInfo(self.lexer.lineno)} }
+    | BOOLEAN { result = s(:boolean, val[0] == "true").line(self.lexer.lineno) }
     | UNDEFINED { {type: 'UndefinedLiteral', original: undefined, value: undefined, loc: yy.locInfo(self.lexer.lineno)} }
     | NULL { {type: 'NullLiteral', original: null, value: null, loc: yy.locInfo(self.lexer.lineno)} }
     ;
