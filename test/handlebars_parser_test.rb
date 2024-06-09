@@ -7,11 +7,12 @@ class PrintingProcessor < SexpProcessor
   def print(expr)
     result = process(expr)
     raise "Unexpected result #{result}" unless result.sexp_type == :print
+
     result.sexp_body[0]
   end
 
   def process_mustache(expr)
-    _, val, _, _, _ = expr.shift(5)
+    _, val, = expr.shift(5)
     val = print(val)
     s(:print, "{{ #{val} [] }}")
   end
@@ -41,7 +42,7 @@ describe HandlebarsParser do
     _(act).must_equal exp
   end
 
-  def astFor(str)
+  def astFor(str) # rubocop:disable Naming/MethodName
     result = parser.parse str
     PrintingProcessor.new.print(result)
   end
@@ -52,10 +53,12 @@ describe HandlebarsParser do
     _(result).must_equal(s(:content, "Hello!"))
   end
 
+  # rubocop:disable Style/StringLiterals
   it "parses simple mustaches" do
     equals(astFor('{{123}}'), '{{ NUMBER{123} [] }}')
     equals(astFor('{{"foo"}}'), '{{ "foo" [] }}')
     equals(astFor('{{false}}'), '{{ BOOLEAN{false} [] }}')
     equals(astFor('{{true}}'), '{{ BOOLEAN{true} [] }}')
   end
+  # rubocop:enable Style/StringLiterals
 end
