@@ -69,6 +69,10 @@ describe HandlebarsParser do
     equals(astFor('{{false}}'), '{{ BOOLEAN{false} [] }}\n');
     equals(astFor('{{true}}'), '{{ BOOLEAN{true} [] }}\n');
     equals(astFor('{{foo}}'), '{{ PATH:foo [] }}\n');
+    equals(astFor('{{foo?}}'), '{{ PATH:foo? [] }}\n');
+    equals(astFor('{{foo_}}'), '{{ PATH:foo_ [] }}\n');
+    equals(astFor('{{foo-}}'), '{{ PATH:foo- [] }}\n');
+    equals(astFor('{{foo:}}'), '{{ PATH:foo: [] }}\n');
   end
 
   it 'parses mustaches with paths' do
