@@ -20,7 +20,11 @@ inner
     end
 
     def handle_stringescape(str, delimiter)
-      str
+      if delimiter == '"'
+        str[1..-2]
+      else
+        raise NotImplementedError
+      end
     end
 
 macro

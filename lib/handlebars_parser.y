@@ -169,7 +169,7 @@ start root
   helperName
     : path { $1 }
     | dataName { $1 }
-    | STRING { {type: 'StringLiteral', value: $1, original: $1, loc: yy.locInfo(self.lexer.lineno)} }
+    | STRING { result = s(:string, val[0]).line(self.lexer.lineno) }
     | NUMBER { result = s(:number, process_number(val[0])).line(self.lexer.lineno) }
     | BOOLEAN { {type: 'BooleanLiteral', value: $1 === 'true', original: $1 === 'true', loc: yy.locInfo(self.lexer.lineno)} }
     | UNDEFINED { {type: 'UndefinedLiteral', original: undefined, value: undefined, loc: yy.locInfo(self.lexer.lineno)} }

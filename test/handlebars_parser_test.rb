@@ -20,6 +20,11 @@ class PrintingProcessor < SexpProcessor
     _, val = expr.shift(2)
     s(:print, "NUMBER{#{val}}")
   end
+
+  def process_string(expr)
+    _, val = expr.shift(2)
+    s(:print, val.inspect)
+  end
 end
 
 describe HandlebarsParser do
@@ -42,5 +47,6 @@ describe HandlebarsParser do
 
   it "parses simple mustaches" do
     equals(astFor('{{123}}'), '{{ NUMBER{123} [] }}')
+    equals(astFor('{{"foo"}}'), '{{ "foo" [] }}')
   end
 end
