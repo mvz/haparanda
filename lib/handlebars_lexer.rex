@@ -20,7 +20,8 @@ inner
     end
 
     def handle_stringescape(str, delimiter)
-      if delimiter == '"'
+      case delimiter
+      when '"', "'"
         str[1..-2]
       else
         raise NotImplementedError
@@ -118,6 +119,7 @@ rule
 :MU as\s+\|                      { [:OPEN_BLOCK_PARAMS, text] }
 :MU \|                           { [:CLOSE_BLOCK_PARAMS, text] }
 
+:MU {ID}=                        { [:KEY_ASSIGN, text[0..-2]] }
 :MU {ID}                         { [:ID, text] }
 
 :MU \[(\\\]|[^\]])*\]            { text = text.gsub(/\\([\\\]])/, '\1'); [:ID, text] }

@@ -12,10 +12,10 @@ class PrintingProcessor < SexpProcessor
   end
 
   def process_mustache(expr)
-    _, val, params, = expr.shift(5)
-    params = print(params) if params
+    _, val, params, hash, = expr.shift(5)
+    args = [params, hash].compact.map { print _1 }.join(" ")
     val = print(val)
-    s(:print, "{{ #{val} #{params} }}\\n")
+    s(:print, "{{ #{val} #{args} }}\\n")
   end
 
   def process_number(expr)
@@ -57,6 +57,20 @@ class PrintingProcessor < SexpProcessor
   def process_null(expr)
     expr.shift
     s(:print, "NULL")
+  end
+
+  def process_hash(expr)
+    expr.shift
+    pairs = []
+    pairs << expr.shift while expr.any?
+    printed_pairs = pairs.map { print _1 }
+    s(:print, "HASH{#{printed_pairs.join(', ')}}")
+  end
+
+  def process_hash_pair(expr)
+    _, key, val = expr.shift(3)
+    val = print val
+    s(:print, "#{key}=#{val}")
   end
 end
 
@@ -156,7 +170,6 @@ describe HandlebarsParser do
   end
 
   it 'parses mustaches with hash arguments' do
-    skip
     equals(astFor('{{foo bar=baz}}'), '{{ PATH:foo [] HASH{bar=PATH:baz} }}\n');
     equals(astFor('{{foo bar=1}}'), '{{ PATH:foo [] HASH{bar=NUMBER{1}} }}\n');
     equals(

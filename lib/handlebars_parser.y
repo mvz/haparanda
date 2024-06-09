@@ -148,15 +148,15 @@ start root
 
   hash
     : none
-    | hashSegments { {type: 'Hash', pairs: $1, loc: yy.locInfo(self.lexer.lineno)} }
+    | hashSegments { result = result.line(self.lexer.lineno) }
     ;
 
   hashSegments
-    hashSegment
-    | hashSegments hashSegment
+    hashSegment { result = s(:hash, val[0]) }
+    | hashSegments hashSegment { result.push(val[1]) }
 
   hashSegment
-    : ID EQUALS expr { {type: 'HashPair', key: yy.id($1), value: $3, loc: yy.locInfo(self.lexer.lineno)} }
+    : KEY_ASSIGN expr { result = s(:hash_pair, val[0], val[1]).line(self.lexer.lineno) }
     ;
 
   blockParams
