@@ -42,8 +42,7 @@ start root
     };
 
   contents:
-    : none
-    | content
+    : content
     | contents content
 
   rawBlock
