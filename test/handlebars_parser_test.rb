@@ -11,11 +11,22 @@ class PrintingProcessor < SexpProcessor
     result.sexp_body[0]
   end
 
+  def process_statements(expr)
+    expr.shift
+    printed = print_all(expr)
+    s(:print, printed.join)
+  end
+
+  def process_content(expr)
+    _, contents = expr.shift(2)
+    s(:print, "CONTENT[ '#{contents}' ]\n")
+  end
+
   def process_mustache(expr)
     _, val, params, hash, = expr.shift(5)
     args = [params, hash].compact.map { print _1 }.join(" ")
     val = print(val)
-    s(:print, "{{ #{val} #{args} }}\\n")
+    s(:print, "{{ #{val} #{args} }}\n")
   end
 
   def process_number(expr)
@@ -86,6 +97,7 @@ describe HandlebarsParser do
   # Helper methods to make assertions most similar to original
   # handlebars-parser test assertions.
   def equals(act, exp)
+    exp = exp.gsub('\n', "\n")
     _(act).must_equal exp
   end
 
@@ -221,7 +233,6 @@ describe HandlebarsParser do
   end
 
   it 'parses contents followed by a mustache' do
-    skip
     equals(
       astFor('foo bar {{baz}}'),
       "CONTENT[ 'foo bar ' ]\n{{ PATH:baz [] }}\n"
