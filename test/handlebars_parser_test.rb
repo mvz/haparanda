@@ -22,9 +22,26 @@ class PrintingProcessor < SexpProcessor
     s(:print, "CONTENT[ '#{contents}' ]\n")
   end
 
+  def process_partial(expr)
+    _, name, params, hash, = expr.shift(5)
+    args = [params, hash].compact.map { print _1 }.join(" ").strip
+    name = if name.sexp_type == :path
+             name[2..].join("/")
+           else
+             name[1]
+           end
+    if args.empty?
+      s(:print, "{{> PARTIAL:#{name} }}\n")
+    else
+      s(:print, "{{> PARTIAL:#{name} #{args} }}\n")
+    end
+  end
+
   def process_mustache(expr)
     _, val, params, hash, = expr.shift(5)
-    args = [params, hash].compact.map { print _1 }.join(" ")
+    params = "[#{print params}]"
+    hash = print hash if hash
+    args = [params, hash].compact.join(" ")
     val = print(val)
     s(:print, "{{ #{val} #{args} }}\n")
   end
@@ -53,7 +70,7 @@ class PrintingProcessor < SexpProcessor
   def process_exprs(expr)
     expr.shift
     printed_vals = print_all(expr)
-    s(:print, "[#{printed_vals.join(', ')}]")
+    s(:print, printed_vals.join(", "))
   end
 
   def process_undefined(expr)
@@ -240,19 +257,16 @@ describe HandlebarsParser do
   end
 
   it 'parses a partial' do
-    skip
     equals(astFor('{{> foo }}'), '{{> PARTIAL:foo }}\n');
     equals(astFor('{{> "foo" }}'), '{{> PARTIAL:foo }}\n');
     equals(astFor('{{> 1 }}'), '{{> PARTIAL:1 }}\n');
   end
 
   it 'parses a partial with context' do
-    skip
     equals(astFor('{{> foo bar}}'), '{{> PARTIAL:foo PATH:bar }}\n');
   end
 
   it 'parses a partial with hash' do
-    skip
     equals(
       astFor('{{> foo bar=bat}}'),
       '{{> PARTIAL:foo HASH{bar=PATH:bat} }}\n'
@@ -260,7 +274,6 @@ describe HandlebarsParser do
   end
 
   it 'parses a partial with context and hash' do
-    skip
     equals(
       astFor('{{> foo bar bat=baz}}'),
       '{{> PARTIAL:foo PATH:bar HASH{bat=PATH:baz} }}\n'

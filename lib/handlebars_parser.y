@@ -104,15 +104,8 @@ start root
 
   partial
     : OPEN_PARTIAL expr exprs hash CLOSE {
-      $$ = {
-        type: 'PartialStatement',
-        name: $2,
-        params: $3,
-        hash: $4,
-        indent: '',
-        strip: yy.stripFlags($1, $5),
-        loc: yy.locInfo(self.lexer.lineno)
-      };
+      result = s(:partial, val[1], val[2], val[3], strip_flags(val[0], val[4]))
+        .line(self.lexer.lineno)
     }
     ;
   partialBlock
