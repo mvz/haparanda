@@ -13,7 +13,7 @@ file "lib/handlebars_lexer.rb" => "lib/handlebars_lexer.rex" do
 end
 
 file "lib/handlebars_parser.rb" => "lib/handlebars_parser.y" do
-  sh "racc lib/handlebars_parser.y -F -o lib/handlebars_parser.rb"
+  sh "racc lib/handlebars_parser.y -v -F -o lib/handlebars_parser.rb"
 end
 
 task generate: ["lib/handlebars_lexer.rb", "lib/handlebars_parser.rb"]

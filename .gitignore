@@ -1,4 +1,5 @@
 lib/handlebars_lexer.rb
 lib/handlebars_parser.rb
+lib/handlebars_parser.output
 handlebars.tab.rb
 Gemfile.lock
