@@ -31,6 +31,11 @@ class PrintingProcessor < SexpProcessor
     _, val = expr.shift(2)
     s(:print, val.inspect)
   end
+
+  def process_path(expr)
+    _, id = expr.shift(2)
+    s(:print, "PATH:#{id}")
+  end
 end
 
 describe HandlebarsParser do
@@ -60,6 +65,7 @@ describe HandlebarsParser do
     equals(astFor('{{"foo"}}'), '{{ "foo" [] }}\n');
     equals(astFor('{{false}}'), '{{ BOOLEAN{false} [] }}\n');
     equals(astFor('{{true}}'), '{{ BOOLEAN{true} [] }}\n');
+    equals(astFor('{{foo}}'), '{{ PATH:foo [] }}\n');
   end
   # rubocop:enable Style/Semicolon
   # rubocop:enable Style/StringLiterals

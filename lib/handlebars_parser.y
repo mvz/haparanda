@@ -182,12 +182,12 @@ start root
 
   path
     : sexpr SEP pathSegments { yy.preparePath(false, $1, $3, self.lexer.lineno) }
-    | pathSegments { yy.preparePath(false, false, $1, self.lexer.lineno) }
+    | pathSegments { result = prepare_path(false, false, val[0], self.lexer.lineno) }
     ;
 
   pathSegments
     : pathSegments SEP ID { $1.push({part: yy.id($3), original: $3, separator: $2}); $$ = $1; }
-    | ID { [{part: yy.id($1), original: $1}] }
+    | ID { result = [id(val[0])] }
     ;
 
   none: { result = nil }
@@ -224,6 +224,16 @@ end
 
   def strip_flags(start, finish)
     s(:strip, false, false)
+  end
+
+  def id(val)
+    # TODO: Handle bracketed ids
+    val
+  end
+
+  def prepare_path(data, sexpr, parts, loc)
+    # TODO: Handle data and sexpr
+    s(:path, *parts).line loc
   end
 
   def on_error(t, val, vstack)
