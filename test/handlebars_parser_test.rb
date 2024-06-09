@@ -34,18 +34,14 @@ class PrintingProcessor < SexpProcessor
   end
 
   def process_path(expr)
-    _, data, id = expr.shift(3)
-    ids = [id]
-    ids << expr.shift while expr.any?
-
+    _, data = expr.shift(2)
+    ids = shift_all(expr)
     s(:print, "#{'@' if data}PATH:#{ids.join('/')}")
   end
 
   def process_exprs(expr)
     expr.shift
-    vals = []
-    vals << expr.shift while expr.any?
-    printed_vals = vals.map { print _1 }
+    printed_vals = print_all(expr)
     s(:print, "[#{printed_vals.join(', ')}]")
   end
 
@@ -61,9 +57,7 @@ class PrintingProcessor < SexpProcessor
 
   def process_hash(expr)
     expr.shift
-    pairs = []
-    pairs << expr.shift while expr.any?
-    printed_pairs = pairs.map { print _1 }
+    printed_pairs = print_all(expr)
     s(:print, "HASH{#{printed_pairs.join(', ')}}")
   end
 
@@ -71,6 +65,18 @@ class PrintingProcessor < SexpProcessor
     _, key, val = expr.shift(3)
     val = print val
     s(:print, "#{key}=#{val}")
+  end
+
+  def shift_all(expr)
+    result = []
+    result << expr.shift while expr.any?
+    result
+  end
+
+  def print_all(expr)
+    result = []
+    result << print(expr.shift) while expr.any?
+    result
   end
 end
 
