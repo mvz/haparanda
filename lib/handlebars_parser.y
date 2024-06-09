@@ -177,7 +177,7 @@ start root
     ;
 
   dataName
-    : DATA pathSegments { yy.preparePath(true, false, $2, self.lexer.lineno) }
+    : DATA pathSegments { result = prepare_path(true, false, val[1], self.lexer.lineno) }
     ;
 
   path
@@ -232,8 +232,8 @@ end
   end
 
   def prepare_path(data, sexpr, parts, loc)
-    # TODO: Handle data and sexpr
-    s(:path, *parts).line loc
+    # TODO: Handle sexpr
+    s(:path, data, *parts).line loc
   end
 
   def on_error(t, val, vstack)
