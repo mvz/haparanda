@@ -34,7 +34,10 @@ class PrintingProcessor < SexpProcessor
 
   def process_path(expr)
     _, id = expr.shift(2)
-    s(:print, "PATH:#{id}")
+    ids = [id]
+    ids << expr.shift while expr.any?
+
+    s(:print, "PATH:#{ids.join('/')}")
   end
 end
 
@@ -66,6 +69,10 @@ describe HandlebarsParser do
     equals(astFor('{{false}}'), '{{ BOOLEAN{false} [] }}\n');
     equals(astFor('{{true}}'), '{{ BOOLEAN{true} [] }}\n');
     equals(astFor('{{foo}}'), '{{ PATH:foo [] }}\n');
+  end
+
+  it 'parses mustaches with paths' do
+    equals(astFor('{{foo/bar}}'), '{{ PATH:foo/bar [] }}\n');
   end
   # rubocop:enable Style/Semicolon
   # rubocop:enable Style/StringLiterals

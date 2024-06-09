@@ -186,7 +186,7 @@ start root
     ;
 
   pathSegments
-    : pathSegments SEP ID { $1.push({part: yy.id($3), original: $3, separator: $2}); $$ = $1; }
+    : pathSegments SEP ID { result.push val[2] if val[2] }
     | ID { result = [id(val[0])] }
     ;
 
