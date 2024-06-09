@@ -17,7 +17,7 @@ start root
   statements
     : none
     | statement
-    | statements statement
+    | statements statement { result = s(:statements, *val) }
 
   statement
     : mustache { $1 }
@@ -96,9 +96,10 @@ start root
     ;
 
   mustache
-    # Parsing out the '&' escape token at AST level saves ~500 bytes after min due to the removal of one parser node.
-    # This also allows for handler unification as all mustache node instances can utilize the same handler
-    : OPEN expr exprs hash CLOSE { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), self.lexer.lineno) }
+    : OPEN expr exprs hash CLOSE {
+        result = s(:mustache, val[1], val[2], val[3], strip_flags(val[0], val[4]))
+          .line(self.lexer.lineno)
+      }
     | OPEN_UNESCAPED expr exprs hash CLOSE_UNESCAPED { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), self.lexer.lineno) }
     ;
 
@@ -144,12 +145,12 @@ start root
     };
 
   hash
-    : hashSegments { {type: 'Hash', pairs: $1, loc: yy.locInfo(self.lexer.lineno)} }
+    : none
+    | hashSegments { {type: 'Hash', pairs: $1, loc: yy.locInfo(self.lexer.lineno)} }
     ;
 
   hashSegments
-    : none
-    | hashSegment
+    hashSegment
     | hashSegments hashSegment
 
   hashSegment
@@ -169,7 +170,7 @@ start root
     : path { $1 }
     | dataName { $1 }
     | STRING { {type: 'StringLiteral', value: $1, original: $1, loc: yy.locInfo(self.lexer.lineno)} }
-    | NUMBER { {type: 'NumberLiteral', value: Number($1), original: Number($1), loc: yy.locInfo(self.lexer.lineno)} }
+    | NUMBER { result = s(:number, process_number(val[0])).line(self.lexer.lineno) }
     | BOOLEAN { {type: 'BooleanLiteral', value: $1 === 'true', original: $1 === 'true', loc: yy.locInfo(self.lexer.lineno)} }
     | UNDEFINED { {type: 'UndefinedLiteral', original: undefined, value: undefined, loc: yy.locInfo(self.lexer.lineno)} }
     | NULL { {type: 'NullLiteral', original: null, value: null, loc: yy.locInfo(self.lexer.lineno)} }
@@ -211,4 +212,21 @@ end
   # Use pure ruby racc imlementation for debugging
   def do_parse
     _racc_do_parse_rb(_racc_setup(), false)
+  end
+
+  def process_number(str)
+    if str =~ /\./
+      str.to_f
+    else
+      str.to_i
+    end
+  end
+
+  def strip_flags(start, finish)
+    s(:strip, false, false)
+  end
+
+  def on_error(t, val, vstack)
+    raise ParseError, sprintf("parse error on value %s (%s) at %s",
+        val.inspect, token_to_str(t) || '?', vstack.inspect)
   end

@@ -51,7 +51,7 @@ rule
                                    else
                                      @state = :MU
                                    end
-                                   [:CONTENT, text] if(text)
+                                   [:CONTENT, text] unless(text.empty?)
                                  }
 
 [^\x00]+                         { [:CONTENT, text] }
