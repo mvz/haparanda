@@ -120,7 +120,7 @@ rule
 
 :MU {ID}                         { [:ID, text] }
 
-:MU \[(\\\]|[^\]])*\]            { text = text.gsub(/\\([\\\]])/,'$1'); [:ID, text] }
+:MU \[(\\\]|[^\]])*\]            { text = text.gsub(/\\([\\\]])/, '\1'); [:ID, text] }
 :MU .                            { [:INVALID, text] }
 
 <INITIAL,mu><<EOF>>              { [:EOF, text] }

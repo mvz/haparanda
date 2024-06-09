@@ -227,8 +227,11 @@ end
   end
 
   def id(val)
-    # TODO: Handle bracketed ids
-    val
+    if (match = /\A\[(.*)\]\Z/.match val)
+      match[1]
+    else
+      val
+    end
   end
 
   def prepare_path(data, sexpr, parts, loc)

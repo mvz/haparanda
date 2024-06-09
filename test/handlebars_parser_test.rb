@@ -93,12 +93,10 @@ describe HandlebarsParser do
   end
 
   it 'parses mustaches with - in a path' do
-    skip
     equals(astFor('{{foo-bar}}'), '{{ PATH:foo-bar [] }}\n');
   end
 
   it 'parses mustaches with escaped [] in a path' do
-    skip
     equals(astFor('{{[foo[\\]]}}'), '{{ PATH:foo[] [] }}\n');
   end
   it 'parses escaped \\\\ in path' do
