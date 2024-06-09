@@ -14,7 +14,7 @@ class PrintingProcessor < SexpProcessor
   def process_mustache(expr)
     _, val, = expr.shift(5)
     val = print(val)
-    s(:print, "{{ #{val} [] }}")
+    s(:print, "{{ #{val} [] }}\\n")
   end
 
   def process_number(expr)
@@ -54,11 +54,13 @@ describe HandlebarsParser do
   end
 
   # rubocop:disable Style/StringLiterals
+  # rubocop:disable Style/Semicolon
   it "parses simple mustaches" do
-    equals(astFor('{{123}}'), '{{ NUMBER{123} [] }}')
-    equals(astFor('{{"foo"}}'), '{{ "foo" [] }}')
-    equals(astFor('{{false}}'), '{{ BOOLEAN{false} [] }}')
-    equals(astFor('{{true}}'), '{{ BOOLEAN{true} [] }}')
+    equals(astFor('{{123}}'), '{{ NUMBER{123} [] }}\n');
+    equals(astFor('{{"foo"}}'), '{{ "foo" [] }}\n');
+    equals(astFor('{{false}}'), '{{ BOOLEAN{false} [] }}\n');
+    equals(astFor('{{true}}'), '{{ BOOLEAN{true} [] }}\n');
   end
+  # rubocop:enable Style/Semicolon
   # rubocop:enable Style/StringLiterals
 end
