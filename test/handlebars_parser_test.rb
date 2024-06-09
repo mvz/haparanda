@@ -12,9 +12,10 @@ class PrintingProcessor < SexpProcessor
   end
 
   def process_mustache(expr)
-    _, val, = expr.shift(5)
+    _, val, params, = expr.shift(5)
+    params = print(params) if params
     val = print(val)
-    s(:print, "{{ #{val} [] }}\\n")
+    s(:print, "{{ #{val} #{params} }}\\n")
   end
 
   def process_number(expr)
@@ -38,6 +39,14 @@ class PrintingProcessor < SexpProcessor
     ids << expr.shift while expr.any?
 
     s(:print, "#{'@' if data}PATH:#{ids.join('/')}")
+  end
+
+  def process_exprs(expr)
+    expr.shift
+    vals = []
+    vals << expr.shift while expr.any?
+    printed_vals = vals.map { print _1 }
+    s(:print, "[#{printed_vals.join(', ')}]")
   end
 end
 
@@ -99,28 +108,24 @@ describe HandlebarsParser do
   it 'parses mustaches with escaped [] in a path' do
     equals(astFor('{{[foo[\\]]}}'), '{{ PATH:foo[] [] }}\n');
   end
+
   it 'parses escaped \\\\ in path' do
-    skip
     equals(astFor('{{[foo\\\\]}}'), '{{ PATH:foo\\ [] }}\n');
   end
 
   it 'parses mustaches with parameters' do
-    skip
     equals(astFor('{{foo bar}}'), '{{ PATH:foo [PATH:bar] }}\n');
   end
 
   it 'parses mustaches with string parameters' do
-    skip
     equals(astFor('{{foo bar "baz" }}'), '{{ PATH:foo [PATH:bar, "baz"] }}\n');
   end
 
   it 'parses mustaches with NUMBER parameters' do
-    skip
     equals(astFor('{{foo 1}}'), '{{ PATH:foo [NUMBER{1}] }}\n');
   end
 
   it 'parses mustaches with BOOLEAN parameters' do
-    skip
     equals(astFor('{{foo true}}'), '{{ PATH:foo [BOOLEAN{true}] }}\n');
     equals(astFor('{{foo false}}'), '{{ PATH:foo [BOOLEAN{false}] }}\n');
   end
@@ -139,7 +144,6 @@ describe HandlebarsParser do
   end
 
   it 'parses mustaches with DATA parameters' do
-    skip
     equals(astFor('{{foo @bar}}'), '{{ PATH:foo [@PATH:bar] }}\n');
   end
 

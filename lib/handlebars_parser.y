@@ -129,9 +129,9 @@ start root
     ;
 
   exprs
-    : none
-    | expr
-    | exprs expr
+    : none { result = s(:exprs) }
+    | expr { result = s(:exprs, val[0]) }
+    | exprs expr { result.push(val[1]) }
 
   sexpr
     : OPEN_SEXPR expr exprs hash CLOSE_SEXPR {
