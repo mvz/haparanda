@@ -37,12 +37,8 @@ start root
 
   content
     : CONTENT {
-      result = {
-        type: 'ContentStatement',
-        original: val,
-        value: val,
-        loc: self.lexer.lineno
-      };
+      result = s(:content, val[0])
+      result.line = self.lexer.lineno
     };
 
   contents:
@@ -193,6 +189,9 @@ start root
     | ID { [{part: yy.id($1), original: $1}] }
     ;
 end
+
+---- header
+  require "sexp"
 
 ---- inner
   attr_reader :lexer

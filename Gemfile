@@ -2,9 +2,10 @@
 
 source "https://rubygems.org"
 
-gem "minitest"
-
 gem "racc"
 gem "rake"
 gem "rexical"
+gem "sexp_processor"
+
+gem "minitest"
 gem "rubocop"
