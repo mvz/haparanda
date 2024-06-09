@@ -233,7 +233,7 @@ end
 
   def prepare_path(data, sexpr, parts, loc)
     # TODO: Keep track of depth
-    parts.shift if parts.first == ".."
+    parts.shift if parts.first == ".." || parts.first == "this"
     # TODO: Handle sexpr
     s(:path, data, *parts).line loc
   end

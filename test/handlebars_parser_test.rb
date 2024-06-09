@@ -86,6 +86,11 @@ describe HandlebarsParser do
   it 'parses mustaches with paths' do
     equals(astFor('{{foo/bar}}'), '{{ PATH:foo/bar [] }}\n');
   end
+
+  it 'parses mustaches with this/foo' do
+    equals(astFor('{{this/foo}}'), '{{ PATH:foo [] }}\n');
+  end
+
   # rubocop:enable Style/Semicolon
   # rubocop:enable Style/StringLiterals
 end
