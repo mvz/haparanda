@@ -25,11 +25,7 @@ class PrintingProcessor < SexpProcessor
   def process_partial(expr)
     _, name, params, hash, = expr.shift(5)
     args = [params, hash].compact.map { print _1 }.join(" ").strip
-    name = if name.sexp_type == :path
-             name[2..].join("/")
-           else
-             name[1]
-           end
+    name = partial_name(name)
     if args.empty?
       s(:print, "{{> PARTIAL:#{name} }}\n")
     else
@@ -105,6 +101,14 @@ class PrintingProcessor < SexpProcessor
     result = []
     result << print(expr.shift) while expr.any?
     result
+  end
+
+  def partial_name(expr)
+    if expr.sexp_type == :path
+      expr[2..].join("/")
+    else
+      expr[1]
+    end
   end
 end
 
