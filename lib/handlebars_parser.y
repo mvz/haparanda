@@ -181,7 +181,7 @@ start root
     ;
 
   pathSegments
-    : pathSegments SEP ID { result.push val[2] if val[2] }
+    : pathSegments SEP ID { result.push(val[1], val[2]) }
     | ID { result = [id(val[0])] }
     ;
 
@@ -231,7 +231,7 @@ end
 
   def prepare_path(data, sexpr, parts, loc)
     # TODO: Keep track of depth
-    parts.shift if parts.first == ".." || parts.first == "this"
+    parts.shift(2) if parts.first == ".." || parts.first == "this"
     # TODO: Handle sexpr
     s(:path, data, *parts).line loc
   end

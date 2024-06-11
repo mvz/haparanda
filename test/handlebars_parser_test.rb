@@ -59,8 +59,8 @@ class PrintingProcessor < SexpProcessor
 
   def process_path(expr)
     _, data = expr.shift(2)
-    ids = shift_all(expr)
-    s(:print, "#{'@' if data}PATH:#{ids.join('/')}")
+    segments = shift_all(expr)
+    s(:print, "#{'@' if data}PATH:#{segments.join}")
   end
 
   def process_exprs(expr)
@@ -105,7 +105,7 @@ class PrintingProcessor < SexpProcessor
 
   def partial_name(expr)
     if expr.sexp_type == :path
-      expr[2..].join("/")
+      expr[2..].join
     else
       expr[1]
     end
@@ -285,7 +285,6 @@ describe HandlebarsParser do
   end
 
   it 'parses a partial with a complex name' do
-    skip
     equals(
       astFor('{{> shared/partial?.bar}}'),
       '{{> PARTIAL:shared/partial?.bar }}\n'
