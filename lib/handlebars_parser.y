@@ -27,12 +27,8 @@ start root
     | partialBlock { $1 }
     | content { $1 }
     | COMMENT {
-      $$ = {
-        type: 'CommentStatement',
-        value: yy.stripComment($1),
-        strip: yy.stripFlags($1, $1),
-        loc: yy.locInfo(self.lexer.lineno)
-      };
+      result = s(:comment, strip_comment(val[0]), strip_flags(val[0], val[0]))
+        .line(self.lexer.lineno)
     };
 
   content
@@ -219,6 +215,10 @@ end
 
   def strip_flags(start, finish)
     s(:strip, false, false)
+  end
+
+  def strip_comment(comment)
+    comment.sub(/^\{\{~?!-?-?/, "").sub(/-?-?~?\}\}$/, "")
   end
 
   def id(val)

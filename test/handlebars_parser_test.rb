@@ -3,7 +3,7 @@
 require "test_helper"
 require "sexp_processor"
 
-class PrintingProcessor < SexpProcessor
+class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   def print(expr)
     result = process(expr)
     raise "Unexpected result #{result}" unless result.sexp_type == :print
@@ -52,6 +52,11 @@ class PrintingProcessor < SexpProcessor
     args = [params, hash].compact.join(" ")
     val = print(val)
     s(:print, "{{ #{val} #{args} }}\n")
+  end
+
+  def process_comment(expr)
+    _, comment, = expr.shift(3)
+    s(:print, "{{! '#{comment}' }}\n")
   end
 
   def process_number(expr)
@@ -135,6 +140,7 @@ describe HandlebarsParser do
   end
 
   def astFor(str) # rubocop:disable Naming/MethodName
+    str = str.gsub('\n', "\n")
     result = parser.parse str
     PrintingProcessor.new.print(result)
   end
@@ -318,7 +324,6 @@ describe HandlebarsParser do
   end
 
   it 'parses a comment' do
-    skip
     equals(
       astFor('{{! this is a comment }}'),
       "{{! ' this is a comment ' }}\n"
@@ -326,7 +331,6 @@ describe HandlebarsParser do
   end
 
   it 'parses a multi-line comment' do
-    skip
     equals(
       astFor('{{!\nthis is a multi-line comment\n}}'),
       "{{! '\nthis is a multi-line comment\n' }}\n"
