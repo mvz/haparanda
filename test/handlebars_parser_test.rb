@@ -45,6 +45,14 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
   end
 
+  def process_block(expr)
+    # TODO: Handle program and inverse_chain
+    _, name, params, hash, _program, _inverse_chain, = expr.shift(8)
+    args = [params, hash].compact.map { print _1 }.join(" ").strip
+    name = print(name)
+    s(:print, "BLOCK:\n  #{name} [#{args}]\n  PROGRAM:\n")
+  end
+
   def process_mustache(expr)
     _, val, params, hash, = expr.shift(5)
     params = "[#{print params}]"
@@ -362,7 +370,6 @@ describe HandlebarsParser do
   end
 
   it 'parses empty blocks' do
-    skip
     equals(astFor('{{#foo}}{{/foo}}'), 'BLOCK:\n  PATH:foo []\n  PROGRAM:\n');
   end
 
