@@ -91,7 +91,7 @@ start root
     ;
 
   closeBlock
-    : OPEN_ENDBLOCK helperName CLOSE { {path: $2, strip: yy.stripFlags($1, $3)} }
+    : OPEN_ENDBLOCK helperName CLOSE { result = s(:close, val[1], strip_flags(val[0], val[2])) }
     ;
 
   mustache
@@ -109,10 +109,10 @@ start root
     }
     ;
   partialBlock
-    : openPartialBlock program closeBlock { yy.preparePartialBlock($1, $2, $3, self.lexer.lineno) }
+    : openPartialBlock program closeBlock { result = prepare_partial_block(*val) }
     ;
   openPartialBlock
-    : OPEN_PARTIAL_BLOCK expr exprs hash CLOSE { { path: $2, params: $3, hash: $4, strip: yy.stripFlags($1, $5) } }
+    : OPEN_PARTIAL_BLOCK expr exprs hash CLOSE { result = s(:open_partial, val[1], val[2], val[3], strip_flags(val[0], val[4])) }
     ;
 
   expr
@@ -234,6 +234,16 @@ end
     parts.shift(2) if parts.first == ".." || parts.first == "this"
     # TODO: Handle sexpr
     s(:path, data, *parts).line loc
+  end
+
+  def prepare_partial_block(open, program, close)
+    _, name, params, hash, open_strip = *open
+    _, close_name, close_strip = *close
+
+    # TODO: Validate open and close names match
+
+    s(:partial_block, name, params, hash, program, open_strip, close_strip)
+      .line(self.lexer.lineno)
   end
 
   def on_error(t, val, vstack)

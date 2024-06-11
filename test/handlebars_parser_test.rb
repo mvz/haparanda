@@ -33,6 +33,18 @@ class PrintingProcessor < SexpProcessor
     end
   end
 
+  def process_partial_block(expr)
+    _, name, params, hash, program, = expr.shift(7)
+    args = [params, hash].compact.map { print _1 }.join(" ").strip
+    name = partial_name(name)
+    program = print program
+    if args.empty?
+      s(:print, "{{> PARTIAL BLOCK:#{name} PROGRAM:\n  #{program} }}\n")
+    else
+      s(:print, "{{> PARTIAL BLOCK:#{name} #{args} PROGRAM:\n  #{program} }}\n")
+    end
+  end
+
   def process_mustache(expr)
     _, val, params, hash, = expr.shift(5)
     params = "[#{print params}]"
@@ -291,15 +303,14 @@ describe HandlebarsParser do
     );
   end
 
-  it 'parsers partial blocks' do
-    skip
+  it 'parses partial blocks' do
     equals(
       astFor('{{#> foo}}bar{{/foo}}'),
       "{{> PARTIAL BLOCK:foo PROGRAM:\n  CONTENT[ 'bar' ]\n }}\n"
     );
   end
+
   it 'parsers partial blocks with arguments' do
-    skip
     equals(
       astFor('{{#> foo context hash=value}}bar{{/foo}}'),
       "{{> PARTIAL BLOCK:foo PATH:context HASH{hash=PATH:value} PROGRAM:\n  CONTENT[ 'bar' ]\n }}\n"
