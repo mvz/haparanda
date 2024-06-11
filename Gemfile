@@ -8,4 +8,5 @@ gem "rexical"
 gem "sexp_processor"
 
 gem "minitest"
+gem "minitest-focus"
 gem "rubocop"
