@@ -49,9 +49,15 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     _, name, params, hash, program, inverse_chain, = expr.shift(8)
     args = [params, hash].compact.map { print _1 }.join(" ").strip
     name = print(name)
-    program = print(program).gsub(/^/, "    ") if program
+    program = print(program).gsub(/^/, "  ") if program
     inverse_chain = print(inverse_chain).gsub(/^/, "  ") if inverse_chain
-    s(:print, "BLOCK:\n  #{name} [#{args}]\n  PROGRAM:\n#{program}#{inverse_chain}")
+    s(:print, "BLOCK:\n  #{name} [#{args}]\n#{program}#{inverse_chain}")
+  end
+
+  def process_program(expr)
+    _, program, = expr.shift(3)
+    program = print(program).gsub(/^/, "  ") if program
+    s(:print, "PROGRAM:\n#{program}")
   end
 
   def process_inverse(expr)
@@ -420,7 +426,6 @@ describe HandlebarsParser do
   end
 
   it 'parses a standalone inverse section' do
-    skip
     equals(
       astFor('{{^foo}}bar{{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  {{^}}\n    CONTENT[ 'bar' ]\n"

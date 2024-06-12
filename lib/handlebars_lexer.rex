@@ -93,7 +93,7 @@ rule
 :MU {{{LEFT_STRIP}?\/            { [:OPEN_ENDBLOCK, text] }
 :MU {{{LEFT_STRIP}?\^\s*{RIGHT_STRIP}?}}      { @state = nil; [:INVERSE, text] }
 :MU {{{LEFT_STRIP}?\s*else\s*{RIGHT_STRIP}?}} { @state = nil; [:INVERSE, text] }
-:MU {{{LEFT_STRIP}?^             { [:OPEN_INVERSE, text] }
+:MU {{{LEFT_STRIP}?\^            { [:OPEN_INVERSE, text] }
 :MU {{{LEFT_STRIP}?\s*else       { [:OPEN_INVERSE_CHAIN, text] }
 :MU {{{LEFT_STRIP}?{             { [:OPEN_UNESCAPED, text] }
 :MU {{{LEFT_STRIP}?&             { [:OPEN, text] }

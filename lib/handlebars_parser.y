@@ -51,7 +51,7 @@ start root
 
   block
     : openBlock program inverseChain closeBlock { result = prepare_block(val[0], val[1], val[2], val[3], false) }
-    | openInverse program optInverseAndProgram closeBlock { yy.prepareBlock($1, $2, $3, $4, true, self.lexer.lineno) }
+    | openInverse program optInverseAndProgram closeBlock {  result = prepare_block(val[0], val[1], val[2], val[3], true) }
     ;
 
   openBlock
@@ -59,7 +59,7 @@ start root
     ;
 
   openInverse
-    : OPEN_INVERSE helperName exprs hash blockParams CLOSE { { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) } }
+    : OPEN_INVERSE helperName exprs hash blockParams CLOSE { result = s(:open, val[1], val[2], val[3], val[4], strip_flags(val[0], val[5])) }
     ;
 
   openInverseChain
@@ -248,8 +248,15 @@ end
     _, close_name, close_strip = *close
 
     # TODO: Validate open and close names match
-    # TODO: Handle inverted flag
     # TODO: Handle block decorator marker ('*')
+
+    if inverted
+      raise NotImplementedError if inverse_chain
+      inverse_chain = s(:inverse, program)
+      program = nil
+    else
+      program = s(:program, program)
+    end
 
     s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)
       .line(self.lexer.lineno)
