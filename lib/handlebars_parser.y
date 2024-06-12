@@ -50,7 +50,7 @@ start root
     ;
 
   block
-    : openBlock program inverseChain closeBlock { result = prepare_block(*val, false) }
+    : openBlock program inverseChain closeBlock { result = prepare_block(val[0], val[1], val[2], val[3], false) }
     | openInverse program optInverseAndProgram closeBlock { yy.prepareBlock($1, $2, $3, $4, true, self.lexer.lineno) }
     ;
 
@@ -63,7 +63,7 @@ start root
     ;
 
   openInverseChain
-    : OPEN_INVERSE_CHAIN helperName exprs hash blockParams CLOSE { { path: $2, params: $3, hash: $4, blockParams: $5, strip: yy.stripFlags($1, $6) } }
+    : OPEN_INVERSE_CHAIN helperName exprs hash blockParams CLOSE { result = s(:open, val[1], val[2], val[3], val[4], strip_flags(val[0], val[5])) }
     ;
 
   optInverseAndProgram
@@ -77,11 +77,8 @@ start root
   inverseChain
     : none
     | openInverseChain program inverseChain {
-      var inverse = yy.prepareBlock($1, $2, $3, $3, false, self.lexer.lineno),
-          program = yy.prepareProgram([inverse], $2.loc);
-      program.chained = true;
-
-      $$ = { strip: $1.strip, program: program, chain: true };
+      block = prepare_block(val[0], val[1], val[2], val[2], false)
+      result = s(:inverse, block)
     }
     | inverseAndProgram
     ;

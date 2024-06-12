@@ -367,7 +367,6 @@ describe HandlebarsParser do
   end
 
   it 'parses multiple inverse sections' do
-    skip
     equals(
       astFor('{{#foo}} bar {{else if bar}}{{else}} baz {{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n    CONTENT[ ' bar ' ]\n  {{^}}\n    BLOCK:\n      PATH:if [PATH:bar]\n      PROGRAM:\n      {{^}}\n        CONTENT[ ' baz ' ]\n"
