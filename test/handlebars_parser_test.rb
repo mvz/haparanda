@@ -353,7 +353,6 @@ describe HandlebarsParser do
   end
 
   it 'parses an inverse section' do
-    skip
     equals(
       astFor('{{#foo}} bar {{^}} baz {{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n    CONTENT[ ' bar ' ]\n  {{^}}\n    CONTENT[ ' baz ' ]\n"
@@ -380,7 +379,6 @@ describe HandlebarsParser do
   end
 
   it 'parses empty blocks with empty inverse section' do
-    skip
     equals(
       astFor('{{#foo}}{{^}}{{/foo}}'),
       'BLOCK:\n  PATH:foo []\n  PROGRAM:\n  {{^}}\n'
@@ -395,7 +393,6 @@ describe HandlebarsParser do
   end
 
   it 'parses non-empty blocks with empty inverse section' do
-    skip
     equals(
       astFor('{{#foo}} bar {{^}}{{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n    CONTENT[ ' bar ' ]\n  {{^}}\n"
@@ -410,7 +407,6 @@ describe HandlebarsParser do
   end
 
   it 'parses empty blocks with non-empty inverse section' do
-    skip
     equals(
       astFor('{{#foo}}{{^}} bar {{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n  {{^}}\n    CONTENT[ ' bar ' ]\n"
