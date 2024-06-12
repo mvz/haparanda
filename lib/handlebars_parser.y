@@ -130,13 +130,7 @@ start root
 
   sexpr
     : OPEN_SEXPR expr exprs hash CLOSE_SEXPR {
-      $$ = {
-        type: 'SubExpression',
-        path: $2,
-        params: $3,
-        hash: $4,
-        loc: yy.locInfo(self.lexer.lineno)
-      };
+      result = s(:sub_expression, val[1], val[2], val[3]).line self.lexer.lineno
     };
 
   hash

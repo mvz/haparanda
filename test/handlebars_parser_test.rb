@@ -102,6 +102,14 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     s(:print, "#{'@' if data}PATH:#{segments.join}")
   end
 
+  def process_sub_expression(expr)
+    _, path, params, hash, = expr.shift(5)
+    params = "[#{print params}]"
+    hash = print hash if hash
+    args = [params, hash].compact.join(" ")
+    s(:print, "#{print(path)} #{args}")
+  end
+
   def process_exprs(expr)
     expr.shift
     printed_vals = print_all(expr)
@@ -447,7 +455,6 @@ describe HandlebarsParser do
   end
 
   it 'parses mustaches with sub-expressions as the callable' do
-    skip
     equals(
       astFor('{{(my-helper foo)}}'),
       '{{ PATH:my-helper [PATH:foo] [] }}\n'
@@ -455,7 +462,6 @@ describe HandlebarsParser do
   end
 
   it 'parses mustaches with sub-expressions as the callable (with args)' do
-    skip
     equals(
       astFor('{{(my-helper foo) bar}}'),
       '{{ PATH:my-helper [PATH:foo] [PATH:bar] }}\n'
@@ -463,7 +469,6 @@ describe HandlebarsParser do
   end
 
   it 'parses sub-expressions with a sub-expression as the callable' do
-    skip
     equals(
       astFor('{{((my-helper foo))}}'),
       '{{ PATH:my-helper [PATH:foo] [] [] }}\n'
@@ -471,7 +476,6 @@ describe HandlebarsParser do
   end
 
   it 'parses sub-expressions with a sub-expression as the callable (with args)' do
-    skip
     equals(
       astFor('{{((my-helper foo) bar)}}'),
       '{{ PATH:my-helper [PATH:foo] [PATH:bar] [] }}\n'
@@ -479,7 +483,6 @@ describe HandlebarsParser do
   end
 
   it 'parses arguments with a sub-expression as the callable (with args)' do
-    skip
     equals(
       astFor('{{my-helper ((foo) bar) baz=((foo bar))}}'),
       '{{ PATH:my-helper [PATH:foo [] [PATH:bar]] HASH{baz=PATH:foo [PATH:bar] []} }}\n'
