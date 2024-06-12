@@ -18,6 +18,7 @@ start root
   statements
     : statement
     | statements statement { result = s(:statements, *val) }
+    ;
 
   statement
     : mustache { $1 }
@@ -40,6 +41,7 @@ start root
   contents:
     : content
     | contents content
+    ;
 
   rawBlock
     : openRawBlock contents END_RAW_BLOCK { yy.prepareRawBlock($1, $2, $3, self.lexer.lineno) }
@@ -69,6 +71,7 @@ start root
   optInverseAndProgram
     : none
     | inverseAndProgram
+    ;
 
   inverseAndProgram
     : INVERSE program { result = s(:inverse, val[1], strip_flags(val[0], val[0])) }
@@ -101,9 +104,11 @@ start root
         .line(self.lexer.lineno)
     }
     ;
+
   partialBlock
     : openPartialBlock program closeBlock { result = prepare_partial_block(*val) }
     ;
+
   openPartialBlock
     : OPEN_PARTIAL_BLOCK expr exprs hash CLOSE { result = s(:open_partial, val[1], val[2], val[3], strip_flags(val[0], val[4])) }
     ;
@@ -116,10 +121,12 @@ start root
   exprs:
     : none { result = s(:exprs) }
     | exprList
+    ;
 
   exprList
     : expr { result = s(:exprs, val[0]) }
     | exprList expr { result.push(val[1]) }
+    ;
 
   sexpr
     : OPEN_SEXPR expr exprs hash CLOSE_SEXPR {
@@ -140,6 +147,7 @@ start root
   hashSegments
     hashSegment { result = s(:hash, val[0]) }
     | hashSegments hashSegment { result.push(val[1]) }
+    ;
 
   hashSegment
     : KEY_ASSIGN expr { result = s(:hash_pair, val[0], val[1]).line(self.lexer.lineno) }
@@ -153,6 +161,7 @@ start root
   idSequence
     : ID { result = [id(val[0])] }
     | idSequence ID { result << id(val[1]) }
+    ;
 
   helperName
     : path { $1 }
@@ -178,7 +187,9 @@ start root
     | ID { result = [id(val[0])] }
     ;
 
-  none: { result = nil }
+  none
+    : { result = nil }
+    ;
 end
 
 ---- header
