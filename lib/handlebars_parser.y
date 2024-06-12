@@ -147,12 +147,12 @@ start root
 
   blockParams
     : none
-    | OPEN_BLOCK_PARAMS idSequence CLOSE_BLOCK_PARAMS { yy.id($2) }
+    | OPEN_BLOCK_PARAMS idSequence CLOSE_BLOCK_PARAMS { result = s(:block_params, *val[1]) }
     ;
 
   idSequence
-    : ID
-    | idSequence ID
+    : ID { result = [id(val[0])] }
+    | idSequence ID { result << id(val[1]) }
 
   helperName
     : path { $1 }
@@ -244,7 +244,7 @@ end
   end
 
   def prepare_block(open, program, inverse_chain, close, inverted)
-    _, name, params, hash, open_strip = *open
+    _, name, params, hash, block_params, open_strip = *open
     _, close_name, close_strip = *close
 
     # TODO: Validate open and close names match
@@ -255,7 +255,7 @@ end
       inverse_chain = s(:inverse, program)
       program = nil
     else
-      program = s(:program, program)
+      program = s(:program, block_params, program)
     end
 
     s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)

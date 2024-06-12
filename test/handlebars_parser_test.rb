@@ -55,9 +55,10 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_program(expr)
-    _, program, = expr.shift(3)
+    _, params, program, = expr.shift(3)
+    params = print(params).gsub(/^/, "  ") if params
     program = print(program).gsub(/^/, "  ") if program
-    s(:print, "PROGRAM:\n#{program}")
+    s(:print, "PROGRAM:\n#{params}#{program}")
   end
 
   def process_inverse(expr)
@@ -105,6 +106,12 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     expr.shift
     printed_vals = print_all(expr)
     s(:print, printed_vals.join(", "))
+  end
+
+  def process_block_params(expr)
+    expr.shift
+    params = shift_all(expr)
+    s(:print, "BLOCK PARAMS: [ #{params.join(' ')} ]\n")
   end
 
   def process_undefined(expr)
@@ -433,7 +440,6 @@ describe HandlebarsParser do
   end
 
   it 'parses block with block params' do
-    skip
     equals(
       astFor('{{#foo as |bar baz|}}content{{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n    BLOCK PARAMS: [ bar baz ]\n    CONTENT[ 'content' ]\n"
