@@ -71,7 +71,7 @@ start root
     | inverseAndProgram
 
   inverseAndProgram
-    : INVERSE program { { strip: yy.stripFlags($1, $1), program: $2 } }
+    : INVERSE program { result = s(:inverse, val[1], strip_flags(val[0], val[0])) }
     ;
 
   inverseChain
@@ -83,7 +83,7 @@ start root
 
       $$ = { strip: $1.strip, program: program, chain: true };
     }
-    | inverseAndProgram { $1 }
+    | inverseAndProgram
     ;
 
   closeBlock
@@ -253,9 +253,8 @@ end
     # TODO: Validate open and close names match
     # TODO: Handle inverted flag
     # TODO: Handle block decorator marker ('*')
-    # TODO: Process inverse_chain
 
-    s(:block, name, params, hash, program, nil, open_strip, close_strip)
+    s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)
       .line(self.lexer.lineno)
   end
 

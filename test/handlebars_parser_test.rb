@@ -46,11 +46,18 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_block(expr)
-    # TODO: Handle program and inverse_chain
-    _, name, params, hash, _program, _inverse_chain, = expr.shift(8)
+    _, name, params, hash, program, inverse_chain, = expr.shift(8)
     args = [params, hash].compact.map { print _1 }.join(" ").strip
     name = print(name)
-    s(:print, "BLOCK:\n  #{name} [#{args}]\n  PROGRAM:\n")
+    program = print(program).gsub(/^/, "    ") if program
+    inverse_chain = print(inverse_chain).gsub(/^/, "  ") if inverse_chain
+    s(:print, "BLOCK:\n  #{name} [#{args}]\n  PROGRAM:\n#{program}#{inverse_chain}")
+  end
+
+  def process_inverse(expr)
+    _, program, = expr.shift(3)
+    program = print(program).gsub(/^/, "  ") if program
+    s(:print, "{{^}}\n#{program}")
   end
 
   def process_mustache(expr)
@@ -354,7 +361,6 @@ describe HandlebarsParser do
   end
 
   it 'parses an inverse (else-style) section' do
-    skip
     equals(
       astFor('{{#foo}} bar {{else}} baz {{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n    CONTENT[ ' bar ' ]\n  {{^}}\n    CONTENT[ ' baz ' ]\n"
@@ -382,7 +388,6 @@ describe HandlebarsParser do
   end
 
   it 'parses empty blocks with empty inverse (else-style) section' do
-    skip
     equals(
       astFor('{{#foo}}{{else}}{{/foo}}'),
       'BLOCK:\n  PATH:foo []\n  PROGRAM:\n  {{^}}\n'
@@ -398,7 +403,6 @@ describe HandlebarsParser do
   end
 
   it 'parses non-empty blocks with empty inverse (else-style) section' do
-    skip
     equals(
       astFor('{{#foo}} bar {{else}}{{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n    CONTENT[ ' bar ' ]\n  {{^}}\n"
@@ -414,7 +418,6 @@ describe HandlebarsParser do
   end
 
   it 'parses empty blocks with non-empty inverse (else-style) section' do
-    skip
     equals(
       astFor('{{#foo}}{{else}} bar {{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n  {{^}}\n    CONTENT[ ' bar ' ]\n"
