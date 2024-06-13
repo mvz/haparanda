@@ -96,9 +96,19 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     s(:print, val.inspect)
   end
 
+  def process_id(expr)
+    _, id = expr.shift(2)
+    s(:print, id)
+  end
+
+  def process_sep(expr)
+    _, sep = expr.shift(2)
+    s(:print, sep)
+  end
+
   def process_path(expr)
     _, data = expr.shift(2)
-    segments = shift_all(expr)
+    segments = print_all(expr)
     s(:print, "#{'@' if data}PATH:#{segments.join}")
   end
 
@@ -118,7 +128,7 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
   def process_block_params(expr)
     expr.shift
-    params = shift_all(expr)
+    params = print_all(expr)
     s(:print, "BLOCK PARAMS: [ #{params.join(' ')} ]\n")
   end
 
@@ -157,8 +167,9 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def partial_name(expr)
-    if expr.sexp_type == :path
-      expr[2..].join
+    case expr.sexp_type
+    when :path
+      print_all(expr[2..]).join
     else
       expr[1]
     end

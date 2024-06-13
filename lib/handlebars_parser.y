@@ -177,7 +177,7 @@ start root
     ;
 
   pathSegments
-    : pathSegments SEP ID { result.push(val[1], val[2]) }
+    : pathSegments SEP ID { result.push(s(:sep, val[1]), id(val[2])) }
     | ID { result = [id(val[0])] }
     ;
 
@@ -225,15 +225,16 @@ end
 
   def id(val)
     if (match = /\A\[(.*)\]\Z/.match val)
-      match[1]
+      # TODO: Mark as having had square brackets
+      s(:id, match[1])
     else
-      val
+      s(:id, val)
     end
   end
 
   def prepare_path(data, sexpr, parts, loc)
     # TODO: Keep track of depth
-    parts.shift(2) if parts.first == ".." || parts.first == "this"
+    parts.shift(2) if parts.first[1] == ".." || parts.first[1] == "this"
     # TODO: Handle sexpr
     s(:path, data, *parts).line loc
   end
