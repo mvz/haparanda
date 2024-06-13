@@ -108,7 +108,7 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
   def process_path(expr)
     _, data = expr.shift(2)
-    segments = print_all(expr)
+    segments = path_segments(expr)
     s(:print, "#{'@' if data}PATH:#{segments.join}")
   end
 
@@ -164,6 +164,18 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     result = []
     result << print(expr.shift) while expr.any?
     result
+  end
+
+  def path_segments(expr)
+    segments = shift_all(expr)
+    segments.map do |seg|
+      case seg.sexp_type
+      when :sub_expression
+        "[#{print(seg)}]"
+      else
+        print(seg)
+      end
+    end
   end
 
   def partial_name(expr)
@@ -501,7 +513,6 @@ describe HandlebarsParser do
   end
 
   it 'parses paths with sub-expressions as the root' do
-    skip
     equals(
       astFor('{{(my-helper foo).bar}}'),
       '{{ PATH:[PATH:my-helper [PATH:foo]]/bar [] }}\n'
@@ -509,7 +520,6 @@ describe HandlebarsParser do
   end
 
   it 'parses paths with sub-expressions as the root as a callable' do
-    skip
     equals(
       astFor('{{((my-helper foo).bar baz)}}'),
       '{{ PATH:[PATH:my-helper [PATH:foo]]/bar [PATH:baz] [] }}\n'
@@ -517,7 +527,6 @@ describe HandlebarsParser do
   end
 
   it 'parses paths with sub-expressions as the root as an argument' do
-    skip
     equals(
       astFor('{{(foo (my-helper bar).baz)}}'),
       '{{ PATH:foo [PATH:[PATH:my-helper [PATH:bar]]/baz] [] }}\n'
@@ -525,7 +534,6 @@ describe HandlebarsParser do
   end
 
   it 'parses paths with sub-expressions as the root as a named argument' do
-    skip
     equals(
       astFor('{{(foo bar=(my-helper baz).qux)}}'),
       '{{ PATH:foo [] HASH{bar=PATH:[PATH:my-helper [PATH:baz]]/qux} [] }}\n'

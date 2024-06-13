@@ -172,7 +172,10 @@ start root
     ;
 
   path
-    : sexpr SEP pathSegments { yy.preparePath(false, $1, $3, self.lexer.lineno) }
+    : sexpr SEP pathSegments {
+      # NOTE: Separator is always parsed as '/'
+      result = prepare_path(false, false, [val[0], s(:sep, "/"), *val[2]], self.lexer.lineno)
+    }
     | pathSegments { result = prepare_path(false, false, val[0], self.lexer.lineno) }
     ;
 
