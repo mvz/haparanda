@@ -189,6 +189,17 @@ describe HandlebarsParser do
     );
   end
 
+  it 'should handle parser block mismatch' do
+    skip
+    shouldThrow(
+      lambda {
+        astFor('{{#> goodbyes}}{{/hellos}}');
+      },
+      Error,
+      /goodbyes doesn't match hellos/
+    );
+  end
+
   it 'parsers partial blocks with arguments' do
     equals(
       astFor('{{#> foo context hash=value}}bar{{/foo}}'),
@@ -284,6 +295,13 @@ describe HandlebarsParser do
     );
   end
 
+  it 'throws on old inverse section' do
+    skip
+    shouldThrow(lambda {
+      astFor('{{else foo}}bar{{/foo}}');
+    }, Error);
+  end
+
   it 'parses block with block params' do
     equals(
       astFor('{{#foo as |bar baz|}}content{{/foo}}'),
@@ -367,6 +385,184 @@ describe HandlebarsParser do
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n  {{^}}\n    BLOCK:\n      PATH:foo []\n      PROGRAM:\n        BLOCK PARAMS: [ bar baz ]\n        CONTENT[ 'content' ]\n"
     );
   end
+
+  it "raises if there's a Parse error" do
+    skip
+    shouldThrow(
+      lambda {
+        astFor('foo{{^}}bar');
+      },
+      Error,
+      /Parse error on line 1/
+    );
+    shouldThrow(
+      lambda {
+        astFor('{{foo}');
+      },
+      Error,
+      /Parse error on line 1/
+    );
+    shouldThrow(
+      lambda {
+        astFor('{{foo &}}');
+      },
+      Error,
+      /Parse error on line 1/
+    );
+    shouldThrow(
+      lambda {
+        astFor('{{#goodbyes}}{{/hellos}}');
+      },
+      Error,
+      /goodbyes doesn't match hellos/
+    );
+
+    shouldThrow(
+      lambda {
+        astFor('{{{{goodbyes}}}} {{{{/hellos}}}}');
+      },
+      Error,
+      /goodbyes doesn't match hellos/
+    );
+  end
+
+  # rubocop:disable Style/RegexpLiteral
+  it 'should handle invalid paths' do
+    skip
+    shouldThrow(
+      lambda {
+        astFor('{{foo/../bar}}');
+      },
+      Error,
+      /Invalid path: foo\/\.\. - 1:2/
+    );
+    shouldThrow(
+      lambda {
+        astFor('{{foo/./bar}}');
+      },
+      Error,
+      /Invalid path: foo\/\. - 1:2/
+    );
+    shouldThrow(
+      lambda {
+        astFor('{{foo/this/bar}}');
+      },
+      Error,
+      /Invalid path: foo\/this - 1:2/
+    );
+  end
+  # rubocop:enable Style/RegexpLiteral
+
+  it 'knows how to report the correct line number in errors' do
+    skip
+    shouldThrow(
+      lambda {
+        astFor('hello\nmy\n{{foo}');
+      },
+      Error,
+      /Parse error on line 3/
+    );
+    shouldThrow(
+      lambda {
+        astFor('hello\n\nmy\n\n{{foo}');
+      },
+      Error,
+      /Parse error on line 5/
+    );
+  end
+
+  it 'knows how to report the correct line number in errors when the first character is a newline' do
+    skip
+    shouldThrow(
+      lambda {
+        astFor('\n\nhello\n\nmy\n\n{{foo}');
+      },
+      Error,
+      /Parse error on line 7/
+    );
+  end
+
+  # rubocop:disable Layout/FirstHashElementIndentation
+  describe 'externally compiled AST' do
+    it 'can pass through an already-compiled AST' do
+      skip
+      equals(
+        astFor({
+          type: 'Program',
+          body: [{ type: 'ContentStatement', value: 'Hello' }]
+        }),
+        "CONTENT[ 'Hello' ]\n"
+      );
+    end
+  end
+  # rubocop:enable Layout/FirstHashElementIndentation
+
+  describe 'directives' do
+    it 'should parse block directives' do
+      skip
+      equals(
+        astFor('{{#* foo}}{{/foo}}'),
+        'DIRECTIVE BLOCK:\n  PATH:foo []\n  PROGRAM:\n'
+      );
+    end
+    it 'should parse directives' do
+      skip
+      equals(astFor('{{* foo}}'), '{{ DIRECTIVE PATH:foo [] }}\n');
+    end
+    it 'should fail if directives have inverse' do
+      skip
+      shouldThrow(
+        lambda {
+          astFor('{{#* foo}}{{^}}{{/foo}}');
+        },
+        Error,
+        /Unexpected inverse/
+      );
+    end
+  end
+
+  # rubocop:disable Style/LineEndConcatenation
+  # rubocop:disable Style/StringConcatenation
+  # rubocop:disable Layout/FirstHashElementIndentation
+  it 'GH1024 - should track program location properly' do
+    skip
+    let p = parse(
+      '\n' +
+        '  {{#if foo}}\n' +
+        '    {{bar}}\n' +
+        '       {{else}}    {{baz}}\n' +
+        '\n' +
+        '     {{/if}}\n' +
+        '    '
+    );
+
+    # We really need a deep equals but for now this should be stable...
+    equals(
+      JSON.stringify(p.loc),
+      JSON.stringify({
+        start: { line: 1, column: 0 },
+        end: { line: 7, column: 4 }
+      })
+    );
+    equals(
+      JSON.stringify(p.body[1].program.loc),
+      JSON.stringify({
+        start: { line: 2, column: 13 },
+        end: { line: 4, column: 7 }
+      })
+    );
+    equals(
+      JSON.stringify(p.body[1].inverse.loc),
+      JSON.stringify({
+        start: { line: 4, column: 15 },
+        end: { line: 6, column: 5 }
+      })
+    );
+  end
+  # rubocop:enable Layout/FirstHashElementIndentation
+  # rubocop:enable Style/StringConcatenation
+  # rubocop:enable Style/LineEndConcatenation
+
   # rubocop:enable Layout/LineLength
   # rubocop:enable Style/Semicolon
   # rubocop:enable Style/StringLiterals
