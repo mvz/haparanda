@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require "rake/testtask"
+require "minitest/test_task"
 
-Rake::TestTask.new(:test) do |t|
-  t.libs = ["lib"]
-  t.ruby_opts += ["-w -Itest"]
-  t.test_files = FileList["test/**/*_test.rb"]
+Minitest::TestTask.create(:test) do |t|
+  t.libs << "lib"
+  t.libs << "test"
+  t.warning = true
+  t.test_globs = ["test/**/*_test.rb"]
 end
 
 file "lib/handlebars_lexer.rb" => "lib/handlebars_lexer.rex" do
