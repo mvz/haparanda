@@ -278,6 +278,6 @@ end
   end
 
   def on_error(t, val, vstack)
-    raise ParseError, sprintf("parse error on value %s (%s) at %s",
-        val.inspect, token_to_str(t) || '?', vstack.inspect)
+    raise ParseError, sprintf("Parse error on line %i on value %s (%s) at %s",
+        self.lexer.lineno, val.inspect, token_to_str(t) || '?', vstack.inspect)
   end

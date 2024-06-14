@@ -390,41 +390,47 @@ describe HandlebarsParser do
   end
 
   it "raises if there's a Parse error" do
-    skip
     shouldThrow(
       lambda {
         astFor('foo{{^}}bar');
       },
-      Error,
+      ParseError,
       /Parse error on line 1/
     );
     shouldThrow(
       lambda {
         astFor('{{foo}');
       },
-      Error,
+      ParseError,
       /Parse error on line 1/
     );
     shouldThrow(
       lambda {
         astFor('{{foo &}}');
       },
-      Error,
+      ParseError,
       /Parse error on line 1/
     );
+  end
+
+  it 'should handle block name mismatch' do
+    skip
     shouldThrow(
       lambda {
         astFor('{{#goodbyes}}{{/hellos}}');
       },
-      Error,
+      ParseError,
       /goodbyes doesn't match hellos/
     );
+  end
 
+  it "raises if there's a Parse error with too many braces" do
+    skip
     shouldThrow(
       lambda {
         astFor('{{{{goodbyes}}}} {{{{/hellos}}}}');
       },
-      Error,
+      ParseError,
       /goodbyes doesn't match hellos/
     );
   end
