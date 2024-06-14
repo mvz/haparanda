@@ -21,12 +21,12 @@ start root
     ;
 
   statement
-    : mustache { $1 }
-    | block { $1 }
-    | rawBlock { $1 }
-    | partial { $1 }
-    | partialBlock { $1 }
-    | content { $1 }
+    : mustache
+    | block
+    | rawBlock
+    | partial
+    | partialBlock
+    | content
     | COMMENT {
       result = s(:comment, strip_comment(val[0]), strip_flags(val[0], val[0]))
         .line(self.lexer.lineno)
@@ -114,8 +114,8 @@ start root
     ;
 
   expr
-    : helperName { $1 }
-    | sexpr { $1 }
+    : helperName
+    | sexpr
     ;
 
   exprs:
@@ -158,8 +158,8 @@ start root
     ;
 
   helperName
-    : path { $1 }
-    | dataName { $1 }
+    : path
+    | dataName
     | STRING { result = s(:string, val[0]).line(self.lexer.lineno) }
     | NUMBER { result = s(:number, process_number(val[0])).line(self.lexer.lineno) }
     | BOOLEAN { result = s(:boolean, val[0] == "true").line(self.lexer.lineno) }
