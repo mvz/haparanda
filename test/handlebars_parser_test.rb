@@ -18,6 +18,11 @@ describe HandlebarsParser do
     PrintingProcessor.new.print(result)
   end
 
+  def shouldThrow(function, error, message) # rubocop:disable Naming/MethodName
+    exception = _(function).must_raise error
+    _(exception.message).must_match message
+  end
+
   it "parses content" do
     result = parser.parse "Hello!"
 
@@ -189,13 +194,12 @@ describe HandlebarsParser do
     );
   end
 
-  it 'should handle parser block mismatch' do
-    skip
+  it 'should handle partial block name mismatch' do
     shouldThrow(
       lambda {
         astFor('{{#> goodbyes}}{{/hellos}}');
       },
-      Error,
+      ParseError,
       /goodbyes doesn't match hellos/
     );
   end

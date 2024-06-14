@@ -246,7 +246,7 @@ end
     _, name, params, hash, open_strip = *open
     _, close_name, close_strip = *close
 
-    # TODO: Validate open and close names match
+    validated_close(name, close_name)
 
     s(:partial_block, name, params, hash, program, open_strip, close_strip)
       .line(self.lexer.lineno)
@@ -269,6 +269,12 @@ end
 
     s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)
       .line(self.lexer.lineno)
+  end
+
+  def validated_close(name, close_name)
+    unless name == close_name
+      raise ParseError, "#{name[2][1]} doesn't match #{close_name[2][1]}"
+    end
   end
 
   def on_error(t, val, vstack)
