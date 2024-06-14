@@ -414,7 +414,6 @@ describe HandlebarsParser do
   end
 
   it 'should handle block name mismatch' do
-    skip
     shouldThrow(
       lambda {
         astFor('{{#goodbyes}}{{/hellos}}');

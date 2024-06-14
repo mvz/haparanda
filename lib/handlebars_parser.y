@@ -80,7 +80,7 @@ start root
   inverseChain
     : none
     | openInverseChain program inverseChain {
-      block = prepare_block(val[0], val[1], val[2], val[2], false)
+      block = prepare_block(val[0], val[1], val[2], nil, false)
       result = s(:inverse, nil, block)
     }
     | inverseAndProgram
@@ -254,9 +254,13 @@ end
 
   def prepare_block(open, program, inverse_chain, close, inverted)
     _, name, params, hash, block_params, open_strip = *open
-    _, close_name, close_strip = *close
 
-    # TODO: Validate open and close names match
+    if close
+      _, close_name, close_strip = *close
+      validated_close(name, close_name)
+    end
+
+    # TODO: Get close_strip from inverse_chain if close is nil
     # TODO: Handle block decorator marker ('*')
 
     if inverted
