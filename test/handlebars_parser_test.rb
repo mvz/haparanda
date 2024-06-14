@@ -18,9 +18,9 @@ describe HandlebarsParser do
     PrintingProcessor.new.print(result)
   end
 
-  def shouldThrow(function, error, message) # rubocop:disable Naming/MethodName
+  def shouldThrow(function, error, message = nil) # rubocop:disable Naming/MethodName
     exception = _(function).must_raise error
-    _(exception.message).must_match message
+    _(exception.message).must_match message if message
   end
 
   it "parses content" do
@@ -300,10 +300,9 @@ describe HandlebarsParser do
   end
 
   it 'throws on old inverse section' do
-    skip
     shouldThrow(lambda {
       astFor('{{else foo}}bar{{/foo}}');
-    }, Error);
+    }, ParseError);
   end
 
   it 'parses block with block params' do
