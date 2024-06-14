@@ -437,26 +437,25 @@ describe HandlebarsParser do
 
   # rubocop:disable Style/RegexpLiteral
   it 'should handle invalid paths' do
-    skip
     shouldThrow(
       lambda {
         astFor('{{foo/../bar}}');
       },
-      Error,
+      ParseError,
       /Invalid path: foo\/\.\. - 1:2/
     );
     shouldThrow(
       lambda {
         astFor('{{foo/./bar}}');
       },
-      Error,
+      ParseError,
       /Invalid path: foo\/\. - 1:2/
     );
     shouldThrow(
       lambda {
         astFor('{{foo/this/bar}}');
       },
-      Error,
+      ParseError,
       /Invalid path: foo\/this - 1:2/
     );
   end

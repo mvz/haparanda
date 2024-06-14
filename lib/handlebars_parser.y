@@ -237,9 +237,23 @@ end
 
   def prepare_path(data, sexpr, parts, loc)
     # TODO: Keep track of depth
-    parts.shift(2) if parts.first[1] == ".." || parts.first[1] == "this"
+    tail = []
+    while parts.any?
+      part, sep = parts.shift(2)
+
+      if ["..", ".", "this"].include? part[1]
+        unless tail.empty?
+          path = tail.map { _1[1] }.join + part[1]
+          raise ParseError, "Invalid path: #{path} - #{loc}:2"
+        end
+        next
+      end
+
+      tail << part
+      tail << sep if sep
+    end
     # TODO: Handle sexpr
-    s(:path, data, *parts).line loc
+    s(:path, data, *tail).line loc
   end
 
   def prepare_partial_block(open, program, close)
