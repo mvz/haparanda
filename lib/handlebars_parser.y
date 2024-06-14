@@ -74,14 +74,14 @@ start root
     ;
 
   inverseAndProgram
-    : INVERSE program { result = s(:inverse, val[1], strip_flags(val[0], val[0])) }
+    : INVERSE program { result = s(:inverse, nil, val[1], strip_flags(val[0], val[0])) }
     ;
 
   inverseChain
     : none
     | openInverseChain program inverseChain {
       block = prepare_block(val[0], val[1], val[2], val[2], false)
-      result = s(:inverse, block)
+      result = s(:inverse, nil, block)
     }
     | inverseAndProgram
     ;
@@ -261,7 +261,7 @@ end
 
     if inverted
       raise NotImplementedError if inverse_chain
-      inverse_chain = s(:inverse, program)
+      inverse_chain = s(:inverse, block_params, program)
       program = nil
     else
       program = s(:program, block_params, program)

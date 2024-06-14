@@ -62,9 +62,10 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_inverse(expr)
-    _, program, = expr.shift(3)
+    _, block_params, program, = expr.shift(4)
+    block_params = print(block_params).gsub(/^/, "  ") if block_params
     program = print(program).gsub(/^/, "  ") if program
-    s(:print, "{{^}}\n#{program}")
+    s(:print, "{{^}}\n#{block_params}#{program}")
   end
 
   def process_mustache(expr)
@@ -541,14 +542,13 @@ describe HandlebarsParser do
   end
 
   it 'parses inverse block with block params' do
-    skip
     equals(
       astFor('{{^foo as |bar baz|}}content{{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  {{^}}\n    BLOCK PARAMS: [ bar baz ]\n    CONTENT[ 'content' ]\n"
     );
   end
+
   it 'parses chained inverse block with block params' do
-    skip
     equals(
       astFor('{{#foo}}{{else foo as |bar baz|}}content{{/foo}}'),
       "BLOCK:\n  PATH:foo []\n  PROGRAM:\n  {{^}}\n    BLOCK:\n      PATH:foo []\n      PROGRAM:\n        BLOCK PARAMS: [ bar baz ]\n        CONTENT[ 'content' ]\n"
