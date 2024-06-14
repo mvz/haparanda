@@ -46,7 +46,8 @@ ID    [^\s!"\#%-,\.\/;->@\[-\^`\{-~]+(?={LOOKAHEAD})
 
 rule
 
-[^\x00]*?(?={{)                  {
+\n                               { [:CONTENT, text] }
+[^\x00\n]*?(?={{)                {
                                    if(text.slice(-2) === "\\\\")
                                      strip(0,1);
                                      @state = :MU
@@ -59,7 +60,7 @@ rule
                                    [:CONTENT, text] unless(text.empty?)
                                  }
 
-[^\x00]+                         { [:CONTENT, text] }
+[^\x00\n]+                       { [:CONTENT, text] }
 
 # consume escaped mustache
 :EMU {{                          { @state = nil; [:CONTENT, text] }

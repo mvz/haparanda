@@ -462,30 +462,28 @@ describe HandlebarsParser do
   # rubocop:enable Style/RegexpLiteral
 
   it 'knows how to report the correct line number in errors' do
-    skip
     shouldThrow(
       lambda {
         astFor('hello\nmy\n{{foo}');
       },
-      Error,
+      ParseError,
       /Parse error on line 3/
     );
     shouldThrow(
       lambda {
         astFor('hello\n\nmy\n\n{{foo}');
       },
-      Error,
+      ParseError,
       /Parse error on line 5/
     );
   end
 
   it 'knows how to report the correct line number in errors when the first character is a newline' do
-    skip
     shouldThrow(
       lambda {
         astFor('\n\nhello\n\nmy\n\n{{foo}');
       },
-      Error,
+      ParseError,
       /Parse error on line 7/
     );
   end
