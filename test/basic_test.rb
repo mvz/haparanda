@@ -25,15 +25,21 @@ describe 'basic context' do
     end
 
     def process_statements(expr)
-      _, rest, tail = expr.shift(3)
-      rest = process(rest)[1]
-      tail = process(tail)[1]
-      s(:result, "#{rest}#{tail}")
+      expr.shift
+      statements = shift_all(expr)
+      results = statements.map { process(_1)[1] }
+      s(:result, "#{results.join}")
     end
 
     def process_comment(expr)
       _, _comment, = expr.shift(3)
       s(:result, "")
+    end
+
+    def shift_all(expr)
+      result = []
+      result << expr.shift while expr.any?
+      result
     end
   end
 

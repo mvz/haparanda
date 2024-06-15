@@ -29,7 +29,7 @@ describe HandlebarsParser do
   it "parses content" do
     result = parser.parse "Hello!"
 
-    _(result).must_equal(s(:content, "Hello!"))
+    _(result).must_equal(s(:statements, s(:content, "Hello!")))
   end
 
   # rubocop:disable Style/StringLiterals

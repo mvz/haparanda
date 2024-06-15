@@ -27,8 +27,8 @@ program
 
 # Extra rule needed for racc to parse list of one or more statements
 statements
-  : statement
-  | statements statement { result = s(:statements, *val) }
+  : statement { result = s(:statements, val[0]) }
+  | statements statement { result << val[1] }
   ;
 
 statement
