@@ -23,6 +23,13 @@ describe 'basic context' do
       key = val[2][1].to_sym
       s(:result, @input[key].to_s)
     end
+
+    def process_statements(expr)
+      _, rest, tail = expr.shift(3)
+      rest = process(rest)[1]
+      tail = process(tail)[1]
+      s(:result, "#{rest}#{tail}")
+    end
   end
 
   class TemplateTester
@@ -37,9 +44,14 @@ describe 'basic context' do
       self
     end
 
+    def withMessage(message)
+      @message = message
+      self
+    end
+
     def toCompileTo(expected)
       actual = @processor.apply(@template)
-      @spec._(actual).must_equal expected
+      @spec._(actual).must_equal expected, @message
     end
   end
 
@@ -75,7 +87,6 @@ describe 'basic context' do
   end
 
   it 'compiling with a basic context' do
-    skip
     expectTemplate('Goodbye\n{{cruel}}\n{{world}}!')
       .withInput({
         cruel: 'cruel',
