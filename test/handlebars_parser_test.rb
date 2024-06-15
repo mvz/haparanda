@@ -2,6 +2,9 @@
 
 require "test_helper"
 
+# Based on spec/parser.js in handlebars-parser. The content of the specs should
+# mostly be identical to the content there, so a side-by-side diff should show
+# spec equivalence, and show any new specs that should be added.
 describe HandlebarsParser do
   let(:parser) { HandlebarsParser.new }
 
