@@ -7,8 +7,47 @@ require "test_helper"
 # spec equivalence, and show any new specs that should be added.
 
 describe 'basic context' do
+  class HandlebarsProcessor < SexpProcessor
+    def initialize(input)
+      super()
+      @input = input
+    end
+
+    def apply(expr)
+      result = process(expr)
+      result[1]
+    end
+
+    def process_mustache(expr)
+      _, val, _params, _hash, = expr.shift(5)
+      key = val[2][1].to_sym
+      s(:result, @input[key].to_s)
+    end
+  end
+
+  class TemplateTester
+    def initialize(str, spec)
+      @template = HandlebarsParser.new.parse(str)
+      @spec = spec
+    end
+
+    def withInput(input)
+      @input = input
+      @processor = HandlebarsProcessor.new(input)
+      self
+    end
+
+    def toCompileTo(expected)
+      actual = @processor.apply(@template)
+      @spec._(actual).must_equal expected
+    end
+  end
+
+  def expectTemplate(template)
+    TemplateTester.new(template, self)
+  end
+
   it 'most basic' do
-    skip
     expectTemplate('{{foo}}').withInput({ foo: 'foo' }).toCompileTo('foo');
   end
 
