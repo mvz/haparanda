@@ -30,6 +30,11 @@ describe 'basic context' do
       tail = process(tail)[1]
       s(:result, "#{rest}#{tail}")
     end
+
+    def process_comment(expr)
+      _, _comment, = expr.shift(3)
+      s(:result, "")
+    end
   end
 
   def expectTemplate(template)
@@ -89,7 +94,6 @@ describe 'basic context' do
   end
 
   it 'comments' do
-    skip
     expectTemplate('{{! Goodbye}}Goodbye\n{{cruel}}\n{{world}}!')
       .withInput({
         cruel: 'cruel',
@@ -98,6 +102,7 @@ describe 'basic context' do
       .withMessage('comments are ignored')
       .toCompileTo('Goodbye\ncruel\nworld!');
 
+    skip
     expectTemplate('    {{~! comment ~}}      blah').toCompileTo('blah');
 
     expectTemplate('    {{~!-- long-comment --~}}      blah').toCompileTo(

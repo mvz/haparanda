@@ -6,11 +6,11 @@ class TemplateTester
   def initialize(str, spec)
     @template = HandlebarsParser.new.parse(str)
     @spec = spec
+    @input = {}
   end
 
   def withInput(input)
     @input = input
-    @processor = HandlebarsProcessor.new(input)
     self
   end
 
@@ -20,7 +20,8 @@ class TemplateTester
   end
 
   def toCompileTo(expected)
-    actual = @processor.apply(@template)
+    processor = HandlebarsProcessor.new(@input)
+    actual = processor.apply(@template)
     @spec._(actual).must_equal expected, @message
   end
 end
