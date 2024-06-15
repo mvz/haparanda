@@ -6,3 +6,4 @@ require "handlebars_lexer"
 require "handlebars_parser"
 
 require_relative "support/printing_processor"
+require_relative "support/template_tester"
