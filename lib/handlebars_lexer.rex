@@ -1,14 +1,6 @@
 class HandlebarsLexer
 %x mu emu com raw
 
-%{
-
-function strip(start, end) {
-  return text = text.substring(start, yyleng - end + start);
-}
-
-%}
-
 inner
 
     def do_parse
@@ -48,11 +40,11 @@ rule
 
 \n                               { [:CONTENT, text] }
 [^\x00\n]*?(?={{)                {
-                                   if(text.slice(-2) === "\\\\")
-                                     strip(0,1);
+                                   if(text.slice(-2, 2) === "\\\\")
+                                     text = text[0..-2]
                                      @state = :MU
                                    elsif(text.slice(-1) === "\\")
-                                     strip(0,1);
+                                     text = text[0..-2]
                                      @state = :EMU
                                    else
                                      @state = :MU

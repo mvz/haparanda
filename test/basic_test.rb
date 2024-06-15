@@ -64,7 +64,6 @@ describe 'basic context' do
   end
 
   it 'escaping' do
-    skip
     expectTemplate('\\{{foo}}')
       .withInput({ foo: 'food' })
       .toCompileTo('{{foo}}');
