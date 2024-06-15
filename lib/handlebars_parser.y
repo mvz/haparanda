@@ -6,6 +6,16 @@ start root
 
 # %%
 
+# Based on src/handlebars.yy in handlebars-parser. Some extra rules were added
+# because racc does not support certain things that jison supports.
+#
+# For example, the '*' to signify zero or more items. Rules that need this were
+# generaly split into 'none | items', plus a new rule defining items as 'item |
+# items item'.
+#
+# Similarly, an extra rule is needed to replace '?' signifyling zero or one of
+# an item.
+
 root
   : program
   ;
@@ -15,6 +25,7 @@ program
   | statements
   ;
 
+# Extra rule needed for racc to parse list of one or more statements
 statements
   : statement
   | statements statement { result = s(:statements, *val) }
@@ -38,6 +49,7 @@ content
     result.line = self.lexer.lineno
   };
 
+# Extra rule needed for racc to parse list of one or more pieces of content
 contents:
   : content
   | contents content
@@ -68,6 +80,7 @@ openInverseChain
   : OPEN_INVERSE_CHAIN helperName exprs hash blockParams CLOSE { result = s(:open, val[1], val[2], val[3], val[4], strip_flags(val[0], val[5])) }
   ;
 
+# Extra rule needed for racc to parse zero or one of inverseAndProgram
 optInverseAndProgram
   : none
   | inverseAndProgram
@@ -115,11 +128,13 @@ expr
   | sexpr
   ;
 
+# Extra rule needed to replace all cases of expr*
 exprs:
   : none { result = s(:exprs) }
   | exprList
   ;
 
+# Extra rule needed for racc to parse list of one or more exprs
 exprList
   : expr { result = s(:exprs, val[0]) }
   | exprList expr { result.push(val[1]) }
@@ -135,6 +150,7 @@ hash
   | hashSegments { result = result.line(self.lexer.lineno) }
   ;
 
+# Extra rule needed for racc to parse list of one or more hash segments
 hashSegments
   hashSegment { result = s(:hash, val[0]) }
   | hashSegments hashSegment { result.push(val[1]) }
@@ -149,6 +165,7 @@ blockParams
   | OPEN_BLOCK_PARAMS idSequence CLOSE_BLOCK_PARAMS { result = s(:block_params, *val[1]) }
   ;
 
+# Extra rule needed for racc to parse list of one or more IDs
 idSequence
   : ID { result = [id(val[0])] }
   | idSequence ID { result << id(val[1]) }
@@ -181,6 +198,7 @@ pathSegments
   | ID { result = [id(val[0])] }
   ;
 
+# Extra rule needed to define none, used in the added rules
 none
   : { result = nil }
   ;
