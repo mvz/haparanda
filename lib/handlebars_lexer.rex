@@ -70,7 +70,7 @@ rule
                                  }
 :RAW [^\x00]+?(?={{{{)           { [:CONTENT, text] }
 
-:COM [\s\S]*?"--"{RIGHT_STRIP}?"}}" { @state = nil; [:COMMENT, text] }
+:COM [\s\S]*?\-\-{RIGHT_STRIP}?}}   { @state = nil; [:COMMENT, text] }
 
 :MU \(                           { [:OPEN_SEXPR, text] }
 :MU \)                           { [:CLOSE_SEXPR, text] }

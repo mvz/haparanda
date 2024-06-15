@@ -126,7 +126,6 @@ describe 'basic context' do
 
     expectTemplate('    {{~! comment ~}}      blah').toCompileTo('blah');
 
-    skip
     expectTemplate('    {{~!-- long-comment --~}}      blah').toCompileTo(
       'blah'
     );
