@@ -68,13 +68,16 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_mustache(expr)
-    _, val, params, hash, = expr.shift(5)
+    sexp_type, val, params, hash, = expr.shift(5)
     params = "[#{print params}]"
     hash = print hash if hash
     args = [params, hash].compact.join(" ")
     val = print(val)
-    s(:print, "{{ #{val} #{args} }}\n")
+    directive = "DIRECTIVE " if sexp_type == :directive
+    s(:print, "{{ #{directive}#{val} #{args} }}\n")
   end
+
+  alias process_directive process_mustache
 
   def process_comment(expr)
     _, comment, = expr.shift(3)

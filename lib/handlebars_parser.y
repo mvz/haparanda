@@ -91,10 +91,7 @@ start root
     ;
 
   mustache
-    : OPEN expr exprs hash CLOSE {
-        result = s(:mustache, val[1], val[2], val[3], strip_flags(val[0], val[4]))
-          .line(self.lexer.lineno)
-      }
+    : OPEN expr exprs hash CLOSE { result = prepare_mustache(*val) }
     | OPEN_UNESCAPED expr exprs hash CLOSE_UNESCAPED { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), self.lexer.lineno) }
     ;
 
@@ -254,6 +251,12 @@ end
     end
     # TODO: Handle sexpr
     s(:path, data, *tail).line loc
+  end
+
+  def prepare_mustache(open, path, params, hash, close)
+    decorator = /\*/.match? open
+    type = decorator ? :directive : :mustache
+    s(type, path, params, hash, strip_flags(open, close)).line(self.lexer.lineno)
   end
 
   def prepare_partial_block(open, program, close)

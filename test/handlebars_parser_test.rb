@@ -514,10 +514,11 @@ describe HandlebarsParser do
         'DIRECTIVE BLOCK:\n  PATH:foo []\n  PROGRAM:\n'
       );
     end
+
     it 'should parse directives' do
-      skip
       equals(astFor('{{* foo}}'), '{{ DIRECTIVE PATH:foo [] }}\n');
     end
+
     it 'should fail if directives have inverse' do
       skip
       shouldThrow(
