@@ -233,7 +233,7 @@ def process_number(str)
 end
 
 def strip_flags(start, finish)
-  s(:strip, false, false)
+  s(:strip, start[2] == "~", finish[-3] == "~")
 end
 
 def strip_comment(comment)

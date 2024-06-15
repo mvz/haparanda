@@ -27,6 +27,22 @@ describe 'basic context' do
     def process_statements(expr)
       expr.shift
       statements = shift_all(expr)
+
+      statements.each_cons(2) do |prev, item|
+        if prev.sexp_type == :content && item.sexp_type != :content
+          strip = item.last
+          if strip[1]
+            prev[1] = prev[1].sub(/\s*$/, "")
+          end
+        end
+        if prev.sexp_type != :content && item.sexp_type == :content
+          strip = prev.last
+          if strip[2]
+            item[1] = item[1].sub(/^\s*/, "")
+          end
+        end
+      end
+
       results = statements.map { process(_1)[1] }
       s(:result, "#{results.join}")
     end
@@ -108,9 +124,9 @@ describe 'basic context' do
       .withMessage('comments are ignored')
       .toCompileTo('Goodbye\ncruel\nworld!');
 
-    skip
     expectTemplate('    {{~! comment ~}}      blah').toCompileTo('blah');
 
+    skip
     expectTemplate('    {{~!-- long-comment --~}}      blah').toCompileTo(
       'blah'
     );
