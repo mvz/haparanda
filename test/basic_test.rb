@@ -215,7 +215,6 @@ describe 'basic context' do
   end
 
   it 'escaping expressions' do
-    skip
     expectTemplate('{{{awesome}}}')
       .withInput({ awesome: "&'\\<>" })
       .withMessage("expressions with 3 handlebars aren't escaped")

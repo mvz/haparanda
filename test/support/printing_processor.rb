@@ -68,7 +68,7 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_mustache(expr)
-    sexp_type, val, params, hash, = expr.shift(5)
+    sexp_type, val, params, hash, _escaped, _strip = expr.shift(6)
     params = "[#{print params}]"
     hash = print hash if hash
     args = [params, hash].compact.join(" ")

@@ -271,9 +271,11 @@ def prepare_path(data, sexpr, parts, loc)
 end
 
 def prepare_mustache(open, path, params, hash, close)
-  decorator = /\*/.match? open
+  marker = open[2..-1][-1]
+  decorator = marker == "*"
+  escaped = !["{", "&"].include?(marker)
   type = decorator ? :directive : :mustache
-  s(type, path, params, hash, strip_flags(open, close)).line(self.lexer.lineno)
+  s(type, path, params, hash, escaped, strip_flags(open, close)).line(self.lexer.lineno)
 end
 
 def prepare_partial_block(open, program, close)

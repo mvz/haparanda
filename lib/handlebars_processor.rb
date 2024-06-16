@@ -40,9 +40,14 @@ class HandlebarsProcessor < SexpProcessor
   end
 
   def process_mustache(expr)
-    _, path, _params, _hash, = expr.shift(5)
+    _, path, _params, _hash, escaped, _strip = expr.shift(6)
     value = evaluate_path(path)
-    s(:result, value.to_s)
+    value = if escaped
+              escape(value.to_s)
+            else
+              value.to_s
+            end
+    s(:result, value)
   end
 
   def process_block(expr)
@@ -120,5 +125,21 @@ class HandlebarsProcessor < SexpProcessor
     result = []
     result << expr.shift while expr.any?
     result
+  end
+
+  ESCAPE = {
+    "&" => "&amp;",
+    "<" => "&lt;",
+    ">" => "&gt;",
+    '"' => "&quot;",
+    "'" => "&#x27;",
+    "`" => "&#x60;",
+    "=" => "&#x3D;"
+  }
+
+  def escape(str)
+    str.gsub(/[&<>"'`=]/) do |chr|
+      ESCAPE[chr]
+    end
   end
 end
