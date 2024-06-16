@@ -13,4 +13,4 @@ require_relative "support/template_tester"
 
 # Filter out test support code when showing failure location
 Minitest.backtrace_filter =
-  Minitest::BacktraceFilter.new(/lib\/minitest|internal:warning|test\/support/)
+  Minitest::BacktraceFilter.new(%r{lib/minitest|internal:warning|test/support})

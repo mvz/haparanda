@@ -6,11 +6,19 @@ require "test_helper"
 # mostly be identical to the content there, so a side-by-side diff should show
 # spec equivalence, and show any new specs that should be added.
 
+# rubocop:disable Style/StringLiterals
 describe 'basic context' do
-  def expectTemplate(template)
+  def expectTemplate(template) # rubocop:disable Naming/MethodName
     TemplateTester.new(template, self)
   end
 
+  # rubocop:disable Style/Semicolon
+  # rubocop:disable Style/QuotedSymbols
+  # rubocop:disable Style/TrailingCommaInHashLiteral
+  # rubocop:disable Style/RedundantReturn
+  # rubocop:disable Style/WordArray
+  # rubocop:disable Style/StringConcatenation
+  # rubocop:disable Layout/FirstHashElementIndentation
   it 'most basic' do
     expectTemplate('{{foo}}').withInput({ foo: 'foo' }).toCompileTo('foo');
   end
@@ -152,19 +160,21 @@ describe 'basic context' do
 
   it 'should handle undefined and null' do
     skip
+    # rubocop:disable Lint/UnderscorePrefixedVariableName
     expectTemplate('{{awesome undefined null}}')
       .withInput({
-        awesome: lambda(_undefined, _null, options) {
+        awesome: lambda { |_undefined, _null, options|
           return (
-            (_undefined === undefined) +
+            (_undefined == undefined) +
             ' ' +
-            (_null === null) +
+            (_null == null) +
             ' ' +
             options.class
           );
         },
       })
       .toCompileTo('true true object');
+    # rubocop:enable Lint/UnderscorePrefixedVariableName
 
     expectTemplate('{{undefined}}')
       .withInput({
@@ -274,7 +284,7 @@ describe 'basic context' do
     skip
     expectTemplate('{{awesome frank}}')
       .withInput({
-        awesome: ->(context) {
+        awesome: lambda { |context|
           return context;
         },
         frank: 'Frank',
@@ -288,7 +298,7 @@ describe 'basic context' do
     expectTemplate('{{bar.awesome frank}}')
       .withInput({
         bar: {
-          awesome: ->(context) {
+          awesome: lambda { |context|
             return context;
           },
         },
@@ -302,7 +312,7 @@ describe 'basic context' do
     skip
     expectTemplate('{{#with frank}}{{../awesome .}}{{/with}}')
       .withInput({
-        awesome: ->(context) {
+        awesome: lambda { |context|
           return context;
         },
         frank: 'Frank',
@@ -315,7 +325,7 @@ describe 'basic context' do
     skip
     expectTemplate('{{#awesome 1}}inner {{.}}{{/awesome}}')
       .withInput({
-        awesome: ->(context, options) {
+        awesome: lambda { |context, options|
           return options.fn(context);
         },
       })
@@ -330,7 +340,7 @@ describe 'basic context' do
     )
       .withInput({
         value: true,
-        awesome: ->(context, options) {
+        awesome: lambda { |context, options|
           return options.fn(context);
         },
       })
@@ -342,7 +352,7 @@ describe 'basic context' do
     skip
     expectTemplate('{{#awesome}}inner{{/awesome}}')
       .withInput({
-        awesome: ->(options) {
+        awesome: lambda { |options|
           return options.fn(this);
         },
       })
@@ -506,7 +516,7 @@ describe 'basic context' do
   it 'this keyword in helpers' do
     skip
     var helpers = {
-      foo: ->(value) {
+      foo: lambda { |value|
         return 'bar ' + value;
       },
     };
@@ -535,7 +545,7 @@ describe 'basic context' do
 
     expectTemplate('{{foo [this]}}')
       .withInput({
-        foo: ->(value) {
+        foo: lambda { |value|
           return value;
         },
         this: 'bar',
@@ -544,7 +554,7 @@ describe 'basic context' do
 
     expectTemplate('{{foo text/[this]}}')
       .withInput({
-        foo: ->(value) {
+        foo: lambda { |value|
           return value;
         },
         text: { this: 'bar' },
@@ -577,7 +587,7 @@ describe 'basic context' do
 
     expectTemplate('{{12.34 1}}')
       .withInput({
-        12.34 => ->(arg) {
+        12.34 => lambda { |arg|
           return 'bar' + arg;
         },
       })
@@ -590,20 +600,28 @@ describe 'basic context' do
 
     expectTemplate('{{true}}').withInput({ '': 'foo' }).toCompileTo('');
 
-    expectTemplate('{{false}}').withInput({ false: 'foo' }).toCompileTo('foo');
+    expectTemplate('{{false}}').withInput({ false => 'foo' }).toCompileTo('foo');
   end
 
   it 'should handle literals in subexpression' do
     skip
     expectTemplate('{{foo (false)}}')
       .withInput({
-        false: lambda {
+        false => lambda {
           return 'bar';
         },
       })
-      .withHelper('foo', ->(arg) {
+      .withHelper('foo', lambda { |arg|
         return arg;
       })
       .toCompileTo('bar');
   end
+  # rubocop:enable Layout/FirstHashElementIndentation
+  # rubocop:enable Style/StringConcatenation
+  # rubocop:enable Style/WordArray
+  # rubocop:enable Style/RedundantReturn
+  # rubocop:enable Style/TrailingCommaInHashLiteral
+  # rubocop:enable Style/QuotedSymbols
+  # rubocop:enable Style/Semicolon
 end
+# rubocop:enable Style/StringLiterals

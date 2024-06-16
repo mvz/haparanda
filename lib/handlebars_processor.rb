@@ -12,13 +12,13 @@ class HandlebarsProcessor < SexpProcessor
       data = @data
       keys.each do |key|
         data = case data
-        when Hash
-          data[key]
-        when nil
-          nil
-        else
-          data.send key
-        end
+               when Hash
+                 data[key]
+               when nil
+                 nil
+               else
+                 data.send key
+               end
       end
 
       data
@@ -51,7 +51,7 @@ class HandlebarsProcessor < SexpProcessor
   end
 
   def process_block(expr)
-    _, name, params, hash, program, inverse_chain, = expr.shift(8)
+    _, name, params, _hash, program, _inverse_chain, = expr.shift(8)
     if params.sexp_body.any?
       values = params.sexp_body.map { evaluate_path _1 }
       helper_name = name[2][1].to_sym
@@ -82,26 +82,22 @@ class HandlebarsProcessor < SexpProcessor
     statements.each_cons(2) do |prev, item|
       if prev.sexp_type == :content && item.sexp_type != :content
         strip = item.last
-        if strip[1]
-          prev[1] = prev[1].sub(/\s*$/, "")
-        end
+        prev[1] = prev[1].sub(/\s*$/, "") if strip[1]
       end
       if prev.sexp_type != :content && item.sexp_type == :content
         strip = prev.last
-        if strip[2]
-          item[1] = item[1].sub(/^\s*/, "")
-        end
+        item[1] = item[1].sub(/^\s*/, "") if strip[2]
       end
     end
 
     results = statements.map { process(_1)[1] }
-    s(:result, "#{results.join}")
+    s(:result, results.join)
   end
 
   def process_program(expr)
-    _, params, statements, = expr.shift(3)
+    _, _params, statements, = expr.shift(3)
     statements = process(statements)[1] if statements
-    s(:result, "#{statements}")
+    s(:result, statements.to_s)
   end
 
   def process_comment(expr)
@@ -110,9 +106,9 @@ class HandlebarsProcessor < SexpProcessor
   end
 
   def process_path(expr)
-    _, data = expr.shift(2)
+    _, _data = expr.shift(2)
     segments = shift_all(expr)
-    segments = segments.each_slice(2).map { |elem, sep| elem[1].to_sym }
+    segments = segments.each_slice(2).map { |elem, _sep| elem[1].to_sym }
     s(:segments, segments)
   end
 
@@ -135,7 +131,7 @@ class HandlebarsProcessor < SexpProcessor
     "'" => "&#x27;",
     "`" => "&#x60;",
     "=" => "&#x3D;"
-  }
+  }.freeze
 
   def escape(str)
     str.gsub(/[&<>"'`=]/) do |chr|
