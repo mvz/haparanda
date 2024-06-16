@@ -8,9 +8,28 @@ require "test_helper"
 
 describe 'basic context' do
   class HandlebarsProcessor < SexpProcessor
+    class Input
+      def initialize(data)
+        @data = data
+      end
+
+      def [](key)
+        case @data
+        when Hash
+          @data[key]
+        else
+          @data.send key
+        end
+      end
+
+      def to_s
+        @data.to_s
+      end
+    end
+
     def initialize(input)
       super()
-      @input = input
+      @input = Input.new(input)
     end
 
     def apply(expr)
@@ -19,9 +38,14 @@ describe 'basic context' do
     end
 
     def process_mustache(expr)
-      _, val, _params, _hash, = expr.shift(5)
-      key = val[2][1].to_sym
-      s(:result, @input[key].to_s)
+      _, path, _params, _hash, = expr.shift(5)
+      value = if path[2].nil?
+                @input
+              else
+                key = path[2][1].to_sym
+                @input[key]
+              end
+      s(:result, value.to_s)
     end
 
     def process_block(expr)
@@ -116,7 +140,6 @@ describe 'basic context' do
   end
 
   it 'compiling with a string context' do
-    skip
     expectTemplate('{{.}}{{length}}').withInput('bye').toCompileTo('bye3');
   end
 
