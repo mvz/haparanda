@@ -184,14 +184,12 @@ describe 'basic context' do
   end
 
   it 'newlines' do
-    skip
     expectTemplate("Alan's\nTest").toCompileTo("Alan's\nTest");
 
     expectTemplate("Alan's\rTest").toCompileTo("Alan's\rTest");
   end
 
   it 'escaping text' do
-    skip
     expectTemplate("Awesome's")
       .withMessage(
         "text is escaped so that it doesn't get caught on single quotes"
@@ -383,7 +381,6 @@ describe 'basic context' do
   end
 
   it 'paths with hyphens' do
-    skip
     expectTemplate('{{foo-bar}}')
       .withInput({ 'foo-bar': 'baz' })
       .withMessage('Paths can contain hyphens (-)')
@@ -401,7 +398,6 @@ describe 'basic context' do
   end
 
   it 'nested paths' do
-    skip
     expectTemplate('Goodbye {{alan/expression}} world!')
       .withInput({ alan: { expression: 'beautiful' } })
       .withMessage('Nested paths access nested objects')
@@ -417,7 +413,6 @@ describe 'basic context' do
   end
 
   it 'nested paths with empty string value' do
-    skip
     expectTemplate('Goodbye {{alan/expression}} world!')
       .withInput({ alan: { expression: '' } })
       .withMessage('Nested paths access nested objects with empty string')
@@ -425,7 +420,6 @@ describe 'basic context' do
   end
 
   it 'literal paths' do
-    skip
     expectTemplate('Goodbye {{[@alan]/expression}} world!')
       .withInput({ '@alan': { expression: 'beautiful' } })
       .withMessage('Literal paths can be used')
@@ -473,7 +467,7 @@ describe 'basic context' do
   end
 
   it 'complex but empty paths' do
-    skip
+    null = nil
     expectTemplate('{{person/name}}')
       .withInput({ person: { name: null } })
       .toCompileTo('');
