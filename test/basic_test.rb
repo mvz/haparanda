@@ -125,7 +125,6 @@ describe 'basic context' do
   end
 
   it 'false' do
-    skip
     expectTemplate('val1: {{val1}}, val2: {{val2}}')
       .withInput({
         val1: false,

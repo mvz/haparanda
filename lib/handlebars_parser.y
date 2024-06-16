@@ -105,7 +105,7 @@ closeBlock
 
 mustache
   : OPEN expr exprs hash CLOSE { result = prepare_mustache(*val) }
-  | OPEN_UNESCAPED expr exprs hash CLOSE_UNESCAPED { yy.prepareMustache($2, $3, $4, $1, yy.stripFlags($1, $5), self.lexer.lineno) }
+  | OPEN_UNESCAPED expr exprs hash CLOSE_UNESCAPED { result = prepare_mustache(*val) }
   ;
 
 partial
