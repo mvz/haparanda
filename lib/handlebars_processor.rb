@@ -36,22 +36,32 @@ class HandlebarsProcessor < SexpProcessor
 
   def process_mustache(expr)
     _, path, _params, _hash, = expr.shift(5)
-    value = if path[2].nil?
-              @input
-            else
-              key = path[2][1].to_sym
-              @input[key]
-            end
+    value = evaluate_path(path)
     s(:result, value.to_s)
   end
 
   def process_block(expr)
     _, name, params, hash, program, inverse_chain, = expr.shift(8)
-    key = name[2][1].to_sym
-    if @input[key]
-      process(program)
+    if params.sexp_body.any?
+      values = params.sexp_body.map { evaluate_path _1 }
+      helper_name = name[2][1].to_sym
+      case helper_name
+      when :unless
+        if values[0]
+          s(:result, "")
+        else
+          process(program)
+        end
+      else
+        raise NotImplementedError
+      end
     else
-      s(:result, "")
+      value = evaluate_path(name)
+      if value
+        process(program)
+      else
+        s(:result, "")
+      end
     end
   end
 
@@ -87,6 +97,15 @@ class HandlebarsProcessor < SexpProcessor
   def process_comment(expr)
     _, _comment, = expr.shift(3)
     s(:result, "")
+  end
+
+  def evaluate_path(path)
+    if path[2].nil?
+      @input
+    else
+      key = path[2][1].to_sym
+      @input[key]
+    end
   end
 
   def shift_all(expr)

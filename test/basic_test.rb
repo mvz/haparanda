@@ -57,7 +57,6 @@ describe 'basic context' do
       .withInput(undefined)
       .toCompileTo('Goodbye\n\n!');
 
-    skip
     expectTemplate('{{#unless foo}}Goodbye{{../test}}{{test2}}{{/unless}}')
       .withInput(undefined)
       .toCompileTo('Goodbye');
