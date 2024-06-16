@@ -24,6 +24,16 @@ describe 'basic context' do
       s(:result, @input[key].to_s)
     end
 
+    def process_block(expr)
+      _, name, params, hash, program, inverse_chain, = expr.shift(8)
+      key = name[2][1].to_sym
+      if @input[key]
+        process(program)
+      else
+        s(:result, "")
+      end
+    end
+
     def process_statements(expr)
       expr.shift
       statements = shift_all(expr)
@@ -45,6 +55,12 @@ describe 'basic context' do
 
       results = statements.map { process(_1)[1] }
       s(:result, "#{results.join}")
+    end
+
+    def process_program(expr)
+      _, params, statements, = expr.shift(3)
+      statements = process(statements)[1] if statements
+      s(:result, "#{statements}")
     end
 
     def process_comment(expr)
@@ -144,8 +160,7 @@ describe 'basic context' do
   end
 
   it 'boolean' do
-    skip
-    var string = '{{#goodbye}}GOODBYE {{/goodbye}}cruel {{world}}!';
+    string = '{{#goodbye}}GOODBYE {{/goodbye}}cruel {{world}}!';
     expectTemplate(string)
       .withInput({
         goodbye: true,
