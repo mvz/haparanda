@@ -110,7 +110,6 @@ describe 'basic context' do
   end
 
   it 'zeros' do
-    skip
     expectTemplate('num1: {{num1}}, num2: {{num2}}')
       .withInput({
         num1: 42,

@@ -8,15 +8,20 @@ class HandlebarsProcessor < SexpProcessor
       @data = data
     end
 
-    def [](key)
-      case @data
-      when Hash
-        @data[key]
-      when nil
-        nil
-      else
-        @data.send key
+    def dig(*keys)
+      data = @data
+      keys.each do |key|
+        data = case data
+        when Hash
+          data[key]
+        when nil
+          nil
+        else
+          data.send key
+        end
       end
+
+      data
     end
 
     def to_s
@@ -99,13 +104,16 @@ class HandlebarsProcessor < SexpProcessor
     s(:result, "")
   end
 
+  def process_path(expr)
+    _, data = expr.shift(2)
+    segments = shift_all(expr)
+    segments = segments.each_slice(2).map { |elem, sep| elem[1].to_sym }
+    s(:segments, segments)
+  end
+
   def evaluate_path(path)
-    if path[2].nil?
-      @input
-    else
-      key = path[2][1].to_sym
-      @input[key]
-    end
+    elements = process(path)
+    @input.dig(*elements[1])
   end
 
   def shift_all(expr)
