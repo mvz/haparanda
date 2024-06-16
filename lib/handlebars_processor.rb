@@ -12,6 +12,8 @@ class HandlebarsProcessor < SexpProcessor
       case @data
       when Hash
         @data[key]
+      when nil
+        nil
       else
         @data.send key
       end

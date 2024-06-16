@@ -52,11 +52,12 @@ describe 'basic context' do
   end
 
   it 'compiling with an undefined context' do
-    skip
+    undefined = nil
     expectTemplate('Goodbye\n{{cruel}}\n{{world.bar}}!')
       .withInput(undefined)
       .toCompileTo('Goodbye\n\n!');
 
+    skip
     expectTemplate('{{#unless foo}}Goodbye{{../test}}{{test2}}{{/unless}}')
       .withInput(undefined)
       .toCompileTo('Goodbye');
