@@ -2,8 +2,10 @@
 
 require "minitest/autorun"
 require "minitest/focus"
+
 require "handlebars_lexer"
 require "handlebars_parser"
+require "handlebars_processor"
 
 require_relative "support/printing_processor"
 require_relative "support/ast_testing"
