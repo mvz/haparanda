@@ -19,8 +19,7 @@ describe 'builtin helpers' do
   # rubocop:disable Style/WordArray
   describe '#if' do
     it 'if' do
-      skip
-      var string = '{{#if goodbye}}GOODBYE {{/if}}cruel {{world}}!';
+      string = '{{#if goodbye}}GOODBYE {{/if}}cruel {{world}}!';
 
       expectTemplate(string)
         .withInput({
@@ -61,6 +60,7 @@ describe 'builtin helpers' do
         .withMessage('if with non-empty array shows the contents')
         .toCompileTo('GOODBYE cruel world!');
 
+      skip "we only consider falsy Ruby values as false"
       expectTemplate(string)
         .withInput({
           goodbye: [],

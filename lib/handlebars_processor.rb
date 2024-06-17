@@ -62,6 +62,12 @@ class HandlebarsProcessor < SexpProcessor
         else
           process(program)
         end
+      when :if
+        if values[0]
+          process(program)
+        else
+          s(:result, "")
+        end
       else
         raise NotImplementedError
       end
