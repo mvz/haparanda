@@ -6,6 +6,10 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+Lint/LiteralAsCondition:
+  Exclude:
+    - 'test/compatibility/builtins_test.rb'
+
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
 Metrics/AbcSize:
   Max: 26
@@ -17,6 +21,12 @@ Metrics/CyclomaticComplexity:
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
   Max: 22
+
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: AllowOnConstant, AllowOnSelfClass.
+Style/CaseEquality:
+  Exclude:
+    - 'test/compatibility/builtins_test.rb'
 
 # Configuration parameters: AllowedConstants.
 Style/Documentation:
