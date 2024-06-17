@@ -8,10 +8,6 @@ require "test_helper"
 
 # rubocop:disable Style/StringLiterals
 describe 'basic context' do
-  def expectTemplate(template) # rubocop:disable Naming/MethodName
-    TemplateTester.new(template, self)
-  end
-
   # rubocop:disable Style/Semicolon
   # rubocop:disable Style/QuotedSymbols
   # rubocop:disable Style/TrailingCommaInHashLiteral

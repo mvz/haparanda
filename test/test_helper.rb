@@ -7,9 +7,8 @@ require "handlebars_lexer"
 require "handlebars_parser"
 require "handlebars_processor"
 
+require_relative "support/compatibility_test_helpers"
 require_relative "support/printing_processor"
-require_relative "support/ast_testing"
-require_relative "support/template_tester"
 
 # Filter out test support code when showing failure location
 Minitest.backtrace_filter =
