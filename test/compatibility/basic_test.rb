@@ -155,7 +155,7 @@ describe 'basic context' do
   end
 
   it 'should handle undefined and null' do
-    skip
+    skip "functions are not supported"
     # rubocop:disable Lint/UnderscorePrefixedVariableName
     expectTemplate('{{awesome undefined null}}')
       .withInput({
@@ -243,7 +243,7 @@ describe 'basic context' do
   end
 
   it "functions returning safestrings shouldn't be escaped" do
-    skip
+    skip "functions are not supported"
     expectTemplate('{{awesome}}')
       .withInput({
         awesome: lambda {
@@ -255,7 +255,7 @@ describe 'basic context' do
   end
 
   it 'functions' do
-    skip
+    skip "functions are not supported"
     expectTemplate('{{awesome}}')
       .withInput({
         awesome: lambda {
@@ -277,7 +277,7 @@ describe 'basic context' do
   end
 
   it 'functions with context argument' do
-    skip
+    skip "functions are not supported"
     expectTemplate('{{awesome frank}}')
       .withInput({
         awesome: lambda { |context|
@@ -290,7 +290,7 @@ describe 'basic context' do
   end
 
   it 'pathed functions with context argument' do
-    skip
+    skip "functions are not supported"
     expectTemplate('{{bar.awesome frank}}')
       .withInput({
         bar: {
@@ -305,7 +305,7 @@ describe 'basic context' do
   end
 
   it 'depthed functions with context argument' do
-    skip
+    skip "functions are not supported"
     expectTemplate('{{#with frank}}{{../awesome .}}{{/with}}')
       .withInput({
         awesome: lambda { |context|
@@ -318,7 +318,7 @@ describe 'basic context' do
   end
 
   it 'block functions with context argument' do
-    skip
+    skip "functions are not supported"
     expectTemplate('{{#awesome 1}}inner {{.}}{{/awesome}}')
       .withInput({
         awesome: lambda { |context, options|
@@ -330,7 +330,7 @@ describe 'basic context' do
   end
 
   it 'depthed block functions with context argument' do
-    skip
+    skip "functions are not supported"
     expectTemplate(
       '{{#with value}}{{#../awesome 1}}inner {{.}}{{/../awesome}}{{/with}}'
     )
@@ -345,7 +345,7 @@ describe 'basic context' do
   end
 
   it 'block functions without context argument' do
-    skip
+    skip "functions are not supported"
     expectTemplate('{{#awesome}}inner{{/awesome}}')
       .withInput({
         awesome: lambda { |options|
@@ -357,7 +357,7 @@ describe 'basic context' do
   end
 
   it 'pathed block functions without context argument' do
-    skip
+    skip "functions are not supported"
     expectTemplate('{{#foo.awesome}}inner{{/foo.awesome}}')
       .withInput({
         foo: {
@@ -371,7 +371,7 @@ describe 'basic context' do
   end
 
   it 'depthed block functions without context argument' do
-    skip
+    skip "functions are not supported"
     expectTemplate(
       '{{#with value}}{{#../awesome}}inner{{/../awesome}}{{/with}}'
     )
@@ -600,7 +600,7 @@ describe 'basic context' do
   end
 
   it 'should handle literals in subexpression' do
-    skip
+    skip "functions are not supported"
     expectTemplate('{{foo (false)}}')
       .withInput({
         false => lambda {
