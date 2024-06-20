@@ -11,6 +11,8 @@ class HandlebarsProcessor < SexpProcessor
     def dig(*keys)
       data = @data
       keys.each do |key|
+        next if %i[.. . this].include? key
+
         data = case data
                when Hash
                  data[key]
@@ -114,7 +116,6 @@ class HandlebarsProcessor < SexpProcessor
   def process_path(expr)
     _, _data = expr.shift(2)
     segments = shift_all(expr)
-    segments.shift(2) while ["..", ".", "this"].include? segments.dig(0, 1)
     segments = segments.each_slice(2).map { |elem, _sep| elem[1].to_sym }
     s(:segments, segments)
   end
