@@ -557,14 +557,13 @@ describe 'basic context' do
   end
 
   it 'pass string literals' do
-    skip
     expectTemplate('{{"foo"}}').toCompileTo('');
 
-    expectTemplate('{{"foo"}}').withInput({ foo: 'bar' }).toCompileTo('bar');
+    expectTemplate('{{"foo"}}').withInput({ "foo" => 'bar' }).toCompileTo('bar');
 
     expectTemplate('{{#"foo"}}{{.}}{{/"foo"}}')
       .withInput({
-        foo: ['bar', 'baz'],
+        "foo" => ['bar', 'baz'],
       })
       .toCompileTo('barbaz');
   end
@@ -590,7 +589,6 @@ describe 'basic context' do
   end
 
   it 'pass boolean literals' do
-    skip
     expectTemplate('{{true}}').toCompileTo('');
 
     expectTemplate('{{true}}').withInput({ '': 'foo' }).toCompileTo('');
