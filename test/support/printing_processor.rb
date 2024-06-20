@@ -171,6 +171,7 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
   def path_segments(expr)
     segments = shift_all(expr)
+    segments.shift(2) while ["..", ".", "this"].include? segments.dig(0, 1)
     segments.map do |seg|
       case seg.sexp_type
       when :sub_expression

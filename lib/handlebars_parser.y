@@ -250,11 +250,8 @@ def id(val)
 end
 
 def prepare_path(data, sexpr, parts, loc)
-  # TODO: Keep track of depth
   tail = []
-  while parts.any?
-    part, sep = parts.shift(2)
-
+  parts.each_slice(2) do |part, sep|
     if ["..", ".", "this"].include? part[1]
       unless tail.empty?
         path = tail.map { _1[1] }.join + part[1]
@@ -267,7 +264,7 @@ def prepare_path(data, sexpr, parts, loc)
     tail << sep if sep
   end
   # TODO: Handle sexpr
-  s(:path, data, *tail).line loc
+  s(:path, data, *parts).line loc
 end
 
 def prepare_mustache(open, path, params, hash, close)
