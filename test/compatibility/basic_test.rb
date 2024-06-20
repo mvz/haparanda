@@ -480,7 +480,6 @@ describe 'basic context' do
   end
 
   it 'this keyword in paths' do
-    skip
     expectTemplate('{{#goodbyes}}{{this}}{{/goodbyes}}')
       .withInput({ goodbyes: ['goodbye', 'Goodbye', 'GOODBYE'] })
       .withMessage('This keyword in paths evaluates to current context')

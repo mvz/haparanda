@@ -5,11 +5,11 @@ require "sexp_processor"
 class HandlebarsProcessor < SexpProcessor
   class Input
     def initialize(data)
-      @data = data
+      @stack = [data]
     end
 
     def dig(*keys)
-      data = @data
+      data = @stack.last
       keys.each do |key|
         next if %i[.. . this].include? key
 
@@ -26,8 +26,23 @@ class HandlebarsProcessor < SexpProcessor
       data
     end
 
+    def push(data)
+      @stack.push data
+    end
+
+    def pop(data)
+      @stack.pop data
+    end
+
+    def with_new_context(data, &block)
+      @stack.push data
+      result = block.call
+      @stack.pop
+      result
+    end
+
     def to_s
-      @data.to_s
+      @stack.last.to_s
     end
   end
 
@@ -75,11 +90,7 @@ class HandlebarsProcessor < SexpProcessor
       end
     else
       value = evaluate_path(name)
-      if value
-        process(program)
-      else
-        s(:result, "")
-      end
+      evaluate_program_with_value(program, value)
     end
   end
 
@@ -118,6 +129,26 @@ class HandlebarsProcessor < SexpProcessor
     segments = shift_all(expr)
     segments = segments.each_slice(2).map { |elem, _sep| elem[1].to_sym }
     s(:segments, segments)
+  end
+
+  def evaluate_program_with_value(program, value)
+    return s(:result, "") unless value
+
+    case value
+    when Array
+      parts = value.map do |elem|
+        @input.with_new_context(elem) do
+          # FIXME: Using #deep_clone is not great for performance! Switch to
+          # non-consuming processing.
+          process(program.deep_clone)
+        end
+      end
+      s(:result, parts.map { _1[1] }.join)
+    else
+      @input.with_new_context(value) do
+        process(program)
+      end
+    end
   end
 
   def evaluate_path(path)
