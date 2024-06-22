@@ -14,13 +14,17 @@ Lint/LiteralAsCondition:
 Metrics/AbcSize:
   Max: 26
 
+# Configuration parameters: CountComments, CountAsOne.
+Metrics/ClassLength:
+  Max: 105
+
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/CyclomaticComplexity:
   Max: 8
 
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
-  Max: 22
+  Max: 14
 
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowOnConstant, AllowOnSelfClass.
