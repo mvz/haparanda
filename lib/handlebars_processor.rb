@@ -49,6 +49,10 @@ class HandlebarsProcessor < SexpProcessor
   def initialize(input)
     super()
     @input = Input.new(input)
+    @helpers = {
+      unless: ->(value, block) { block.call unless value },
+      if: ->(value, block) { block.call if value }
+    }
   end
 
   def apply(expr)
@@ -72,22 +76,8 @@ class HandlebarsProcessor < SexpProcessor
     if params.sexp_body.any?
       values = params.sexp_body.map { evaluate_path _1 }
       helper_name = name[2][1].to_sym
-      case helper_name
-      when :unless
-        if values[0]
-          s(:result, "")
-        else
-          process(program)
-        end
-      when :if
-        if values[0]
-          process(program)
-        else
-          s(:result, "")
-        end
-      else
-        raise NotImplementedError
-      end
+      value = @helpers.fetch(helper_name).call(*values, -> { apply(program) })
+      s(:result, value.to_s)
     else
       value = evaluate_path(name)
       evaluate_program_with_value(program, value)
