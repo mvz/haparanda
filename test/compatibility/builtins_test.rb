@@ -156,7 +156,6 @@ describe 'builtin helpers' do
 
   describe '#with' do
     it 'with' do
-      skip
       expectTemplate('{{#with person}}{{first}} {{last}}{{/with}}')
         .withInput({
           person: {

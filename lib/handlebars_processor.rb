@@ -50,8 +50,9 @@ class HandlebarsProcessor < SexpProcessor
     super()
     @input = Input.new(input)
     @helpers = {
+      if: ->(value, block) { block.call if value },
       unless: ->(value, block) { block.call unless value },
-      if: ->(value, block) { block.call if value }
+      with: ->(value, block) { @input.with_new_context(value, &block) }
     }
   end
 
