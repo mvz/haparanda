@@ -50,9 +50,15 @@ class HandlebarsProcessor < SexpProcessor
     super()
     @input = Input.new(input)
     @helpers = {
-      if: ->(value, block) { block.call if value },
-      unless: ->(value, block) { block.call unless value },
-      with: ->(value, block) { @input.with_new_context(value, &block) }
+      if: ->(value, block, _else_block) { block.call if value },
+      unless: ->(value, block, _else_block) { block.call unless value },
+      with: lambda do |value, block, else_block|
+        if value
+          @input.with_new_context(value, &block)
+        else
+          @input.with_new_context(value, &else_block)
+        end
+      end
     }
   end
 
@@ -73,11 +79,14 @@ class HandlebarsProcessor < SexpProcessor
   end
 
   def process_block(expr)
-    _, name, params, _hash, program, _inverse_chain, = expr.shift(8)
+    _, name, params, _hash, program, inverse_chain, = expr.shift(8)
+    else_program = inverse_chain.sexp_body[1] if inverse_chain
     if params.sexp_body.any?
       values = params.sexp_body.map { evaluate_path _1 }
       helper_name = name[2][1].to_sym
-      value = @helpers.fetch(helper_name).call(*values, -> { apply(program) })
+      value = @helpers.fetch(helper_name).call(*values,
+                                               -> { apply(program) },
+                                               -> { apply(else_program) })
       s(:result, value.to_s)
     else
       value = evaluate_path(name)

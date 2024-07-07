@@ -181,7 +181,6 @@ describe 'builtin helpers' do
     end
 
     it 'with with else' do
-      skip
       expectTemplate(
         '{{#with person}}Person is present{{else}}Person is not present{{/with}}'
       ).toCompileTo('Person is not present');
