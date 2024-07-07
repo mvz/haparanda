@@ -569,7 +569,6 @@ describe 'basic context' do
   end
 
   it 'pass number literals' do
-    skip
     expectTemplate('{{12}}').toCompileTo('');
 
     expectTemplate('{{12}}').withInput({ 12 => 'bar' }).toCompileTo('bar');

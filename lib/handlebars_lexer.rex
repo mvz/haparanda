@@ -108,7 +108,7 @@ rule
 :MU false(?={LIT_LOOKAHEAD})     { [:BOOLEAN, text] }
 :MU undefined(?={LIT_LOOKAHEAD}) { [:UNDEFINED, text] }
 :MU null(?={LIT_LOOKAHEAD})      { [:NULL, text] }
-:MU \-?[0-9]+(?=\.[0-9]+)?(?={LIT_LOOKAHEAD}) { [:NUMBER, text] }
+:MU \-?[0-9]+(?:\.[0-9]+)?(?={LIT_LOOKAHEAD}) { [:NUMBER, text] }
 :MU as\s+\|                      { [:OPEN_BLOCK_PARAMS, text] }
 :MU \|                           { [:CLOSE_BLOCK_PARAMS, text] }
 
