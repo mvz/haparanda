@@ -12,6 +12,10 @@ AllCops:
   NewCops: enable
   TargetRubyVersion: 3.0
 
+Layout/FirstHashElementIndentation:
+  Exclude:
+    - 'test/compatibility/*'
+
 # Test describe blocks can be any size
 Metrics/BlockLength:
   Exclude:
@@ -21,6 +25,28 @@ Metrics/BlockLength:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
+Style/DoubleNegation:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/RedundantReturn:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/Semicolon:
+  Exclude:
+    - 'test/compatibility/*'
+
 # Do not commit to use of interpolation
 Style/StringLiterals:
   EnforcedStyle: double_quotes
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/TrailingCommaInArrayLiteral:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/TrailingCommaInHashLiteral:
+  Exclude:
+    - 'test/compatibility/*'
