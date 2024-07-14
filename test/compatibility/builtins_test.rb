@@ -304,7 +304,6 @@ describe 'builtin helpers' do
     end
 
     it 'each with @index' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}{{@index}}. {{text}}! {{/each}}cruel {{world}}!'
       )

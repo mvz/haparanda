@@ -67,7 +67,10 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
         break unless value
 
         value = value.values if value.is_a? Hash
-        value.map { |item| @input.with_new_context(item, &block) }.join
+        value.each_with_index.map do |item, index|
+          @input.set_data(:index, index)
+          @input.with_new_context(item, &block)
+        end.join
       end
     }
   end
