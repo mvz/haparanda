@@ -427,21 +427,21 @@ describe 'parser' do
         astFor('{{foo/../bar}}');
       },
       ParseError,
-      /Invalid path: foo\/\.\. - 1:2/
+      /Invalid path: foo\/\.\. - 1/
     );
     shouldThrow(
       lambda {
         astFor('{{foo/./bar}}');
       },
       ParseError,
-      /Invalid path: foo\/\. - 1:2/
+      /Invalid path: foo\/\. - 1/
     );
     shouldThrow(
       lambda {
         astFor('{{foo/this/bar}}');
       },
       ParseError,
-      /Invalid path: foo\/this - 1:2/
+      /Invalid path: foo\/this - 1/
     );
   end
   # rubocop:enable Style/RegexpLiteral

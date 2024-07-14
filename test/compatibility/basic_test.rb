@@ -494,12 +494,12 @@ describe 'basic context' do
   end
 
   it 'this keyword nested inside path' do
-    skip
     expectTemplate('{{#hellos}}{{text/this/foo}}{{/hellos}}').toThrow(
-      Error,
-      'Invalid path: text/this - 1:13'
+      Racc::ParseError,
+      'Invalid path: text/this - 1'
     );
 
+    skip
     expectTemplate('{{[this]}}').withInput({ this: 'bar' }).toCompileTo('bar');
 
     expectTemplate('{{text/[this]}}')

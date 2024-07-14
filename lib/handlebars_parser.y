@@ -255,7 +255,8 @@ def prepare_path(data, sexpr, parts, loc)
     if ["..", ".", "this"].include? part[1]
       unless tail.empty?
         path = tail.map { _1[1] }.join + part[1]
-        raise ParseError, "Invalid path: #{path} - #{loc}:2"
+        # TODO: keep track of the position in the line as well
+        raise ParseError, "Invalid path: #{path} - #{loc}"
       end
       next
     end

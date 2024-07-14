@@ -4,7 +4,7 @@ require "handlebars_parser"
 
 class TemplateTester
   def initialize(str, spec)
-    @template = HandlebarsParser.new.parse(str)
+    @str = str
     @spec = spec
     @input = {}
   end
@@ -20,8 +20,13 @@ class TemplateTester
   end
 
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
+    template = HandlebarsParser.new.parse(@str)
     processor = HandlebarsProcessor.new(@input)
-    actual = processor.apply(@template)
+    actual = processor.apply(template)
     @spec._(actual).must_equal expected, @message
+  end
+
+  def toThrow(error, message) # rubocop:disable Naming/MethodName
+    @spec.shouldThrow(-> { toCompileTo("") }, error, message)
   end
 end
