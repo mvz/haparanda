@@ -215,8 +215,7 @@ describe 'builtin helpers' do
     end
 
     it 'each' do
-      skip
-      var string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!';
+      string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!';
 
       expectTemplate(string)
         .withInput({

@@ -2,7 +2,7 @@
 
 require "sexp_processor"
 
-class HandlebarsProcessor < SexpProcessor
+class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   class Input
     def initialize(data)
       @stack = [data]
@@ -58,12 +58,17 @@ class HandlebarsProcessor < SexpProcessor
         else
           @input.with_new_context(value, &else_block)
         end
+      end,
+      each: lambda do |value, block, _else_block|
+        value.map { |item| @input.with_new_context(item, &block) }.join
       end
     }
   end
 
   def apply(expr)
-    result = process(expr)
+    # FIXME: Using #deep_clone is not great for performance! Switch to
+    # non-consuming processing.
+    result = process(expr.deep_clone)
     result[1]
   end
 
@@ -138,12 +143,10 @@ class HandlebarsProcessor < SexpProcessor
     when Array
       parts = value.map do |elem|
         @input.with_new_context(elem) do
-          # FIXME: Using #deep_clone is not great for performance! Switch to
-          # non-consuming processing.
-          process(program.deep_clone)
+          apply(program)
         end
       end
-      s(:result, parts.map { _1[1] }.join)
+      s(:result, parts.join)
     else
       @input.with_new_context(value) do
         process(program)
