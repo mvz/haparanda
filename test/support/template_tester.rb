@@ -34,7 +34,7 @@ class TemplateTester
     @spec._(actual).must_equal expected, @message
   end
 
-  def toThrow(error, message) # rubocop:disable Naming/MethodName
+  def toThrow(error, message = nil) # rubocop:disable Naming/MethodName
     @spec.shouldThrow(-> { toCompileTo("") }, error, message)
   end
 end

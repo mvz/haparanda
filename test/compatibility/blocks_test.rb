@@ -8,8 +8,7 @@ require "test_helper"
 
 describe 'blocks' do
   it 'array' do
-    skip
-    var string = '{{#goodbyes}}{{text}}! {{/goodbyes}}cruel {{world}}!';
+    string = '{{#goodbyes}}{{text}}! {{/goodbyes}}cruel {{world}}!';
 
     expectTemplate(string)
       .withInput({
@@ -33,7 +32,6 @@ describe 'blocks' do
   end
 
   it 'array without data' do
-    skip
     expectTemplate(
       '{{#goodbyes}}{{text}}{{/goodbyes}} {{#goodbyes}}{{text}}{{/goodbyes}}'
     )
@@ -67,8 +65,7 @@ describe 'blocks' do
   end
 
   it 'empty block' do
-    skip
-    var string = '{{#goodbyes}}{{/goodbyes}}cruel {{world}}!';
+    string = '{{#goodbyes}}{{/goodbyes}}cruel {{world}}!';
 
     expectTemplate(string)
       .withInput({
@@ -125,10 +122,9 @@ describe 'blocks' do
   end
 
   it 'block with complex lookup using nested context' do
-    skip
     expectTemplate(
       '{{#goodbyes}}{{text}} cruel {{foo/../name}}! {{/goodbyes}}'
-    ).toThrow(Error);
+    ).toThrow(Racc::ParseError);
   end
 
   it 'block with deep nested complex lookup' do
