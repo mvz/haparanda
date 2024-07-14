@@ -48,6 +48,9 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
   def initialize(input)
     super()
+
+    self.require_empty = false
+
     @input = Input.new(input)
     @helpers = {
       if: ->(value, block, _else_block) { block.call if value },
@@ -69,14 +72,12 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def apply(expr)
-    # FIXME: Using #deep_clone is not great for performance! Switch to
-    # non-consuming processing.
-    result = process(expr.deep_clone)
+    result = process(expr)
     result[1]
   end
 
   def process_mustache(expr)
-    _, path, _params, _hash, escaped, _strip = expr.shift(6)
+    _, path, _params, _hash, escaped, _strip = expr
     value = evaluate_path(path)
     value = if escaped
               escape(value.to_s)
@@ -87,7 +88,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_block(expr)
-    _, name, params, _hash, program, inverse_chain, = expr.shift(8)
+    _, name, params, _hash, program, inverse_chain, = expr
     else_program = inverse_chain.sexp_body[1] if inverse_chain
     if params.sexp_body.any?
       values = params.sexp_body.map { evaluate_path _1 }
@@ -103,8 +104,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_statements(expr)
-    expr.shift
-    statements = shift_all(expr)
+    statements = expr.sexp_body
 
     statements.each_cons(2) do |prev, item|
       if prev.sexp_type == :content && item.sexp_type != :content
@@ -122,22 +122,23 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_program(expr)
-    _, _params, statements, = expr.shift(3)
+    _, _params, statements, = expr
     statements = process(statements)[1] if statements
     s(:result, statements.to_s)
   end
 
   def process_comment(expr)
-    _, _comment, = expr.shift(3)
+    _, _comment, = expr
     s(:result, "")
   end
 
   def process_path(expr)
-    _, _data = expr.shift(2)
-    segments = shift_all(expr)
+    _, _data, *segments = expr
     segments = segments.each_slice(2).map { |elem, _sep| elem[1].to_sym }
     s(:segments, segments)
   end
+
+  private
 
   def evaluate_program_with_value(program, value)
     return s(:result, "") unless value
@@ -160,12 +161,6 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   def evaluate_path(path)
     elements = process(path)
     @input.dig(*elements[1])
-  end
-
-  def shift_all(expr)
-    result = []
-    result << expr.shift while expr.any?
-    result
   end
 
   ESCAPE = {
