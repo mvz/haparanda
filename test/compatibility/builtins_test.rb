@@ -241,7 +241,6 @@ describe 'builtin helpers' do
     end
 
     it 'each without data' do
-      skip
       expectTemplate('{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!')
         .withInput({
           goodbyes: [

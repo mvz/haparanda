@@ -19,6 +19,14 @@ class TemplateTester
     self
   end
 
+  def withRuntimeOptions(_opts) # rubocop:disable Naming/MethodName
+    self
+  end
+
+  def withCompileOptions(_opts) # rubocop:disable Naming/MethodName
+    self
+  end
+
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
     template = HandlebarsParser.new.parse(@str)
     processor = HandlebarsProcessor.new(@input)
