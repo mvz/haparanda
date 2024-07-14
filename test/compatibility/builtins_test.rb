@@ -262,7 +262,7 @@ describe 'builtin helpers' do
     end
 
     it 'each without context' do
-      skip
+      undefined = nil
       expectTemplate('{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!')
         .withInput(undefined)
         .toCompileTo('cruel !');
