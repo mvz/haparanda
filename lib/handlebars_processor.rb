@@ -133,9 +133,9 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_path(expr)
-    _, _data, *segments = expr
+    _, data, *segments = expr
     segments = segments.each_slice(2).map { |elem, _sep| elem[1].to_sym }
-    s(:segments, segments)
+    s(:segments, data, segments)
   end
 
   private
@@ -159,8 +159,13 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def evaluate_path(path)
-    elements = process(path)
-    @input.dig(*elements[1])
+    elements = case path.sexp_type
+               when :path
+                 process(path)[2]
+               else
+                 process(path)[1]
+               end
+    @input.dig(*elements)
   end
 
   ESCAPE = {
