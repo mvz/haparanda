@@ -48,7 +48,6 @@ describe 'blocks' do
   end
 
   it 'array with @index' do
-    skip
     expectTemplate(
       '{{#goodbyes}}{{@index}}. {{text}}! {{/goodbyes}}cruel {{world}}!'
     )

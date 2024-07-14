@@ -4,38 +4,39 @@ require "sexp_processor"
 
 class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   class Input
-    def initialize(data)
-      @stack = [data]
+    def initialize(value)
+      @stack = [value]
+      @data = {}
     end
 
     def dig(*keys)
-      data = @stack.last
+      value = @stack.last
       keys.each do |key|
         next if %i[.. . this].include? key
 
-        data = case data
-               when Hash
-                 data[key]
-               when nil
-                 nil
-               else
-                 data.send key
-               end
+        value = case value
+                when Hash
+                  value[key]
+                when nil
+                  nil
+                else
+                  value.send key
+                end
       end
 
-      data
+      value
     end
 
-    def push(data)
-      @stack.push data
+    def data(key)
+      @data[key]
     end
 
-    def pop(data)
-      @stack.pop data
+    def set_data(key, value)
+      @data[key] = value
     end
 
-    def with_new_context(data, &block)
-      @stack.push data
+    def with_new_context(value, &block)
+      @stack.push value
       result = block.call
       @stack.pop
       result
@@ -145,7 +146,8 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
     case value
     when Array
-      parts = value.map do |elem|
+      parts = value.each_with_index.map do |elem, index|
+        @input.set_data(:index, index)
         @input.with_new_context(elem) do
           apply(program)
         end
@@ -159,13 +161,18 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def evaluate_path(path)
-    elements = case path.sexp_type
-               when :path
-                 process(path)[2]
-               else
-                 process(path)[1]
-               end
-    @input.dig(*elements)
+    path = process(path)
+    case path.sexp_type
+    when :segments
+      data, elements = path.sexp_body
+    else
+      elements = path[1]
+    end
+    if data
+      @input.data(*elements)
+    else
+      @input.dig(*elements)
+    end
   end
 
   ESCAPE = {
