@@ -40,6 +40,13 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
       @data[key] = value
     end
 
+    def with_new_data(&block)
+      data = @data.clone
+      result = block.call
+      @data = data
+      result
+    end
+
     def with_new_context(value, &block)
       @stack.push value
       result = block.call
@@ -72,10 +79,12 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
         break unless value
 
         value = value.values if value.is_a? Hash
-        value.each_with_index.map do |item, index|
-          @input.set_data(:index, index)
-          @input.with_new_context(item, &block)
-        end.join
+        @input.with_new_data do
+          value.each_with_index.map do |item, index|
+            @input.set_data(:index, index)
+            @input.with_new_context(item, &block)
+          end.join
+        end
       end
     }
   end

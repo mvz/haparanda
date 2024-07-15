@@ -310,7 +310,6 @@ describe 'builtin helpers' do
     end
 
     it 'each with nested @index' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}{{@index}}. {{text}}! {{#each ../goodbyes}}{{@index}} {{/each}}After {{@index}} {{/each}}{{@index}}cruel {{world}}!'
       )
