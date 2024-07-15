@@ -132,7 +132,6 @@ describe 'builtin helpers' do
     end
 
     it 'should not change the depth list' do
-      skip
       expectTemplate(
         '{{#with foo}}{{#if goodbye}}GOODBYE cruel {{../world}}!{{/if}}{{/with}}'
       )
@@ -352,7 +351,6 @@ describe 'builtin helpers' do
     end
 
     it 'each object with @index' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}{{@index}}. {{text}}! {{/each}}cruel {{world}}!'
       )
