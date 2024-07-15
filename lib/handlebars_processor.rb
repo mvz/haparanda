@@ -66,26 +66,10 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
     @input = Input.new(input)
     @helpers = {
-      if: ->(value, block, _else_block) { block.call if value },
-      unless: ->(value, block, _else_block) { block.call unless value },
-      with: lambda do |value, block, else_block|
-        if value
-          @input.with_new_context(value, &block)
-        else
-          @input.with_new_context(value, &else_block)
-        end
-      end,
-      each: lambda do |value, block, _else_block|
-        break unless value
-
-        value = value.values if value.is_a? Hash
-        @input.with_new_data do
-          value.each_with_index.map do |item, index|
-            @input.set_data(:index, index)
-            @input.with_new_context(item, &block)
-          end.join
-        end
-      end
+      if: method(:handle_if),
+      unless: method(:handle_unless),
+      with: method(:handle_with),
+      each: method(:handle_each)
     }
   end
 
@@ -189,6 +173,34 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
       @input.data(*elements)
     else
       @input.dig(*elements)
+    end
+  end
+
+  def handle_if(value, block, _else_block)
+    block.call if value
+  end
+
+  def handle_unless(value, block, _else_block)
+    block.call unless value
+  end
+
+  def handle_with(value, block, else_block)
+    if value
+      @input.with_new_context(value, &block)
+    else
+      @input.with_new_context(value, &else_block)
+    end
+  end
+
+  def handle_each(value, block, _else_block)
+    return unless value
+
+    value = value.values if value.is_a? Hash
+    @input.with_new_data do
+      value.each_with_index.map do |item, index|
+        @input.set_data(:index, index)
+        @input.with_new_context(item, &block)
+      end.join
     end
   end
 
