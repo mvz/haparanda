@@ -147,23 +147,26 @@ describe 'basic context' do
   end
 
   it 'should handle undefined and null' do
-    skip "functions are not supported"
+    undefined = nil
+    null = nil
+
     # rubocop:disable Lint/UnderscorePrefixedVariableName
     expectTemplate('{{awesome undefined null}}')
       .withInput({
         awesome: lambda { |_undefined, _null, options|
           return (
-            (_undefined == undefined) +
+            (_undefined == undefined).to_s +
             ' ' +
-            (_null == null) +
+            (_null == null).to_s +
             ' ' +
-            options.class
+            options.class.to_s
           );
         },
       })
-      .toCompileTo('true true object');
+      .toCompileTo('true true Object');
     # rubocop:enable Lint/UnderscorePrefixedVariableName
 
+    skip
     expectTemplate('{{undefined}}')
       .withInput({
         undefined: lambda {
