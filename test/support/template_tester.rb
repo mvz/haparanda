@@ -27,9 +27,14 @@ class TemplateTester
     self
   end
 
+  def withHelpers(opts) # rubocop:disable Naming/MethodName
+    @helpers = opts
+    self
+  end
+
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
     template = HandlebarsParser.new.parse(@str)
-    processor = HandlebarsProcessor.new(@input)
+    processor = HandlebarsProcessor.new(@input, @helpers)
     actual = processor.apply(template)
     @spec._(actual).must_equal expected, @message
   end

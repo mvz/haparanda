@@ -59,18 +59,20 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def initialize(input)
+  def initialize(input, custom_helpers = nil)
     super()
 
     self.require_empty = false
 
     @input = Input.new(input)
+
+    custom_helpers ||= {}
     @helpers = {
       if: method(:handle_if),
       unless: method(:handle_unless),
       with: method(:handle_with),
       each: method(:handle_each)
-    }
+    }.merge(custom_helpers)
   end
 
   def apply(expr)
@@ -79,13 +81,19 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_mustache(expr)
-    _, path, _params, _hash, escaped, _strip = expr
-    value = evaluate_path(path)
-    value = if escaped
-              escape(value.to_s)
-            else
-              value.to_s
-            end
+    _, path, params, _hash, escaped, _strip = expr
+    params = process(params)[1]
+    if params.any?
+      helper_name = process(path)[2].first
+      value = @helpers.fetch(helper_name).call(*params)
+    else
+      value = evaluate_path(path)
+      value = if escaped
+                escape(value.to_s)
+              else
+                value.to_s
+              end
+    end
     s(:result, value)
   end
 
@@ -138,6 +146,12 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     _, data, *segments = expr
     segments = segments.each_slice(2).map { |elem, _sep| elem[1].to_sym }
     s(:segments, data, segments)
+  end
+
+  def process_exprs(expr)
+    _, *paths = expr
+    values = paths.map { evaluate_path(_1) }
+    s(:values, values)
   end
 
   private

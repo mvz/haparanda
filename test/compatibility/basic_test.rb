@@ -455,7 +455,7 @@ describe 'basic context' do
   end
 
   it "that current context path ({{.}}) doesn't hit helpers" do
-    skip
+    null = nil
     expectTemplate('test: {{.}}')
       .withInput(null)
       .withHelpers({ helper: 'awesome' })
@@ -500,8 +500,7 @@ describe 'basic context' do
   end
 
   it 'this keyword in helpers' do
-    skip
-    var helpers = {
+    helpers = {
       foo: lambda { |value|
         return 'bar ' + value;
       },
