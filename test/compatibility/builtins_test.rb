@@ -6,17 +6,7 @@ require "test_helper"
 # mostly be identical to the content there, so a side-by-side diff should show
 # spec equivalence, and show any new specs that should be added.
 
-# rubocop:disable Style/StringLiterals
 describe 'builtin helpers' do
-  # rubocop:disable Layout/FirstHashElementIndentation
-  # rubocop:disable Layout/FirstArrayElementIndentation
-  # rubocop:disable Layout/LineLength
-  # rubocop:disable Style/NegatedIf
-  # rubocop:disable Style/RedundantReturn
-  # rubocop:disable Style/Semicolon
-  # rubocop:disable Style/TrailingCommaInArrayLiteral
-  # rubocop:disable Style/TrailingCommaInHashLiteral
-  # rubocop:disable Style/WordArray
   describe '#if' do
     it 'if' do
       string = '{{#if goodbye}}GOODBYE {{/if}}cruel {{world}}!';
@@ -862,14 +852,4 @@ describe 'builtin helpers' do
         .toCompileTo('');
     end
   end
-  # rubocop:enable Style/WordArray
-  # rubocop:enable Style/TrailingCommaInHashLiteral
-  # rubocop:enable Style/TrailingCommaInArrayLiteral
-  # rubocop:enable Style/Semicolon
-  # rubocop:enable Style/RedundantReturn
-  # rubocop:enable Style/NegatedIf
-  # rubocop:enable Layout/LineLength
-  # rubocop:enable Layout/FirstArrayElementIndentation
-  # rubocop:enable Layout/FirstHashElementIndentation
 end
-# rubocop:enable Style/StringLiterals

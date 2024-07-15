@@ -6,7 +6,6 @@ require "test_helper"
 # mostly be identical to the content there, so a side-by-side diff should show
 # spec equivalence, and show any new specs that should be added.
 #
-# rubocop:disable Style/StringLiterals
 describe 'parser' do
   def astFor(str) # rubocop:disable Naming/MethodName
     str = str.gsub('\n', "\n")
@@ -15,8 +14,6 @@ describe 'parser' do
     PrintingProcessor.new.print(result)
   end
 
-  # rubocop:disable Style/Semicolon
-  # rubocop:disable Layout/LineLength
   it 'parses simple mustaches' do
     equals(astFor('{{123}}'), '{{ NUMBER{123} [] }}\n');
     equals(astFor('{{"foo"}}'), '{{ "foo" [] }}\n');
@@ -420,7 +417,6 @@ describe 'parser' do
     );
   end
 
-  # rubocop:disable Style/RegexpLiteral
   it 'should handle invalid paths' do
     shouldThrow(
       lambda {
@@ -444,7 +440,6 @@ describe 'parser' do
       /Invalid path: foo\/this - 1/
     );
   end
-  # rubocop:enable Style/RegexpLiteral
 
   it 'knows how to report the correct line number in errors' do
     shouldThrow(
@@ -473,7 +468,6 @@ describe 'parser' do
     );
   end
 
-  # rubocop:disable Layout/FirstHashElementIndentation
   describe 'externally compiled AST' do
     it 'can pass through an already-compiled AST' do
       skip
@@ -486,7 +480,6 @@ describe 'parser' do
       );
     end
   end
-  # rubocop:enable Layout/FirstHashElementIndentation
 
   describe 'directives' do
     it 'should parse block directives' do
@@ -513,9 +506,6 @@ describe 'parser' do
     end
   end
 
-  # rubocop:disable Style/LineEndConcatenation
-  # rubocop:disable Style/StringConcatenation
-  # rubocop:disable Layout/FirstHashElementIndentation
   it 'GH1024 - should track program location properly' do
     skip
     let p = parse(
@@ -551,11 +541,4 @@ describe 'parser' do
       })
     );
   end
-  # rubocop:enable Layout/FirstHashElementIndentation
-  # rubocop:enable Style/StringConcatenation
-  # rubocop:enable Style/LineEndConcatenation
-
-  # rubocop:enable Layout/LineLength
-  # rubocop:enable Style/Semicolon
 end
-# rubocop:enable Style/StringLiterals

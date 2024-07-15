@@ -16,6 +16,14 @@ Layout/FirstHashElementIndentation:
   Exclude:
     - 'test/compatibility/*'
 
+Layout/FirstArrayElementIndentation:
+  Exclude:
+    - 'test/compatibility/*'
+
+Layout/LineLength:
+  Exclude:
+    - 'test/compatibility/*'
+
 # Test describe blocks can be any size
 Metrics/BlockLength:
   Exclude:
@@ -29,7 +37,23 @@ Style/DoubleNegation:
   Exclude:
     - 'test/compatibility/*'
 
+Style/LineEndConcatenation:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/NegatedIf:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/QuotedSymbols:
+  Exclude:
+    - 'test/compatibility/*'
+
 Style/RedundantReturn:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/RegexpLiteral:
   Exclude:
     - 'test/compatibility/*'
 
@@ -43,10 +67,18 @@ Style/StringLiterals:
   Exclude:
     - 'test/compatibility/*'
 
+Style/StringConcatenation:
+  Exclude:
+    - 'test/compatibility/*'
+
 Style/TrailingCommaInArrayLiteral:
   Exclude:
     - 'test/compatibility/*'
 
 Style/TrailingCommaInHashLiteral:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/WordArray:
   Exclude:
     - 'test/compatibility/*'

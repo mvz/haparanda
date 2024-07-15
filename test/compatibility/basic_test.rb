@@ -6,15 +6,7 @@ require "test_helper"
 # mostly be identical to the content there, so a side-by-side diff should show
 # spec equivalence, and show any new specs that should be added.
 
-# rubocop:disable Style/StringLiterals
 describe 'basic context' do
-  # rubocop:disable Style/Semicolon
-  # rubocop:disable Style/QuotedSymbols
-  # rubocop:disable Style/TrailingCommaInHashLiteral
-  # rubocop:disable Style/RedundantReturn
-  # rubocop:disable Style/WordArray
-  # rubocop:disable Style/StringConcatenation
-  # rubocop:disable Layout/FirstHashElementIndentation
   it 'most basic' do
     expectTemplate('{{foo}}').withInput({ foo: 'foo' }).toCompileTo('foo');
   end
@@ -608,12 +600,4 @@ describe 'basic context' do
       })
       .toCompileTo('bar');
   end
-  # rubocop:enable Layout/FirstHashElementIndentation
-  # rubocop:enable Style/StringConcatenation
-  # rubocop:enable Style/WordArray
-  # rubocop:enable Style/RedundantReturn
-  # rubocop:enable Style/TrailingCommaInHashLiteral
-  # rubocop:enable Style/QuotedSymbols
-  # rubocop:enable Style/Semicolon
 end
-# rubocop:enable Style/StringLiterals
