@@ -297,6 +297,9 @@ end
 
 def prepare_block(open, program, inverse_chain, close, inverted)
   open_type, name, params, hash, block_params, open_strip = *open
+  directive = open_type == :open_directive
+
+  raise ParseError, "Unexpected inverse" if directive && inverse_chain
 
   if close
     _, close_name, close_strip = *close
@@ -313,7 +316,7 @@ def prepare_block(open, program, inverse_chain, close, inverted)
     program = s(:program, block_params, program)
   end
 
-  type = open_type == :open_directive ? :directive_block : :block
+  type = directive ? :directive_block : :block
   s(type, name, params, hash, program, inverse_chain, open_strip, close_strip)
     .line(self.lexer.lineno)
 end

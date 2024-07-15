@@ -494,12 +494,11 @@ describe 'parser' do
     end
 
     it 'should fail if directives have inverse' do
-      skip
       shouldThrow(
         lambda {
           astFor('{{#* foo}}{{^}}{{/foo}}');
         },
-        Error,
+        Racc::ParseError,
         /Unexpected inverse/
       );
     end
