@@ -88,7 +88,6 @@ describe 'blocks' do
   end
 
   it 'block with complex lookup' do
-    skip
     expectTemplate('{{#goodbyes}}{{text}} cruel {{../name}}! {{/goodbyes}}')
       .withInput({
         name: 'Alan',
@@ -107,7 +106,6 @@ describe 'blocks' do
   end
 
   it 'multiple blocks with complex lookup' do
-    skip
     expectTemplate('{{#goodbyes}}{{../name}}{{../name}}{{/goodbyes}}')
       .withInput({
         name: 'Alan',
@@ -127,7 +125,6 @@ describe 'blocks' do
   end
 
   it 'block with deep nested complex lookup' do
-    skip
     expectTemplate(
       '{{#outer}}Goodbye {{#inner}}cruel {{../sibling}} {{../../omg}}{{/inner}}{{/outer}}'
     )

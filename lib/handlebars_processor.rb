@@ -10,8 +10,13 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
 
     def dig(*keys)
-      value = @stack.last
+      index = -1
+      value = @stack[index]
       keys.each do |key|
+        if key == :".."
+          index -= 1
+          value = @stack[index]
+        end
         next if %i[.. . this].include? key
 
         value = case value
