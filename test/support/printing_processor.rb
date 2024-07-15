@@ -53,6 +53,15 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     s(:print, "BLOCK:\n  #{name} [#{args}]\n#{program}#{inverse_chain}")
   end
 
+  def process_directive_block(expr)
+    _, name, params, hash, program, inverse_chain, = expr.shift(8)
+    args = [params, hash].compact.map { print _1 }.join(" ").strip
+    name = print(name)
+    program = print(program).gsub(/^/, "  ") if program
+    inverse_chain = print(inverse_chain).gsub(/^/, "  ") if inverse_chain
+    s(:print, "DIRECTIVE BLOCK:\n  #{name} [#{args}]\n#{program}#{inverse_chain}")
+  end
+
   def process_program(expr)
     _, params, program, = expr.shift(3)
     params = print(params).gsub(/^/, "  ") if params

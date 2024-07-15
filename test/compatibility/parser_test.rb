@@ -483,7 +483,6 @@ describe 'parser' do
 
   describe 'directives' do
     it 'should parse block directives' do
-      skip
       equals(
         astFor('{{#* foo}}{{/foo}}'),
         'DIRECTIVE BLOCK:\n  PATH:foo []\n  PROGRAM:\n'

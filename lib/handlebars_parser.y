@@ -69,7 +69,11 @@ block
   ;
 
 openBlock
-  : OPEN_BLOCK helperName exprs hash blockParams CLOSE { result = s(:open, val[1], val[2], val[3], val[4], strip_flags(val[0], val[5])) }
+  : OPEN_BLOCK helperName exprs hash blockParams CLOSE {
+    decorator, _escaped = interpret_open_token(val[0])
+    type = decorator ? :open_directive : :open
+    result = s(type, *val[1..4], strip_flags(val[0], val[5]))
+  }
   ;
 
 openInverse
@@ -249,6 +253,13 @@ def id(val)
   end
 end
 
+def interpret_open_token(open)
+  marker = open[2..-1][-1]
+  decorator = marker == "*"
+  escaped = !["{", "&"].include?(marker)
+  return decorator, escaped
+end
+
 def prepare_path(data, sexpr, parts, loc)
   tail = []
   parts.each_slice(2) do |part, sep|
@@ -269,9 +280,7 @@ def prepare_path(data, sexpr, parts, loc)
 end
 
 def prepare_mustache(open, path, params, hash, close)
-  marker = open[2..-1][-1]
-  decorator = marker == "*"
-  escaped = !["{", "&"].include?(marker)
+  decorator, escaped = interpret_open_token(open)
   type = decorator ? :directive : :mustache
   s(type, path, params, hash, escaped, strip_flags(open, close)).line(self.lexer.lineno)
 end
@@ -287,7 +296,7 @@ def prepare_partial_block(open, program, close)
 end
 
 def prepare_block(open, program, inverse_chain, close, inverted)
-  _, name, params, hash, block_params, open_strip = *open
+  open_type, name, params, hash, block_params, open_strip = *open
 
   if close
     _, close_name, close_strip = *close
@@ -295,7 +304,6 @@ def prepare_block(open, program, inverse_chain, close, inverted)
   end
 
   # TODO: Get close_strip from inverse_chain if close is nil
-  # TODO: Handle block decorator marker ('*')
 
   if inverted
     raise NotImplementedError if inverse_chain
@@ -305,7 +313,8 @@ def prepare_block(open, program, inverse_chain, close, inverted)
     program = s(:program, block_params, program)
   end
 
-  s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)
+  type = open_type == :open_directive ? :directive_block : :block
+  s(type, name, params, hash, program, inverse_chain, open_strip, close_strip)
     .line(self.lexer.lineno)
 end
 
