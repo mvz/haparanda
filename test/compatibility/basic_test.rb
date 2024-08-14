@@ -272,7 +272,6 @@ describe 'basic context' do
   end
 
   it 'functions with context argument' do
-    skip "functions are not supported"
     expectTemplate('{{awesome frank}}')
       .withInput({
         awesome: lambda { |context|
@@ -285,7 +284,6 @@ describe 'basic context' do
   end
 
   it 'pathed functions with context argument' do
-    skip "functions are not supported"
     expectTemplate('{{bar.awesome frank}}')
       .withInput({
         bar: {
@@ -300,7 +298,6 @@ describe 'basic context' do
   end
 
   it 'depthed functions with context argument' do
-    skip "functions are not supported"
     expectTemplate('{{#with frank}}{{../awesome .}}{{/with}}')
       .withInput({
         awesome: lambda { |context|
