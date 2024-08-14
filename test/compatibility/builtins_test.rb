@@ -79,8 +79,7 @@ describe 'builtin helpers' do
     end
 
     it 'if with function argument' do
-      skip "functions are not supported"
-      var string = '{{#if goodbye}}GOODBYE {{/if}}cruel {{world}}!';
+      string = '{{#if goodbye}}GOODBYE {{/if}}cruel {{world}}!';
 
       expectTemplate(string)
         .withInput({
@@ -156,7 +155,6 @@ describe 'builtin helpers' do
     end
 
     it 'with with function argument' do
-      skip "functions are not supported"
       expectTemplate('{{#with person}}{{first}} {{last}}{{/with}}')
         .withInput({
           person: lambda {
@@ -465,8 +463,7 @@ describe 'builtin helpers' do
     end
 
     it 'each with function argument' do
-      skip "functions are not supported"
-      var string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!';
+      string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!';
 
       expectTemplate(string)
         .withInput({

@@ -104,7 +104,6 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     params = process(params)[1]
     if params.empty?
       value = evaluate_path(path)
-      value = @context_wrapper.instance_exec(&value) if value.respond_to? :call
       value = if escaped
                 escape(value.to_s)
               else
@@ -212,11 +211,13 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     else
       elements = path[1]
     end
-    if data
-      @input.data(*elements)
-    else
-      @input.dig(*elements)
-    end
+    value = if data
+              @input.data(*elements)
+            else
+              @input.dig(*elements)
+            end
+    value = @context_wrapper.instance_exec(&value) if value.respond_to? :call
+    value
   end
 
   def handle_if(value, block, _else_block)
