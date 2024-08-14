@@ -250,7 +250,6 @@ describe 'basic context' do
   end
 
   it 'functions' do
-    skip "functions are not supported"
     expectTemplate('{{awesome}}')
       .withInput({
         awesome: lambda {
@@ -260,6 +259,7 @@ describe 'basic context' do
       .withMessage('functions are called and render their output')
       .toCompileTo('Awesome');
 
+    skip
     expectTemplate('{{awesome}}')
       .withInput({
         awesome: lambda {

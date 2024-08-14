@@ -85,6 +85,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     params = process(params)[1]
     if params.empty?
       value = evaluate_path(path)
+      value = value.call if value.respond_to? :call
       value = if escaped
                 escape(value.to_s)
               else
