@@ -59,12 +59,31 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
   end
 
+  class ContextWrapper
+    def initialize(input)
+      @input = input
+    end
+
+    def this
+      self
+    end
+
+    def respond_to_missing?(_method_name)
+      true
+    end
+
+    def method_missing(method_name, *_args)
+      @input.dig(method_name) # rubocop:disable Style/SingleArgumentDig
+    end
+  end
+
   def initialize(input, custom_helpers = nil)
     super()
 
     self.require_empty = false
 
     @input = Input.new(input)
+    @context_wrapper = ContextWrapper.new(@input)
 
     custom_helpers ||= {}
     @helpers = {
@@ -85,7 +104,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     params = process(params)[1]
     if params.empty?
       value = evaluate_path(path)
-      value = value.call if value.respond_to? :call
+      value = @context_wrapper.instance_exec(&value) if value.respond_to? :call
       value = if escaped
                 escape(value.to_s)
               else

@@ -259,7 +259,6 @@ describe 'basic context' do
       .withMessage('functions are called and render their output')
       .toCompileTo('Awesome');
 
-    skip
     expectTemplate('{{awesome}}')
       .withInput({
         awesome: lambda {
