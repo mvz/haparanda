@@ -313,14 +313,13 @@ describe 'helpers' do
   end
 
   it 'pathed lambas with parameters' do
-    skip
-    var hash = {
+    hash = {
       helper: lambda {
         return 'winning';
       },
     };
-    hash.hash = hash;
-    var helpers = {
+    hash[:hash] = hash;
+    helpers = {
       './helper': lambda {
         return 'fail';
       },

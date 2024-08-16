@@ -114,11 +114,11 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
       helper = @helpers.fetch(helper_path[0]) { @input.dig(*helper_path) }
 
       args = [*params, Object.new]
-      value = if helper.arity == args.size
-                # TODO: Bind helper to the @context_wrapper.
-                helper.call(*args)
+      value = if helper.arity < 0
+                raise NotImplementedError
               else
-                @context_wrapper.instance_exec(*params, &helper)
+                args = args.take(helper.arity)
+                @context_wrapper.instance_exec(*args, &helper)
               end
     end
     s(:result, value)
