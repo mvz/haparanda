@@ -126,16 +126,16 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   def process_block(expr)
     _, name, params, _hash, program, inverse_chain, = expr
     else_program = inverse_chain.sexp_body[1] if inverse_chain
-    if params.sexp_body.any?
-      values = params.sexp_body.map { evaluate_path _1 }
+    arguments = process(params)[1]
+    if arguments.empty?
+      value = evaluate_path(name)
+      evaluate_program_with_value(program, value)
+    else
       helper_name = name[2][1].to_sym
-      value = @helpers.fetch(helper_name).call(*values,
+      value = @helpers.fetch(helper_name).call(*arguments,
                                                -> { apply(program) },
                                                -> { apply(else_program) })
       s(:result, value.to_s)
-    else
-      value = evaluate_path(name)
-      evaluate_program_with_value(program, value)
     end
   end
 
