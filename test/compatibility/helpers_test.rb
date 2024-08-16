@@ -169,7 +169,6 @@ describe 'helpers' do
   end
 
   it 'helper returning undefined value' do
-    skip
     expectTemplate(' {{nothere}}')
       .withHelpers({
         nothere: -> {},
@@ -340,7 +339,6 @@ describe 'helpers' do
 
   describe 'helpers hash' do
     it 'providing a helpers hash' do
-      skip
       expectTemplate('Goodbye {{cruel}} {{world}}!')
         .withInput({ cruel: 'cruel' })
         .withHelpers({
@@ -363,7 +361,6 @@ describe 'helpers' do
     end
 
     it 'in cases of conflict, helpers win' do
-      skip
       expectTemplate('{{{lookup}}}')
         .withInput({ lookup: 'Explicit' })
         .withHelpers({
@@ -386,7 +383,6 @@ describe 'helpers' do
     end
 
     it 'the helpers hash is available is nested contexts' do
-      skip
       expectTemplate('{{#outer}}{{#inner}}{{helper}}{{/inner}}{{/outer}}')
         .withInput({ outer: { inner: { unused: [] } } })
         .withHelpers({
