@@ -8,7 +8,6 @@ require "test_helper"
 
 describe 'helpers' do
   it 'helper with complex lookup$' do
-    skip
     expectTemplate('{{#goodbyes}}{{{link ../prefix}}}{{/goodbyes}}')
       .withInput({
         prefix: '/root',

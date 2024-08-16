@@ -32,6 +32,11 @@ class TemplateTester
     self
   end
 
+  def withHelper(name, helper) # rubocop:disable Naming/MethodName
+    @helpers = { name.to_sym => helper }
+    self
+  end
+
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
     template = HandlebarsParser.new.parse(@str)
     processor = HandlebarsProcessor.new(@input, @helpers)
