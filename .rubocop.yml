@@ -33,7 +33,15 @@ Metrics/BlockLength:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
+Style/GuardClause:
+  Exclude:
+    - 'test/compatibility/*'
+
 Style/DoubleNegation:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/IfUnlessModifier:
   Exclude:
     - 'test/compatibility/*'
 
@@ -42,6 +50,10 @@ Style/LineEndConcatenation:
     - 'test/compatibility/*'
 
 Style/NegatedIf:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/NumericPredicate:
   Exclude:
     - 'test/compatibility/*'
 
@@ -58,6 +70,10 @@ Style/RegexpLiteral:
     - 'test/compatibility/*'
 
 Style/Semicolon:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/ZeroLengthPredicate:
   Exclude:
     - 'test/compatibility/*'
 
