@@ -210,10 +210,12 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     when :undefined, :null
       return nil
     else
-      elements = path[1]
+      elements = [path[1]]
     end
     value = if data
               @input.data(*elements)
+            elsif elements.count == 1 && @helpers.key?(elements.first)
+              @helpers[elements.first]
             else
               @input.dig(*elements)
             end

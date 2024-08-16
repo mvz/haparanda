@@ -7,6 +7,7 @@ class TemplateTester
     @str = str
     @spec = spec
     @input = {}
+    @helpers = {}
   end
 
   def withInput(input) # rubocop:disable Naming/MethodName
@@ -33,7 +34,7 @@ class TemplateTester
   end
 
   def withHelper(name, helper) # rubocop:disable Naming/MethodName
-    @helpers = { name.to_sym => helper }
+    @helpers[name.to_sym] = helper
     self
   end
 

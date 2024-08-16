@@ -920,14 +920,12 @@ describe 'helpers' do
 
   describe 'name conflicts' do
     it 'helpers take precedence over same-named context properties' do
-      skip
       expectTemplate('{{goodbye}} {{cruel world}}')
         .withHelper('goodbye', lambda {
-          skip
-          return this.goodbye.toUpperCase;
+          return this.goodbye.upcase;
         })
         .withHelper('cruel', lambda { |world|
-          return 'cruel ' + world.toUpperCase;
+          return 'cruel ' + world.upcase;
         })
         .withInput({
           goodbye: 'goodbye',
@@ -955,13 +953,12 @@ describe 'helpers' do
     end
 
     it 'Scoped names take precedence over helpers' do
-      skip
       expectTemplate('{{this.goodbye}} {{cruel world}} {{cruel this.goodbye}}')
         .withHelper('goodbye', lambda {
-          return this.goodbye.toUpperCase;
+          return this.goodbye.upcase;
         })
         .withHelper('cruel', lambda { |world|
-          return 'cruel ' + world.toUpperCase;
+          return 'cruel ' + world.upcase;
         })
         .withInput({
           goodbye: 'goodbye',
