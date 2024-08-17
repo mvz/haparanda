@@ -163,7 +163,7 @@ describe 'basic context' do
           );
         },
       })
-      .toCompileTo('true true Object');
+      .toCompileTo('true true HandlebarsProcessor::Options');
     # rubocop:enable Lint/UnderscorePrefixedVariableName
 
     skip

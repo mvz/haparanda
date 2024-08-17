@@ -77,6 +77,16 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
   end
 
+  class Options
+    def initialize(fn: nil) # rubocop:disable Naming/MethodParameterName
+      @fn = fn
+    end
+
+    def fn(_arg)
+      @fn&.call
+    end
+  end
+
   def initialize(input, custom_helpers = nil)
     super()
 
@@ -122,8 +132,10 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     else_program = inverse_chain.sexp_body[1] if inverse_chain
     arguments = process(params)[1]
     if arguments.empty?
-      value = evaluate_path(name)
-      evaluate_program_with_value(program, value)
+      path = process(name)
+      data, elements = path_segments(path)
+      value = lookup_path(data, elements)
+      evaluate_program_with_value(value, program, else_program)
     else
       helper_name = name[2][1].to_sym
       value = @helpers.fetch(helper_name).call(*arguments,
@@ -176,8 +188,13 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
   private
 
-  def evaluate_program_with_value(program, value)
+  def evaluate_program_with_value(value, program, _else_program)
     return s(:result, "") unless value
+
+    if value.respond_to? :call
+      value = execute_in_context(value, [], program: -> { apply(program) })
+      return s(:result, value.to_s)
+    end
 
     case value
     when Array
@@ -240,11 +257,11 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def execute_in_context(callable, params = [])
+  def execute_in_context(callable, params = [], program: nil)
     num_params = callable.arity
     raise NotImplementedError if num_params < 0
 
-    args = [*params, Object.new]
+    args = [*params, Options.new(fn: program)]
     args = args.take(num_params)
     @context_wrapper.instance_exec(*args, &callable)
   end

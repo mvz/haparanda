@@ -93,12 +93,11 @@ describe 'helpers' do
   end
 
   it 'helper block with identical context' do
-    skip
     expectTemplate('{{#goodbyes}}{{name}}{{/goodbyes}}')
       .withInput({ name: 'Alan' })
       .withHelper('goodbyes', lambda { |options|
-        var out = '';
-        var byes = ['Goodbye', 'goodbye', 'GOODBYE'];
+        out = '';
+        byes = ['Goodbye', 'goodbye', 'GOODBYE'];
         byes.length.times do |i|
           out += byes[i] + ' ' + options.fn(this) + '! ';
         end
