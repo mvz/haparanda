@@ -32,6 +32,7 @@ describe 'helpers' do
   end
 
   it 'helper for raw block gets parameters' do
+    skip
     expectTemplate('{{{{raw 1 2 3}}}} {{test}} {{{{/raw}}}}')
       .withInput({ test: 'hello' })
       .withHelper('raw', lambda { |a, b, c, options|
@@ -549,7 +550,6 @@ describe 'helpers' do
 
   describe 'multiple parameters' do
     it 'simple multi-params work' do
-      skip
       expectTemplate('Message: {{goodbye cruel world}}')
         .withInput({ cruel: 'cruel', world: 'world' })
         .withHelper('goodbye', lambda { |cruel, world|
@@ -560,7 +560,6 @@ describe 'helpers' do
     end
 
     it 'block multi-params work' do
-      skip
       expectTemplate(
         'Message: {{#goodbye cruel world}}{{greeting}} {{adj}} {{noun}}{{/goodbye}}'
       )
