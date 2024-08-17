@@ -182,7 +182,6 @@ describe 'helpers' do
   end
 
   it 'block helper' do
-    skip
     expectTemplate('{{#goodbyes}}{{text}}! {{/goodbyes}}cruel {{world}}!')
       .withInput({ world: 'world' })
       .withHelper('goodbyes', lambda { |options|

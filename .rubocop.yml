@@ -21,6 +21,7 @@ Layout/FirstArrayElementIndentation:
     - 'test/compatibility/*'
 
 Layout/LineLength:
+  Max: 92
   Exclude:
     - 'test/compatibility/*'
 

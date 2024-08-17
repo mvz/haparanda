@@ -48,10 +48,16 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
 
     def with_new_context(value, &block)
-      @stack.push value
-      result = block.call
-      @stack.pop
-      result
+      # TODO: This prevents a SystemStackError. Make this unnecessary, for
+      # example by moving the stacking behavior out of the Input class.
+      if self == value
+        block.call
+      else
+        @stack.push value
+        result = block.call
+        @stack.pop
+        result
+      end
     end
 
     def to_s
@@ -76,8 +82,8 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
       @fn = fn
     end
 
-    def fn(_arg)
-      @fn&.call
+    def fn(arg)
+      @fn&.call(arg)
     end
   end
 
@@ -184,8 +190,14 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   def evaluate_program_with_value(value, program, _else_program)
     return s(:result, "") unless value
 
+    fn = lambda { |item|
+      @input.with_new_context(item) do
+        apply(program)
+      end
+    }
+
     if value.respond_to? :call
-      value = execute_in_context(value, [], program: -> { apply(program) })
+      value = execute_in_context(value, [], program: fn)
       return s(:result, value.to_s)
     end
 
@@ -193,15 +205,12 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     when Array
       parts = value.each_with_index.map do |elem, index|
         @input.set_data(:index, index)
-        @input.with_new_context(elem) do
-          apply(program)
-        end
+        fn.call(elem)
       end
       s(:result, parts.join)
     else
-      @input.with_new_context(value) do
-        process(program)
-      end
+      result = fn.call(value)
+      s(:result, result)
     end
   end
 
