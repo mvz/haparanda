@@ -192,7 +192,6 @@ describe 'helpers' do
   end
 
   it 'block helper staying in the same context' do
-    skip
     expectTemplate('{{#form}}<p>{{name}}</p>{{/form}}')
       .withInput({ name: 'Yehuda' })
       .withHelper('form', lambda { |options|
@@ -203,9 +202,8 @@ describe 'helpers' do
   end
 
   it 'block helper should have context in this' do
-    skip
-    function link(options) {
-      return '<a href="/people/' + this.id + '">' + options.fn(this) + '</a>';
+    link = lambda { |options|
+      return '<a href="/people/' + this.id.to_s + '">' + options.fn(this) + '</a>';
     }
 
     expectTemplate(
@@ -224,7 +222,6 @@ describe 'helpers' do
   end
 
   it 'block helper for undefined value' do
-    skip
     expectTemplate("{{#empty}}shouldn't render{{/empty}}").toCompileTo('');
   end
 
