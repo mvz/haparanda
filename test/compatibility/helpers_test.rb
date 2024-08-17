@@ -32,11 +32,10 @@ describe 'helpers' do
   end
 
   it 'helper for raw block gets parameters' do
-    skip
     expectTemplate('{{{{raw 1 2 3}}}} {{test}} {{{{/raw}}}}')
       .withInput({ test: 'hello' })
       .withHelper('raw', lambda { |a, b, c, options|
-        return options.fn + a + b + c;
+        return options.fn + a.to_s + b.to_s + c.to_s;
       })
       .withMessage('raw block helper gets raw content')
       .toCompileTo(' {{test}} 123');
@@ -106,7 +105,6 @@ describe 'helpers' do
   end
 
   it 'helper block with complex lookup expression' do
-    skip
     expectTemplate('{{#goodbyes}}{{../name}}{{/goodbyes}}')
       .withInput({ name: 'Alan' })
       .withHelper('goodbyes', lambda { |options|
@@ -121,7 +119,6 @@ describe 'helpers' do
   end
 
   it 'helper with complex lookup and nested template' do
-    skip
     expectTemplate(
       '{{#goodbyes}}{{#link ../prefix}}{{text}}{{/link}}{{/goodbyes}}'
     )
@@ -144,7 +141,6 @@ describe 'helpers' do
   end
 
   it 'helper with complex lookup and nested template in VM+Compiler' do
-    skip
     expectTemplate(
       '{{#goodbyes}}{{#link ../prefix}}{{text}}{{/link}}{{/goodbyes}}'
     )
@@ -225,7 +221,6 @@ describe 'helpers' do
   end
 
   it 'block helper passing a new context' do
-    skip
     expectTemplate('{{#form yehuda}}<p>{{name}}</p>{{/form}}')
       .withInput({ yehuda: { name: 'Yehuda' } })
       .withHelper('form', lambda { |context, options|
@@ -236,7 +231,6 @@ describe 'helpers' do
   end
 
   it 'block helper passing a complex path context' do
-    skip
     expectTemplate('{{#form yehuda/cat}}<p>{{name}}</p>{{/form}}')
       .withInput({ yehuda: { name: 'Yehuda', cat: { name: 'Harold' } } })
       .withHelper('form', lambda { |context, options|
@@ -247,7 +241,6 @@ describe 'helpers' do
   end
 
   it 'nested block helpers' do
-    skip
     expectTemplate(
       '{{#form yehuda}}<p>{{name}}</p>{{#link}}Hello{{/link}}{{/form}}'
     )
@@ -265,9 +258,8 @@ describe 'helpers' do
   end
 
   it 'block helper inverted sections' do
-    skip
-    var string = "{{#list people}}{{name}}{{^}}<em>Nobody's here</em>{{/list}}";
-    function list(context, options) {
+    string = "{{#list people}}{{name}}{{^}}<em>Nobody's here</em>{{/list}}";
+    list = lambda { |context, options|
       if context.length > 0
         var out = '<ul>';
         context.length.times do |i|
@@ -919,13 +911,12 @@ describe 'helpers' do
     end
 
     it 'helpers take precedence over same-named context properties$' do
-      skip
       expectTemplate('{{#goodbye}} {{cruel world}}{{/goodbye}}')
         .withHelper('goodbye', lambda { |options|
-          return this.goodbye.toUpperCase + options.fn(this);
+          return this.goodbye.upcase + options.fn(this);
         })
         .withHelper('cruel', lambda { |world|
-          return 'cruel ' + world.toUpperCase;
+          return 'cruel ' + world.upcase;
         })
         .withInput({
           goodbye: 'goodbye',
@@ -952,15 +943,14 @@ describe 'helpers' do
     end
 
     it 'Scoped names take precedence over block helpers' do
-      skip
       expectTemplate(
         '{{#goodbye}} {{cruel world}}{{/goodbye}} {{this.goodbye}}'
       )
         .withHelper('goodbye', lambda { |options|
-          return this.goodbye.toUpperCase + options.fn(this);
+          return this.goodbye.upcase + options.fn(this);
         })
         .withHelper('cruel', lambda { |world|
-          return 'cruel ' + world.toUpperCase;
+          return 'cruel ' + world.upcase;
         })
         .withInput({
           goodbye: 'goodbye',
