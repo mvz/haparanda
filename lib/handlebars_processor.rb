@@ -112,14 +112,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     else
       helper_path = process(path)[2]
       helper = @helpers.fetch(helper_path[0]) { @input.dig(*helper_path) }
-
-      args = [*params, Object.new]
-      value = if helper.arity < 0
-                raise NotImplementedError
-              else
-                args = args.take(helper.arity)
-                @context_wrapper.instance_exec(*args, &helper)
-              end
+      value = execute_in_context(helper, params)
     end
     s(:result, value)
   end
@@ -202,24 +195,11 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def evaluate_path(path)
-    path = process(path)
-    case path.sexp_type
-    when :segments
-      data, elements = path.sexp_body
-    when :undefined, :null
-      return nil
-    else
-      elements = [path[1]]
-    end
-    value = if data
-              @input.data(*elements)
-            elsif elements.count == 1 && @helpers.key?(elements.first)
-              @helpers[elements.first]
-            else
-              @input.dig(*elements)
-            end
-    value = @context_wrapper.instance_exec(&value) if value.respond_to? :call
+  def evaluate_path(expr)
+    path = process(expr)
+    data, elements = path_segments(path)
+    value = lookup_path(data, elements)
+    value = execute_in_context(value) if value.respond_to? :call
     value
   end
 
@@ -228,20 +208,45 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     case path.sexp_type
     when :segments
       data, elements = path.sexp_body
-      value = if data
-                @input.data(*elements)
-              elsif elements.count == 1 && @helpers.key?(elements.first)
-                @helpers[elements.first]
-              else
-                @input.dig(*elements)
-              end
-      value = @context_wrapper.instance_exec(&value) if value.respond_to? :call
+      value = lookup_path(data, elements)
+      value = execute_in_context(value) if value.respond_to? :call
       value
     when :undefined, :null
       nil
     else
       path[1]
     end
+  end
+
+  def path_segments(path)
+    case path.sexp_type
+    when :segments
+      data, elements = path.sexp_body
+    when :undefined, :null
+      raise NotImplementedError
+    else
+      elements = [path[1]]
+    end
+    return data, elements
+  end
+
+  def lookup_path(data, elements)
+    if data
+      @input.data(*elements)
+    elsif elements.count == 1 && @helpers.key?(elements.first)
+      @helpers[elements.first]
+    else
+      @input.dig(*elements)
+    end
+  end
+
+  def execute_in_context(callable, params = [])
+    num_params = callable.arity
+    raise NotImplementedError if num_params < 0
+
+    args = [*params, Object.new]
+    args = args.take(num_params)
+    @context_wrapper.instance_exec(*args, &callable)
   end
 
   def handle_if(value, block, _else_block)

@@ -61,6 +61,7 @@ Style/QuotedSymbols:
     - 'test/compatibility/*'
 
 Style/RedundantReturn:
+  AllowMultipleReturnValues: true
   Exclude:
     - 'test/compatibility/*'
 
