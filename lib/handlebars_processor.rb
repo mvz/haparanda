@@ -57,12 +57,6 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     def to_s
       @stack.last.to_s
     end
-  end
-
-  class ContextWrapper
-    def initialize(input)
-      @input = input
-    end
 
     def this
       self
@@ -73,7 +67,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
 
     def method_missing(method_name, *_args)
-      @input.dig(method_name) # rubocop:disable Style/SingleArgumentDig
+      dig(method_name)
     end
   end
 
@@ -93,7 +87,6 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     self.require_empty = false
 
     @input = Input.new(input)
-    @context_wrapper = ContextWrapper.new(@input)
 
     custom_helpers ||= {}
     @helpers = {
@@ -263,7 +256,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
     args = [*params, Options.new(fn: program)]
     args = args.take(num_params)
-    @context_wrapper.instance_exec(*args, &callable)
+    @input.instance_exec(*args, &callable)
   end
 
   def handle_if(value, block, _else_block)
