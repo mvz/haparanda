@@ -469,29 +469,27 @@ describe 'helpers' do
   end
 
   it 'decimal number literals work' do
-    skip
     expectTemplate('Message: {{hello -1.2 1.2}}')
       .withHelper('hello', lambda { |times, times2|
-        if typeof times != 'number'
+        if times.class != Float
           times = 'NaN';
         end
-        if typeof times2 != 'number'
+        if times2.class != Float
           times2 = 'NaN';
         end
-        return 'Hello ' + times + ' ' + times2 + ' times';
+        return 'Hello ' + times.to_s + ' ' + times2.to_s + ' times';
       })
       .withMessage('template with a negative integer literal')
       .toCompileTo('Message: Hello -1.2 1.2 times');
   end
 
   it 'negative number literals work' do
-    skip
     expectTemplate('Message: {{hello -12}}')
       .withHelper('hello', lambda { |times|
-        if typeof times != 'number'
+        if times.class != Integer
           times = 'NaN';
         end
-        return 'Hello ' + times + ' times';
+        return 'Hello ' + times.to_s + ' times';
       })
       .withMessage('template with a negative integer literal')
       .toCompileTo('Message: Hello -12 times');
@@ -499,20 +497,19 @@ describe 'helpers' do
 
   describe 'String literal parameters' do
     it 'simple literals work' do
-      skip
       expectTemplate('Message: {{hello "world" 12 true false}}')
         .withHelper('hello', lambda { |param, times, bool1, bool2|
-          if typeof times != 'number'
+          if times.class != Integer
             times = 'NaN';
           end
-          if typeof bool1 != 'boolean'
+          if bool1.class != TrueClass
             bool1 = 'NaB';
           end
-          if typeof bool2 != 'boolean'
+          if bool2.class != FalseClass
             bool2 = 'NaB';
           end
           return (
-            'Hello ' + param + ' ' + times + ' times: ' + bool1 + ' ' + bool2
+            'Hello ' + param.to_s + ' ' + times.to_s + ' times: ' + bool1.to_s + ' ' + bool2.to_s
           );
         })
         .withMessage('template with a simple String literal')
@@ -546,13 +543,12 @@ describe 'helpers' do
   end
 
   it 'negative number literals work' do
-    skip
     expectTemplate('Message: {{hello -12}}')
       .withHelper('hello', lambda { |times|
-        if typeof times != 'number'
+        if times.class != Integer
           times = 'NaN';
         end
-        return 'Hello ' + times + ' times';
+        return 'Hello ' + times.to_s + ' times';
       })
       .withMessage('template with a negative integer literal')
       .toCompileTo('Message: Hello -12 times');

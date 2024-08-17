@@ -177,7 +177,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
   def process_exprs(expr)
     _, *paths = expr
-    values = paths.map { evaluate_path(_1) }
+    values = paths.map { evaluate_expr(_1) }
     s(:values, values)
   end
 
@@ -221,6 +221,27 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
             end
     value = @context_wrapper.instance_exec(&value) if value.respond_to? :call
     value
+  end
+
+  def evaluate_expr(expr)
+    path = process(expr)
+    case path.sexp_type
+    when :segments
+      data, elements = path.sexp_body
+      value = if data
+                @input.data(*elements)
+              elsif elements.count == 1 && @helpers.key?(elements.first)
+                @helpers[elements.first]
+              else
+                @input.dig(*elements)
+              end
+      value = @context_wrapper.instance_exec(&value) if value.respond_to? :call
+      value
+    when :undefined, :null
+      nil
+    else
+      path[1]
+    end
   end
 
   def handle_if(value, block, _else_block)
