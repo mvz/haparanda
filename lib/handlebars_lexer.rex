@@ -62,8 +62,7 @@ rule
                                   ending_delimiter = text[5...-4]
                                   if ending_delimiter == @raw_delimiter
                                     @state = nil
-                                    text = ""
-                                    [:END_RAW_BLOCK, text]
+                                    [:END_RAW_BLOCK, ending_delimiter]
                                   else
                                     [:CONTENT, text]
                                   end
@@ -75,10 +74,13 @@ rule
 :MU \(                           { [:OPEN_SEXPR, text] }
 :MU \)                           { [:CLOSE_SEXPR, text] }
 
-:MU {{{{[^\s!"#%-,\.\/;->@\[-\^`\{-~]+}}}}    {
-                                  @raw_delimiter = text[4...-4]
-                                  @state = :RAW
-                                  [:START_RAW_BLOCK, text]
+:MU {{{{                         {
+                                   @expect_raw_block_id = true
+                                   [:OPEN_RAW_BLOCK, text]
+                                 }
+:MU }}}}                         {
+                                   @state = :RAW
+                                   [:CLOSE_RAW_BLOCK, text]
                                  }
 :MU {{{LEFT_STRIP}?>             { [:OPEN_PARTIAL, text] }
 :MU {{{LEFT_STRIP}?#>            { [:OPEN_PARTIAL_BLOCK, text] }
@@ -113,7 +115,13 @@ rule
 :MU \|                           { [:CLOSE_BLOCK_PARAMS, text] }
 
 :MU {ID}=                        { [:KEY_ASSIGN, text[0..-2]] }
-:MU {ID}                         { [:ID, text] }
+:MU {ID}                         {
+                                   if @expect_raw_block_id
+                                     @raw_delimiter = text
+                                     @expect_raw_block_id = false
+                                   end
+                                   [:ID, text]
+                                 }
 
 :MU \[(\\\]|[^\]])*\]            { text = text.gsub(/\\([\\\]])/, '\1'); [:ID, text] }
 :MU .                            { [:INVALID, text] }

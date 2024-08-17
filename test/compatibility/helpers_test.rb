@@ -22,7 +22,6 @@ describe 'helpers' do
   end
 
   it 'helper for raw block gets raw content' do
-    skip
     expectTemplate('{{{{raw}}}} {{test}} {{{{/raw}}}}')
       .withInput({ test: 'hello' })
       .withHelper('raw', lambda { |options|
@@ -33,7 +32,6 @@ describe 'helpers' do
   end
 
   it 'helper for raw block gets parameters' do
-    skip
     expectTemplate('{{{{raw 1 2 3}}}} {{test}} {{{{/raw}}}}')
       .withInput({ test: 'hello' })
       .withHelper('raw', lambda { |a, b, c, options|

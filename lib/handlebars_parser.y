@@ -56,11 +56,13 @@ contents:
   ;
 
 rawBlock
-  : openRawBlock contents END_RAW_BLOCK { yy.prepareRawBlock($1, $2, $3, self.lexer.lineno) }
+  : openRawBlock contents END_RAW_BLOCK { result = prepare_raw_block(val[0], val[1], val[2]) }
   ;
 
 openRawBlock
-  : OPEN_RAW_BLOCK helperName exprs hash CLOSE_RAW_BLOCK { { path: $2, params: $3, hash: $4 } }
+  : OPEN_RAW_BLOCK helperName exprs hash CLOSE_RAW_BLOCK {
+    result = s(:open_raw, *val[1..3], strip_flags(val[0], val[4])).line(self.lexer.lineno)
+  }
   ;
 
 block
@@ -289,10 +291,17 @@ def prepare_partial_block(open, program, close)
   _, name, params, hash, open_strip = *open
   _, close_name, close_strip = *close
 
-  validated_close(name, close_name)
+  validate_close(name, close_name)
 
   s(:partial_block, name, params, hash, program, open_strip, close_strip)
     .line(self.lexer.lineno)
+end
+
+def prepare_raw_block(open, contents, close)
+  open_type, path, params, hash, block_params, = *open
+  name = path[2][1]
+  validate_close(name, close)
+  s(:block, path, params, hash, contents, nil, nil, nil).line(self.lexer.lineno)
 end
 
 def prepare_block(open, program, inverse_chain, close, inverted)
@@ -303,7 +312,7 @@ def prepare_block(open, program, inverse_chain, close, inverted)
 
   if close
     _, close_name, close_strip = *close
-    validated_close(name, close_name)
+    validate_close(name, close_name)
   end
 
   # TODO: Get close_strip from inverse_chain if close is nil
@@ -321,7 +330,7 @@ def prepare_block(open, program, inverse_chain, close, inverted)
     .line(self.lexer.lineno)
 end
 
-def validated_close(name, close_name)
+def validate_close(name, close_name)
   unless name == close_name
     raise ParseError, "#{name[2][1]} doesn't match #{close_name[2][1]}"
   end

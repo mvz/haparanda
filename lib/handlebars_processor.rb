@@ -82,7 +82,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
       @fn = fn
     end
 
-    def fn(arg)
+    def fn(arg = nil)
       @fn&.call(arg)
     end
   end
