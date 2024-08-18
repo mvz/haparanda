@@ -309,7 +309,6 @@ describe 'basic context' do
   end
 
   it 'block functions with context argument' do
-    skip "functions are not supported"
     expectTemplate('{{#awesome 1}}inner {{.}}{{/awesome}}')
       .withInput({
         awesome: lambda { |context, options|
@@ -321,7 +320,6 @@ describe 'basic context' do
   end
 
   it 'depthed block functions with context argument' do
-    skip "functions are not supported"
     expectTemplate(
       '{{#with value}}{{#../awesome 1}}inner {{.}}{{/../awesome}}{{/with}}'
     )
@@ -336,7 +334,6 @@ describe 'basic context' do
   end
 
   it 'block functions without context argument' do
-    skip "functions are not supported"
     expectTemplate('{{#awesome}}inner{{/awesome}}')
       .withInput({
         awesome: lambda { |options|
@@ -567,11 +564,10 @@ describe 'basic context' do
 
     expectTemplate('{{12.34}}').withInput({ 12.34 => 'bar' }).toCompileTo('bar');
 
-    skip "functions are not supported"
     expectTemplate('{{12.34 1}}')
       .withInput({
         12.34 => lambda { |arg|
-          return 'bar' + arg;
+          return 'bar' + arg.to_s;
         },
       })
       .toCompileTo('bar1');
