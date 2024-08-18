@@ -116,18 +116,11 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   def process_mustache(expr)
     _, path, params, _hash, escaped, _strip = expr
     params = process(params)[1]
-    if params.empty?
-      value = evaluate_path(path)
-      value = if escaped
-                escape(value.to_s)
-              else
-                value.to_s
-              end
-    else
-      helper_path = process(path)[2]
-      helper = @helpers.fetch(helper_path[0]) { @input.dig(*helper_path) }
-      value = execute_in_context(helper, params)
-    end
+    data, elements = path_segments process(path)
+    value = lookup_path(data, elements)
+    value = execute_in_context(value, params) if value.respond_to? :call
+    value = value.to_s
+    value = escape(value) if escaped
     s(:result, value)
   end
 
@@ -216,14 +209,6 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
         apply(program)
       end
     }
-  end
-
-  def evaluate_path(expr)
-    path = process(expr)
-    data, elements = path_segments(path)
-    value = lookup_path(data, elements)
-    value = execute_in_context(value) if value.respond_to? :call
-    value
   end
 
   def evaluate_expr(expr)
