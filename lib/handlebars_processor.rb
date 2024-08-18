@@ -78,10 +78,13 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   class Options
-    def initialize(fn:, inverse:)
+    def initialize(fn:, inverse:, hash:)
       @fn = fn
       @inverse = inverse
+      @hash = hash
     end
+
+    attr_reader :hash
 
     def fn(arg = nil)
       @fn&.call(arg)
@@ -114,18 +117,20 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_mustache(expr)
-    _, path, params, _hash, escaped, _strip = expr
+    _, path, params, hash, escaped, _strip = expr
     params = process(params)[1]
+    hash = process(hash)[1] if hash
     data, elements = path_segments process(path)
     value = lookup_path(data, elements)
-    value = execute_in_context(value, params) if value.respond_to? :call
+    value = execute_in_context(value, params, hash: hash) if value.respond_to? :call
     value = value.to_s
     value = escape(value) if escaped
     s(:result, value)
   end
 
   def process_block(expr)
-    _, name, params, _hash, program, inverse_chain, = expr
+    _, name, params, hash, program, inverse_chain, = expr
+    hash = process(hash)[1] if hash
     else_program = inverse_chain.sexp_body[1] if inverse_chain
     arguments = process(params)[1]
 
@@ -133,7 +138,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     data, elements = path_segments(path)
     value = lookup_path(data, elements)
 
-    evaluate_program_with_value(value, arguments, program, else_program)
+    evaluate_program_with_value(value, arguments, program, else_program, hash)
   end
 
   def process_statements(expr)
@@ -177,16 +182,22 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     s(:values, values)
   end
 
+  def process_hash(expr)
+    _, *entries = expr
+    hash = entries.to_h { |_, key, (_, value)| [key.to_sym, value] }
+    s(:hash, hash)
+  end
+
   private
 
-  def evaluate_program_with_value(value, arguments, program, else_program)
+  def evaluate_program_with_value(value, arguments, program, else_program, hash)
     return s(:result, "") unless value
 
     fn = make_contextual_lambda(program)
     inverse = make_contextual_lambda(else_program)
 
     if value.respond_to? :call
-      value = execute_in_context(value, arguments, fn: fn, inverse: inverse)
+      value = execute_in_context(value, arguments, fn: fn, inverse: inverse, hash: hash)
       return s(:result, value.to_s)
     end
 
@@ -248,11 +259,11 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def execute_in_context(callable, params = [], fn: nil, inverse: nil)
+  def execute_in_context(callable, params = [], fn: nil, inverse: nil, hash: nil)
     num_params = callable.arity
     raise NotImplementedError if num_params < 0
 
-    args = [*params, Options.new(fn: fn, inverse: inverse)]
+    args = [*params, Options.new(fn: fn, inverse: inverse, hash: hash)]
     args = args.take(num_params)
     @input.instance_exec(*args, &callable)
   end

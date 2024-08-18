@@ -566,16 +566,15 @@ describe 'helpers' do
 
   describe 'hash' do
     it 'helpers can take an optional hash' do
-      skip
       expectTemplate('{{goodbye cruel="CRUEL" world="WORLD" times=12}}')
         .withHelper('goodbye', lambda { |options|
           return (
             'GOODBYE ' +
-            options.hash.cruel +
+            options.hash[:cruel] +
             ' ' +
-            options.hash.world +
+            options.hash[:world] +
             ' ' +
-            options.hash.times +
+            options.hash[:times].to_s +
             ' TIMES'
           );
         })
@@ -584,11 +583,10 @@ describe 'helpers' do
     end
 
     it 'helpers can take an optional hash with booleans' do
-      skip
-      function goodbye(options) {
-        if options.hash.print == true
-          return 'GOODBYE ' + options.hash.cruel + ' ' + options.hash.world;
-        elsif options.hash.print == false
+      goodbye = lambda { |options|
+        if options.hash[:print] == true
+          return 'GOODBYE ' + options.hash[:cruel] + ' ' + options.hash[:world];
+        elsif options.hash[:print] == false
           return 'NOT PRINTING';
         else
           return 'THIS SHOULD NOT HAPPEN';
@@ -607,16 +605,15 @@ describe 'helpers' do
     end
 
     it 'block helpers can take an optional hash' do
-      skip
       expectTemplate('{{#goodbye cruel="CRUEL" times=12}}world{{/goodbye}}')
         .withHelper('goodbye', lambda { |options|
           return (
             'GOODBYE ' +
-            options.hash.cruel +
+            options.hash[:cruel] +
             ' ' +
             options.fn(this) +
             ' ' +
-            options.hash.times +
+            options.hash[:times].to_s +
             ' TIMES'
           );
         })
@@ -625,16 +622,15 @@ describe 'helpers' do
     end
 
     it 'block helpers can take an optional hash with single quoted stings' do
-      skip
-      expectTemplate('{{#goodbye cruel="CRUEL" times=12}}world{{/goodbye}}')
+      expectTemplate('{{#goodbye cruel=\'CRUEL\' times=12}}world{{/goodbye}}')
         .withHelper('goodbye', lambda { |options|
           return (
             'GOODBYE ' +
-            options.hash.cruel +
+            options.hash[:cruel] +
             ' ' +
             options.fn(this) +
             ' ' +
-            options.hash.times +
+            options.hash[:times].to_s +
             ' TIMES'
           );
         })
@@ -643,11 +639,10 @@ describe 'helpers' do
     end
 
     it 'block helpers can take an optional hash with booleans' do
-      skip
-      function goodbye(options) {
-        if options.hash.print == true
-          return 'GOODBYE ' + options.hash.cruel + ' ' + options.fn(this);
-        elsif options.hash.print == false
+      goodbye = lambda { |options|
+        if options.hash[:print] == true
+          return 'GOODBYE ' + options.hash[:cruel] + ' ' + options.fn(this);
+        elsif options.hash[:print] == false
           return 'NOT PRINTING';
         else
           return 'THIS SHOULD NOT HAPPEN';
