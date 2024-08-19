@@ -94,6 +94,10 @@ Style/NegatedIf:
   Exclude:
     - 'test/compatibility/*'
 
+Style/NegatedIfElseCondition:
+  Exclude:
+    - 'test/compatibility/*'
+
 Style/NumericPredicate:
   Enabled: false
 
