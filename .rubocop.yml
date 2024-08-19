@@ -38,6 +38,10 @@ Naming/MethodParameterName:
   AllowedNames:
     - fn
 
+Naming/VariableName:
+  Exclude:
+    - 'test/compatibility/*'
+
 Style/GuardClause:
   Exclude:
     - 'test/compatibility/*'
