@@ -37,7 +37,7 @@ statement
   | rawBlock
   | partial
   | partialBlock
-  | content
+  | contents
   | COMMENT {
     result = s(:comment, strip_comment(val[0]), strip_flags(val[0], val[0]))
       .line(self.lexer.lineno)
@@ -45,14 +45,21 @@ statement
 
 content
   : CONTENT {
-    result = s(:content, val[0])
-    result.line = self.lexer.lineno
   };
 
 # Extra rule needed for racc to parse list of one or more pieces of content
 contents:
-  : content
-  | contents content
+  : none {
+    result = s(:content, "")
+    result.line = self.lexer.lineno
+  }
+  | content {
+    result = s(:content, val[0])
+    result.line = self.lexer.lineno
+  }
+  | contents content {
+    result[1] += val[1]
+  }
   ;
 
 rawBlock
@@ -298,10 +305,11 @@ def prepare_partial_block(open, program, close)
 end
 
 def prepare_raw_block(open, contents, close)
-  open_type, path, params, hash, block_params, = *open
+  _open_type, path, params, hash, open_strip = *open
   name = path[2][1]
   validate_close(name, close)
-  s(:block, path, params, hash, contents, nil, nil, nil).line(self.lexer.lineno)
+  close_strip = strip_flags(close, close)
+  s(:block, path, params, hash, contents, nil, open_strip, close_strip).line(self.lexer.lineno)
 end
 
 def prepare_block(open, program, inverse_chain, close, inverted)

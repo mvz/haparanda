@@ -51,7 +51,6 @@ describe 'helpers' do
     end
 
     it 'helper for nested raw block gets raw content' do
-      skip
       runWithIdentityHelper(
         '{{{{identity}}}} {{{{b}}}} {{{{/b}}}} {{{{/identity}}}}',
         ' {{{{b}}}} {{{{/b}}}} '
@@ -59,7 +58,6 @@ describe 'helpers' do
     end
 
     it 'helper for nested raw block works with empty content' do
-      skip
       runWithIdentityHelper('{{{{identity}}}}{{{{/identity}}}}', '');
     end
 
@@ -76,7 +74,6 @@ describe 'helpers' do
     end
 
     it 'helper for nested raw block closes after first matching close' do
-      skip
       runWithIdentityHelper(
         '{{{{identity}}}}abc{{{{/identity}}}} {{{{identity}}}}abc{{{{/identity}}}}',
         'abc abc'
@@ -84,9 +81,8 @@ describe 'helpers' do
     end
 
     it 'helper for nested raw block throw exception when with missing closing braces' do
-      skip
-      var string = '{{{{a}}}} {{{{/a';
-      expectTemplate(string).toThrow;
+      string = '{{{{a}}}} {{{{/a';
+      expectTemplate(string).toThrow HandlebarsLexer::ScanError;
     end
   end
 
