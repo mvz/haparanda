@@ -207,7 +207,10 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
   def process_hash(expr)
     _, *entries = expr
-    hash = entries.to_h { |_, key, (_, value)| [key.to_sym, value] }
+    hash = entries.to_h do |_, key, value|
+      value = evaluate_expr(value)
+      [key.to_sym, value]
+    end
     s(:hash, hash)
   end
 

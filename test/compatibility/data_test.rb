@@ -20,7 +20,6 @@ describe 'data' do
   end
 
   it 'data can be looked up via @foo' do
-    skip
     expectTemplate('{{@hello}}')
       .withRuntimeOptions({ data: { hello: 'hello' } })
       .withMessage('@foo retrieves template data')
@@ -52,7 +51,6 @@ describe 'data' do
   end
 
   it 'parameter data can be looked up via @foo' do
-    skip
     expectTemplate('{{hello @world}}')
       .withRuntimeOptions({ data: { world: 'world' } })
       .withHelper('hello', lambda { |noun|
@@ -63,11 +61,10 @@ describe 'data' do
   end
 
   it 'hash values can be looked up via @foo' do
-    skip
     expectTemplate('{{hello noun=@world}}')
       .withRuntimeOptions({ data: { world: 'world' } })
       .withHelper('hello', lambda { |options|
-        return 'Hello ' + options.hash.noun;
+        return 'Hello ' + options.hash[:noun];
       })
       .withMessage('@foo as a parameter retrieves template data')
       .toCompileTo('Hello world');
