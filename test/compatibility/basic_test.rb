@@ -166,7 +166,6 @@ describe 'basic context' do
       .toCompileTo('true true HandlebarsProcessor::Options');
     # rubocop:enable Lint/UnderscorePrefixedVariableName
 
-    skip
     expectTemplate('{{undefined}}')
       .withInput({
         undefined: lambda {

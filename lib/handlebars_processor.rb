@@ -268,7 +268,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     when :segments
       data, elements = path.sexp_body
     when :undefined, :null
-      raise NotImplementedError
+      elements = [path.sexp_type]
     else
       elements = [path[1]]
     end
