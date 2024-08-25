@@ -7,6 +7,7 @@ Minitest::TestTask.create(:test) do |t|
   t.libs << "test"
   t.warning = true
   t.test_globs = ["test/**/*_test.rb"]
+  t.test_prelude = %(require "simplecov"; SimpleCov.start)
 end
 
 file "lib/handlebars_lexer.rb" => "lib/handlebars_lexer.rex" do
