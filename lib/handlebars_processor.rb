@@ -223,8 +223,6 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   private
 
   def evaluate_program_with_value(value, arguments, program, else_program, hash)
-    return s(:result, "") unless value
-
     fn = make_contextual_lambda(program)
     inverse = make_contextual_lambda(else_program)
 
@@ -235,23 +233,25 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
     case value
     when Array
+      return s(:result, inverse.call(@input)) if value.empty?
+
       parts = value.each_with_index.map do |elem, index|
         @data.set_data(:index, index)
         fn.call(elem)
       end
       s(:result, parts.join)
     else
-      result = fn.call(value)
+      result = value ? fn.call(value) : inverse.call(@input)
       s(:result, result)
     end
   end
 
   def make_contextual_lambda(program)
-    lambda { |item|
-      @input.with_new_context(item) do
-        apply(program)
-      end
-    }
+    if program
+      ->(item) { @input.with_new_context(item) { apply(program) } }
+    else
+      ->(_item) { "" }
+    end
   end
 
   def evaluate_expr(expr)
@@ -301,7 +301,11 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def handle_if(value, options)
-    options.fn(@input) if value
+    if value
+      options.fn(@input)
+    else
+      options.inverse(@input)
+    end
   end
 
   def handle_unless(value, options)

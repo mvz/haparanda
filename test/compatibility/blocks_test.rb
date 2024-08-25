@@ -152,7 +152,6 @@ describe 'blocks' do
 
   describe 'inverted sections' do
     it 'inverted sections with unset value' do
-      skip
       expectTemplate(
         '{{#goodbyes}}{{this}}{{/goodbyes}}{{^goodbyes}}Right On!{{/goodbyes}}'
       )
@@ -161,7 +160,6 @@ describe 'blocks' do
     end
 
     it 'inverted section with false value' do
-      skip
       expectTemplate(
         '{{#goodbyes}}{{this}}{{/goodbyes}}{{^goodbyes}}Right On!{{/goodbyes}}'
       )
@@ -171,7 +169,6 @@ describe 'blocks' do
     end
 
     it 'inverted section with empty set' do
-      skip
       expectTemplate(
         '{{#goodbyes}}{{this}}{{/goodbyes}}{{^goodbyes}}Right On!{{/goodbyes}}'
       )
@@ -181,14 +178,12 @@ describe 'blocks' do
     end
 
     it 'block inverted sections' do
-      skip
       expectTemplate('{{#people}}{{name}}{{^}}{{none}}{{/people}}')
         .withInput({ none: 'No people' })
         .toCompileTo('No people');
     end
 
     it 'chained inverted sections' do
-      skip
       expectTemplate('{{#people}}{{name}}{{else if none}}{{none}}{{/people}}')
         .withInput({ none: 'No people' })
         .toCompileTo('No people');
@@ -207,14 +202,12 @@ describe 'blocks' do
     end
 
     it 'chained inverted sections with mismatch' do
-      skip
       expectTemplate(
         '{{#people}}{{name}}{{else if none}}{{none}}{{/if}}'
-      ).toThrow(Error);
+      ).toThrow(Racc::ParseError);
     end
 
     it 'block inverted sections with empty arrays' do
-      skip
       expectTemplate('{{#people}}{{name}}{{^}}{{none}}{{/people}}')
         .withInput({
           none: 'No people',
