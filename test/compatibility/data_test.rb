@@ -8,7 +8,6 @@ require "test_helper"
 
 describe 'data' do
   it 'passing in data to a compiled function that expects data - works with helpers' do
-    skip
     expectTemplate('{{hello}}')
       .withCompileOptions({ data: true })
       .withHelper('hello', lambda { |options|

@@ -62,8 +62,8 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   class Data
-    def initialize
-      @data = {}
+    def initialize(data = {})
+      @data = data
     end
 
     def data(key)
@@ -80,16 +80,33 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
       @data = data
       result
     end
+
+    def respond_to_missing?(method_name)
+      @data.key? method_name
+    end
+
+    def method_missing(method_name, *_args)
+      @data[method_name] if @data.key? method_name
+    end
+  end
+
+  class NoData
+    def set_data(key, value); end
+
+    def with_new_data(&block)
+      block.call
+    end
   end
 
   class Options
-    def initialize(fn:, inverse:, hash:)
+    def initialize(fn:, inverse:, hash:, data:)
       @fn = fn
       @inverse = inverse
       @hash = hash
+      @data = data
     end
 
-    attr_reader :hash
+    attr_reader :hash, :data
 
     def fn(arg = nil)
       @fn&.call(arg)
@@ -100,13 +117,13 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def initialize(input, custom_helpers = nil)
+  def initialize(input, custom_helpers = nil, data: {})
     super()
 
     self.require_empty = false
 
     @input = Input.new(input)
-    @data = Data.new
+    @data = data ? Data.new(data) : NoData.new
 
     custom_helpers ||= {}
     @helpers = {
@@ -269,7 +286,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     num_params = callable.arity
     raise NotImplementedError if num_params < 0
 
-    args = [*params, Options.new(fn: fn, inverse: inverse, hash: hash)]
+    args = [*params, Options.new(fn: fn, inverse: inverse, hash: hash, data: @data)]
     args = args.take(num_params)
     @input.instance_exec(*args, &callable)
   end

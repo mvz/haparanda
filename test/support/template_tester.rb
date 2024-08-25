@@ -8,6 +8,7 @@ class TemplateTester
     @spec = spec
     @input = {}
     @helpers = {}
+    @runtime_options = {}
   end
 
   def withInput(input) # rubocop:disable Naming/MethodName
@@ -20,7 +21,8 @@ class TemplateTester
     self
   end
 
-  def withRuntimeOptions(_opts) # rubocop:disable Naming/MethodName
+  def withRuntimeOptions(opts) # rubocop:disable Naming/MethodName
+    @runtime_options = opts
     self
   end
 
@@ -40,7 +42,7 @@ class TemplateTester
 
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
     template = HandlebarsParser.new.parse(@str)
-    processor = HandlebarsProcessor.new(@input, @helpers)
+    processor = HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
     actual = processor.apply(template)
     @spec._(actual).must_equal expected, @message
   end
