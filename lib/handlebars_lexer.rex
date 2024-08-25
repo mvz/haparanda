@@ -14,7 +14,7 @@ inner
     def handle_stringescape(str, delimiter)
       case delimiter
       when '"', "'"
-        str[1..-2]
+        str[1..-2].gsub(%r{\\(.)}, "\\1")
       else
         raise NotImplementedError
       end

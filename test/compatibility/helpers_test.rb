@@ -499,12 +499,10 @@ describe 'helpers' do
     end
 
     it 'using a quote in the middle of a parameter raises an error' do
-      skip
-      expectTemplate('Message: {{hello wo"rld"}}').toThrow(Error);
+      expectTemplate('Message: {{hello wo"rld"}}').toThrow(Racc::ParseError);
     end
 
     it 'escaping a String is possible' do
-      skip
       expectTemplate('Message: {{{hello "\\"world\\""}}}')
         .withHelper('hello', lambda { |param|
           return 'Hello ' + param;
@@ -514,7 +512,6 @@ describe 'helpers' do
     end
 
     it "it works with ' marks" do
-      skip
       expectTemplate('Message: {{{hello "Alan\'s world"}}}')
         .withHelper('hello', lambda { |param|
           return 'Hello ' + param;
