@@ -71,7 +71,6 @@ describe 'data' do
   end
 
   it 'nested parameter data can be looked up via @foo.bar' do
-    skip
     expectTemplate('{{hello @world.bar}}')
       .withRuntimeOptions({ data: { world: { bar: 'world' } } })
       .withHelper('hello', lambda { |noun|

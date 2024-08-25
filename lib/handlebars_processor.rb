@@ -66,8 +66,8 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
       @data = data
     end
 
-    def data(key)
-      @data[key]
+    def data(*keys)
+      @data.dig(*keys)
     end
 
     def set_data(key, value)
