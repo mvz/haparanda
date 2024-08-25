@@ -6,7 +6,6 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   class Input
     def initialize(value)
       @stack = [value]
-      @data = {}
     end
 
     def dig(*keys)
@@ -30,21 +29,6 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
       end
 
       value
-    end
-
-    def data(key)
-      @data[key]
-    end
-
-    def set_data(key, value)
-      @data[key] = value
-    end
-
-    def with_new_data(&block)
-      data = @data.clone
-      result = block.call
-      @data = data
-      result
     end
 
     def with_new_context(value, &block)
@@ -77,6 +61,27 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     end
   end
 
+  class Data
+    def initialize
+      @data = {}
+    end
+
+    def data(key)
+      @data[key]
+    end
+
+    def set_data(key, value)
+      @data[key] = value
+    end
+
+    def with_new_data(&block)
+      data = @data.clone
+      result = block.call
+      @data = data
+      result
+    end
+  end
+
   class Options
     def initialize(fn:, inverse:, hash:)
       @fn = fn
@@ -101,6 +106,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     self.require_empty = false
 
     @input = Input.new(input)
+    @data = Data.new
 
     custom_helpers ||= {}
     @helpers = {
@@ -204,7 +210,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     case value
     when Array
       parts = value.each_with_index.map do |elem, index|
-        @input.set_data(:index, index)
+        @data.set_data(:index, index)
         fn.call(elem)
       end
       s(:result, parts.join)
@@ -251,7 +257,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
 
   def lookup_path(data, elements)
     if data
-      @input.data(*elements)
+      @data.data(*elements)
     elsif elements.count == 1 && @helpers.key?(elements.first)
       @helpers[elements.first]
     else
@@ -288,9 +294,9 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     return unless value
 
     value = value.values if value.is_a? Hash
-    @input.with_new_data do
+    @data.with_new_data do
       value.each_with_index.map do |item, index|
-        @input.set_data(:index, index)
+        @data.set_data(:index, index)
         options.fn(item)
       end.join
     end
