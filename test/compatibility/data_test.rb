@@ -81,25 +81,22 @@ describe 'data' do
   end
 
   it 'nested parameter data does not fail with @world.bar' do
-    skip
     expectTemplate('{{hello @world.bar}}')
       .withRuntimeOptions({ data: { foo: { bar: 'world' } } })
       .withHelper('hello', lambda { |noun|
-        return 'Hello ' + noun;
+        return 'Hello ' + noun.to_s;
       })
       .withMessage('@foo as a parameter retrieves template data')
-      .toCompileTo('Hello undefined');
+      .toCompileTo('Hello ');
   end
 
   it 'parameter data throws when using complex scope references' do
-    skip
     expectTemplate(
       '{{#goodbyes}}{{text}} cruel {{@foo/../name}}! {{/goodbyes}}'
-    ).toThrow(Error);
+    ).toThrow(Racc::ParseError);
   end
 
   it 'data can be functions' do
-    skip
     expectTemplate('{{@hello}}')
       .withRuntimeOptions({
         data: {
@@ -112,7 +109,6 @@ describe 'data' do
   end
 
   it 'data can be functions with params' do
-    skip
     expectTemplate('{{@hello "hello"}}')
       .withRuntimeOptions({
         data: {
@@ -160,7 +156,6 @@ describe 'data' do
   end
 
   it 'passing in data to a compiled function that expects data - works with helpers and parameters' do
-    skip
     expectTemplate('{{hello world}}')
       .withCompileOptions({ data: true })
       .withHelper('hello', lambda { |noun, options|
@@ -173,7 +168,6 @@ describe 'data' do
   end
 
   it 'passing in data to a compiled function that expects data - works with block helpers' do
-    skip
     expectTemplate('{{#hello}}{{world}}{{/hello}}')
       .withCompileOptions({
         data: true,
@@ -191,7 +185,6 @@ describe 'data' do
   end
 
   it 'passing in data to a compiled function that expects data - works with block helpers that use ..' do
-    skip
     expectTemplate('{{#hello}}{{world ../zomg}}{{/hello}}')
       .withCompileOptions({ data: true })
       .withHelper('hello', lambda { |options|
@@ -207,7 +200,6 @@ describe 'data' do
   end
 
   it 'passing in data to a compiled function that expects data - data is passed to with block helpers where children use ..' do
-    skip
     expectTemplate('{{#hello}}{{world ../zomg}}{{/hello}}')
       .withCompileOptions({ data: true })
       .withHelper('hello', lambda { |options|
