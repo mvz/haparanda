@@ -237,11 +237,10 @@ describe 'basic context' do
   end
 
   it "functions returning safestrings shouldn't be escaped" do
-    skip "functions are not supported"
     expectTemplate('{{awesome}}')
       .withInput({
         awesome: lambda {
-          return new Handlebars.SafeString("&'\\<>");
+          return HandlebarsProcessor::SafeString.new("&'\\<>");
         },
       })
       .withMessage("functions returning safestrings aren't escaped")

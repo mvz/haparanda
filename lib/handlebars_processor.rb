@@ -3,6 +3,12 @@
 require "sexp_processor"
 
 class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
+  class SafeString < String
+    def to_s
+      self
+    end
+  end
+
   class Input
     def initialize(value)
       @stack = [value]
@@ -333,6 +339,8 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   }.freeze
 
   def escape(str)
+    return str if str.is_a? SafeString
+
     str.gsub(/[&<>"'`=]/) do |chr|
       ESCAPE[chr]
     end
