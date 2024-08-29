@@ -16,6 +16,7 @@ module CompatibilityTestHelpers
   end
 
   def expectTemplate(template) # rubocop:disable Naming/MethodName
+    template = template.gsub('\n', "\n")
     TemplateTester.new(template, self)
   end
 end

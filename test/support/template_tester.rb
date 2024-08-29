@@ -41,6 +41,7 @@ class TemplateTester
   end
 
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
+    expected = expected.gsub('\n', "\n")
     template = HandlebarsParser.new.parse(@str)
     processor = HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
     actual = processor.apply(template)

@@ -8,7 +8,6 @@ require "test_helper"
 
 describe 'whitespace control' do
   it 'should strip whitespace around mustache calls' do
-    skip
     hash = { foo: 'bar<' };
 
     expectTemplate(' {{~foo~}} ').withInput(hash).toCompileTo('bar&lt;');
