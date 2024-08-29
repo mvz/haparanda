@@ -171,20 +171,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_statements(expr)
-    statements = expr.sexp_body
-
-    statements.each_cons(2) do |prev, item|
-      if prev.sexp_type == :content && item.sexp_type != :content
-        strip = item.last
-        prev[1] = prev[1].sub(/\s*$/, "") if strip[1]
-      end
-      if prev.sexp_type != :content && item.sexp_type == :content
-        strip = prev.last
-        item[1] = item[1].sub(/^\s*/, "") if strip[2]
-      end
-    end
-
-    results = statements.map { process(_1)[1] }
+    results = expr.sexp_body.map { process(_1)[1] }
     s(:result, results.join)
   end
 

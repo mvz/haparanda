@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "handlebars_parser"
+require "whitespace_handler"
+require "handlebars_processor"
 
 class TemplateTester
   def initialize(str, spec)
@@ -43,8 +45,9 @@ class TemplateTester
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
     expected = expected.gsub('\n', "\n")
     template = HandlebarsParser.new.parse(@str)
+    compiled_template = WhitespaceHandler.new.process(template)
     processor = HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
-    actual = processor.apply(template)
+    actual = processor.apply(compiled_template)
     @spec._(actual).must_equal expected, @message
   end
 
