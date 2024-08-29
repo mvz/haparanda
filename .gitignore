@@ -4,3 +4,4 @@ lib/handlebars_parser.output
 handlebars.tab.rb
 Gemfile.lock
 coverage/
+tmp/
