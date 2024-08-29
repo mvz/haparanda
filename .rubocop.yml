@@ -37,6 +37,10 @@ Metrics/BlockLength:
   Exclude:
     - 'test/**/*'
 
+# Allow lots of keyword arguments
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
 # Expect syntax already marks assertions clearly
 Minitest/EmptyLineBeforeAssertionMethods:
   Enabled: false
