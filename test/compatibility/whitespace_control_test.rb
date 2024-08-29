@@ -25,7 +25,6 @@ describe 'whitespace control' do
 
   describe 'blocks' do
     it 'should strip whitespace around simple block calls' do
-      skip
       hash = { foo: 'bar<' };
 
       expectTemplate(' {{~#if foo~}} bar {{~/if~}} ')
