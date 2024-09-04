@@ -327,7 +327,7 @@ def prepare_block(open, program, inverse_chain, close, inverted)
 
   if inverted
     raise NotImplementedError if inverse_chain
-    inverse_chain = s(:inverse, block_params, program)
+    inverse_chain = s(:inverse, block_params, program, open_strip, close_strip)
     program = nil
   else
     program = s(:program, block_params, program)

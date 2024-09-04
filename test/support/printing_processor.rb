@@ -70,7 +70,7 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_inverse(expr)
-    _, block_params, program, = expr.shift(4)
+    _, block_params, program, = expr.shift(5)
     block_params = print(block_params).gsub(/^/, "  ") if block_params
     program = print(program).gsub(/^/, "  ") if program
     s(:print, "{{^}}\n#{block_params}#{program}")

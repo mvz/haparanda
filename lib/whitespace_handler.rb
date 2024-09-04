@@ -24,6 +24,21 @@ class WhitespaceHandler < SexpProcessor
     s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)
   end
 
+  def process_inverse(expr)
+    _, block_params, statements, open_strip, close_strip = expr
+
+    case statements.sexp_type
+    when :statements
+      if (items = statements&.sexp_body)
+        strip_initial_whitespace(items.first, open_strip)
+        strip_final_whitespace(items.last, close_strip)
+      end
+    end
+    # TODO: Handle :block sexp_type
+
+    s(:inverse, process(block_params), process(statements), open_strip, close_strip)
+  end
+
   def process_statements(expr)
     statements = expr.sexp_body
 

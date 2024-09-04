@@ -53,7 +53,6 @@ describe 'whitespace control' do
     end
 
     it 'should strip whitespace around inverse block calls' do
-      skip
       expectTemplate(' {{~^if foo~}} bar {{~/if~}} ').toCompileTo('bar');
 
       expectTemplate(' {{^if foo~}} bar {{/if~}} ').toCompileTo(' bar ');
