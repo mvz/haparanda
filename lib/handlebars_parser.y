@@ -37,27 +37,32 @@ statement
   | rawBlock
   | partial
   | partialBlock
-  | contents
+  | content
   | COMMENT {
     result = s(:comment, strip_comment(val[0]), strip_flags(val[0], val[0]))
       .line(self.lexer.lineno)
   };
 
-content
-  : CONTENT {
-  };
+content:
+  CONTENT {
+    result = s(:content, val[0])
+    result.line = self.lexer.lineno
+  }
+  ;
 
-# Extra rule needed for racc to parse list of one or more pieces of content
+# Extra rule needed to replace content*
 contents:
   : none {
     result = s(:content, "")
     result.line = self.lexer.lineno
   }
-  | content {
-    result = s(:content, val[0])
-    result.line = self.lexer.lineno
-  }
-  | contents content {
+  | contentList
+  ;
+
+# Extra rule needed for racc to parse list of one or more contents
+contentList:
+  content
+  | contentList CONTENT {
     result[1] += val[1]
   }
   ;

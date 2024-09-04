@@ -13,19 +13,22 @@ class WhitespaceHandler < SexpProcessor
   def process_block(expr)
     _, name, params, hash, program, inverse_chain, open_strip, close_strip = expr
 
+    program = process(program)
+    inverse_chain = process(inverse_chain)
+
     if program && (statements = program[2]&.sexp_body)
       strip_initial_whitespace(statements.first, open_strip)
       strip_final_whitespace(statements.last, close_strip)
     end
-
-    program = process(program)
-    inverse_chain = process(inverse_chain)
 
     s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)
   end
 
   def process_inverse(expr)
     _, block_params, statements, open_strip, close_strip = expr
+
+    block_params = process(block_params)
+    statements = process(statements)
 
     case statements.sexp_type
     when :statements
@@ -36,18 +39,20 @@ class WhitespaceHandler < SexpProcessor
     end
     # TODO: Handle :block sexp_type
 
-    s(:inverse, process(block_params), process(statements), open_strip, close_strip)
+    s(:inverse, block_params, statements, open_strip, close_strip)
   end
 
   def process_statements(expr)
     statements = expr.sexp_body
 
+    statements = statements.map { process(_1) }
+    statements = combine_contents(statements)
+
     statements.each_cons(2) do |prev, item|
       strip_final_whitespace(prev, item.last) if item.sexp_type != :content
       strip_initial_whitespace(item, prev.last) if prev.sexp_type != :content
     end
-    results = statements.map { process(_1) }
-    s(:statements, *results)
+    s(:statements, *statements)
   end
 
   def strip_initial_whitespace(item, strip)
@@ -56,5 +61,28 @@ class WhitespaceHandler < SexpProcessor
 
   def strip_final_whitespace(item, strip)
     item[1] = item[1].sub(/\s*$/, "") if item.sexp_type == :content && strip&.at(1)
+  end
+
+  def combine_contents(statements)
+    return statements if statements.length < 2
+
+    prev = nil
+    result = []
+
+    statements.each do |item|
+      if prev
+        if item.sexp_type == :content
+          prev[1] += item[1]
+        else
+          result << item
+          prev = nil
+        end
+      else
+        result << item
+        prev = item if item.sexp_type == :content
+      end
+    end
+
+    result
   end
 end
