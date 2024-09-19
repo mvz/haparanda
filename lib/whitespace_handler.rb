@@ -14,6 +14,11 @@ class WhitespaceHandler < SexpProcessor
     _, name, params, hash, program, inverse_chain, open_strip, close_strip = expr
 
     program = process(program)
+    if inverse_chain && inverse_chain.last.nil?
+      body = inverse_chain.sexp_body
+      body[-1] = close_strip
+      inverse_chain.sexp_body = body
+    end
     inverse_chain = process(inverse_chain)
 
     if program && (statements = program[2]&.sexp_body)

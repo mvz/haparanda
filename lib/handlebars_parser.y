@@ -105,14 +105,14 @@ optInverseAndProgram
   ;
 
 inverseAndProgram
-  : INVERSE program { result = s(:inverse, nil, val[1], strip_flags(val[0], val[0])) }
+  : INVERSE program { result = s(:inverse, nil, val[1], strip_flags(val[0], val[0]), nil) }
   ;
 
 inverseChain
   : none
   | openInverseChain program inverseChain {
     block = prepare_block(val[0], val[1], val[2], nil, false)
-    result = s(:inverse, nil, block)
+    result = s(:inverse, nil, block, nil, nil)
   }
   | inverseAndProgram
   ;
