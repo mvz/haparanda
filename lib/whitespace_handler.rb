@@ -54,8 +54,8 @@ class WhitespaceHandler < SexpProcessor
     statements = combine_contents(statements)
 
     statements.each_cons(2) do |prev, item|
-      strip_final_whitespace(prev, item.last) if item.sexp_type != :content
-      strip_initial_whitespace(item, prev.last) if prev.sexp_type != :content
+      strip_final_whitespace(prev, open_strip_for(item)) if item.sexp_type != :content
+      strip_initial_whitespace(item, close_strip_for(prev)) if prev.sexp_type != :content
     end
     s(:statements, *statements)
   end
@@ -66,6 +66,19 @@ class WhitespaceHandler < SexpProcessor
 
   def strip_final_whitespace(item, strip)
     item[1] = item[1].sub(/\s*$/, "") if item.sexp_type == :content && strip&.at(1)
+  end
+
+  def open_strip_for(item)
+    case item.sexp_type
+    when :block
+      item.at(-2)
+    else
+      item.last
+    end
+  end
+
+  def close_strip_for(item)
+    item.last
   end
 
   def combine_contents(statements)
