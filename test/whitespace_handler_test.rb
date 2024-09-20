@@ -43,4 +43,58 @@ describe WhitespaceHandler do
                              nil, s(:strip, true, false), s(:strip, false, true)),
                            s(:content, ""))
   end
+
+  it "does not strip whitespace around standalone mustaches" do
+    raw = parser.parse "foo \n {{bar}}  \n baz"
+    result = handler.process raw
+    _(result).must_equal s(:statements,
+                           s(:content, "foo \n "),
+                           s(:mustache,
+                             s(:path, false, s(:id, "bar")),
+                             s(:exprs), nil, true,
+                             s(:strip, false, false)),
+                           s(:content, "  \n baz"))
+  end
+
+  it "strips whitespace around standalone starting block delimiters" do
+    raw = parser.parse "foo \n {{# foo}} \nbar{{/foo}} \n baz \n "
+    result = handler.process raw
+    _(result).must_equal s(:statements,
+                           s(:content, "foo \n"),
+                           s(:block,
+                             s(:path, false, s(:id, "foo")),
+                             s(:exprs), nil,
+                             s(:program, nil, s(:statements, s(:content, "bar"))),
+                             nil, s(:strip, false, false), s(:strip, false, false)),
+                           s(:content, " \n baz \n "))
+  end
+
+  it "strips whitespace around standalone ending block delimiters" do
+    raw = parser.parse "foo \n {{# foo}}bar \n {{/foo}} \n baz \n "
+    result = handler.process raw
+    _(result).must_equal s(:statements,
+                           s(:content, "foo \n "),
+                           s(:block,
+                             s(:path, false, s(:id, "foo")),
+                             s(:exprs), nil,
+                             s(:program, nil, s(:statements, s(:content, "bar \n"))),
+                             nil, s(:strip, false, false), s(:strip, false, false)),
+                           s(:content, " baz \n "))
+  end
+
+  it "strips whitespace around standalone block end delimiter with inverse delimiter" do
+    raw = parser.parse "foo \n {{# foo}}bar {{else}}qux\n {{/foo}} \n baz \n "
+    result = handler.process raw
+    _(result).must_equal s(:statements,
+                           s(:content, "foo \n "),
+                           s(:block,
+                             s(:path, false, s(:id, "foo")),
+                             s(:exprs), nil,
+                             s(:program, nil, s(:statements, s(:content, "bar "))),
+                             s(:inverse, nil,
+                               s(:statements, s(:content, "qux\n")),
+                               s(:strip, false, false), s(:strip, false, false)),
+                             s(:strip, false, false), s(:strip, false, false)),
+                           s(:content, " baz \n "))
+  end
 end

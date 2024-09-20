@@ -56,9 +56,17 @@ class WhitespaceHandler < SexpProcessor
     statements.each_cons(2) do |prev, item|
       strip_final_whitespace(prev, open_strip_for(item)) if item.sexp_type != :content
       strip_initial_whitespace(item, close_strip_for(prev)) if prev.sexp_type != :content
+
+      strip_standalone_whitespace(prev, item.dig(4, 2, 1)) if item.sexp_type == :block
+      if prev.sexp_type == :block
+        inner = prev[5] || prev[4]
+        strip_standalone_whitespace(inner.dig(2, -1), item)
+      end
     end
     s(:statements, *statements)
   end
+
+  private
 
   def strip_initial_whitespace(item, strip)
     item[1] = item[1].sub(/^\s*/, "") if item.sexp_type == :content && strip[2]
@@ -66,6 +74,16 @@ class WhitespaceHandler < SexpProcessor
 
   def strip_final_whitespace(item, strip)
     item[1] = item[1].sub(/\s*$/, "") if item.sexp_type == :content && strip&.at(1)
+  end
+
+  def strip_standalone_whitespace(before, after)
+    return unless before&.sexp_type == :content && before[1] =~ /\n\s*$/
+    return unless after.sexp_type == :content && after[1] =~ /^\s*\n/
+
+    # Strip trailing whitespace before but leave the \n
+    before[1] = before[1].sub(/\n[ \t]+$/, "\n")
+    # Strip leading whitespace after including the \n
+    after[1] = after[1].sub(/^[ \t]*\n/, "")
   end
 
   def open_strip_for(item)
