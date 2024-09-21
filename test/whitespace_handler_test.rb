@@ -121,4 +121,17 @@ describe WhitespaceHandler do
                                s(:strip, false, false), s(:strip, false, false)),
                              s(:content, " baz \n ")))
   end
+
+  it "strips whitespace after standalone template-initial starting block delimiter" do
+    raw = parser.parse "{{# foo}} \nbar{{/foo}} \n baz \n "
+    result = handler.process raw
+    _(result).must_equal s(:root,
+                           s(:statements,
+                             s(:block,
+                               s(:path, false, s(:id, "foo")),
+                               s(:exprs), nil,
+                               s(:program, nil, s(:statements, s(:content, "bar"))),
+                               nil, s(:strip, false, false), s(:strip, false, false)),
+                             s(:content, " \n baz \n ")))
+  end
 end

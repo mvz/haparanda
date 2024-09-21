@@ -223,7 +223,6 @@ describe 'blocks' do
         .withInput({ none: 'No people' })
         .toCompileTo('No people\n');
 
-      skip
       expectTemplate('{{#none}}\n{{.}}\n{{^}}\n{{none}}\n{{/none}}\n')
         .withInput({ none: 'No people' })
         .toCompileTo('No people\n');

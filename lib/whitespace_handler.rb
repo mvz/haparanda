@@ -10,6 +10,18 @@ class WhitespaceHandler < SexpProcessor
     self.require_empty = false
   end
 
+  def process_root(expr)
+    _, statements = expr
+
+    statements = process(statements)
+    item = statements.sexp_body[0]
+    if item.sexp_type == :block
+      content = item.dig(4, 2, 1)
+      clear_following_whitespace(content) if following_whitespace?(content)
+    end
+    s(:root, statements)
+  end
+
   def process_block(expr)
     _, name, params, hash, program, inverse_chain, open_strip, close_strip = expr
 
@@ -83,12 +95,28 @@ class WhitespaceHandler < SexpProcessor
   end
 
   def strip_standalone_whitespace(before, after)
-    return unless before&.sexp_type == :content && before[1] =~ /\n\s*$/
-    return unless after.sexp_type == :content && after[1] =~ /^\s*\n/
+    return unless preceding_whitespace? before
+    return unless following_whitespace? after
 
-    # Strip trailing whitespace before but leave the \n
+    clear_preceding_whitespace(before)
+    clear_following_whitespace(after)
+  end
+
+  def preceding_whitespace?(before)
+    before&.sexp_type == :content && before[1] =~ /\n\s*$/
+  end
+
+  def following_whitespace?(after)
+    after&.sexp_type == :content && after[1] =~ /^\s*\n/
+  end
+
+  # Strip trailing whitespace before but leave the \n
+  def clear_preceding_whitespace(before)
     before[1] = before[1].sub(/\n[ \t]+$/, "\n")
-    # Strip leading whitespace after including the \n
+  end
+
+  # Strip leading whitespace after including the \n
+  def clear_following_whitespace(after)
     after[1] = after[1].sub(/^[ \t]*\n/, "")
   end
 
