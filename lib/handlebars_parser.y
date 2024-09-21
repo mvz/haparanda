@@ -17,7 +17,7 @@ start root
 # an item.
 
 root
-  : program
+  : program { result = s(:root, val[0]) }
   ;
 
 program
