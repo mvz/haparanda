@@ -233,7 +233,6 @@ describe 'blocks' do
     end
 
     it 'block standalone else sections can be disabled' do
-      skip
       expectTemplate('{{#people}}\n{{name}}\n{{^}}\n{{none}}\n{{/people}}\n')
         .withInput({ none: 'No people' })
         .withCompileOptions({ ignoreStandalone: true })

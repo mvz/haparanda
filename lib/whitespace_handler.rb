@@ -4,8 +4,10 @@ require "sexp_processor"
 
 # Process the handlebars AST just to do the whitespace stripping.
 class WhitespaceHandler < SexpProcessor
-  def initialize
-    super
+  def initialize(ignore_standalone: false)
+    super()
+
+    @ignore_standalone = ignore_standalone
 
     self.require_empty = false
   end
@@ -112,11 +114,15 @@ class WhitespaceHandler < SexpProcessor
 
   # Strip trailing whitespace before but leave the \n
   def clear_preceding_whitespace(before)
+    return if @ignore_standalone
+
     before[1] = before[1].sub(/\n[ \t]+$/, "\n")
   end
 
   # Strip leading whitespace after including the \n
   def clear_following_whitespace(after)
+    return if @ignore_standalone
+
     after[1] = after[1].sub(/^[ \t]*\n/, "")
   end
 

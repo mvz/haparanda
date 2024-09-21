@@ -11,6 +11,7 @@ class TemplateTester
     @input = {}
     @helpers = {}
     @runtime_options = {}
+    @compile_options = {}
   end
 
   def withInput(input) # rubocop:disable Naming/MethodName
@@ -28,7 +29,8 @@ class TemplateTester
     self
   end
 
-  def withCompileOptions(_opts) # rubocop:disable Naming/MethodName
+  def withCompileOptions(opts) # rubocop:disable Naming/MethodName
+    @compile_options = underscore_opts opts
     self
   end
 
@@ -45,7 +47,7 @@ class TemplateTester
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
     expected = expected.gsub('\n', "\n")
     template = HandlebarsParser.new.parse(@str)
-    compiled_template = WhitespaceHandler.new.process(template)
+    compiled_template = WhitespaceHandler.new(**whitespace_options).process(template)
     processor = HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
     actual = processor.apply(compiled_template)
     @spec._(actual).must_equal expected, @message
@@ -53,5 +55,17 @@ class TemplateTester
 
   def toThrow(error, message = nil) # rubocop:disable Naming/MethodName
     @spec.shouldThrow(-> { toCompileTo("") }, error, message)
+  end
+
+  private
+
+  def underscore_opts(opts)
+    opts.transform_keys do |k|
+      k.to_s.gsub(/[A-Z]/) { |a| "_#{a.downcase}" }.to_sym
+    end
+  end
+
+  def whitespace_options
+    @compile_options.slice(:ignore_standalone)
   end
 end
