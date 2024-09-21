@@ -245,13 +245,13 @@ describe 'blocks' do
     end
 
     it 'block standalone chained else sections' do
-      skip
       expectTemplate(
         '{{#people}}\n{{name}}\n{{else if none}}\n{{none}}\n{{/people}}\n'
       )
         .withInput({ none: 'No people' })
         .toCompileTo('No people\n');
 
+      skip
       expectTemplate(
         '{{#people}}\n{{name}}\n{{else if none}}\n{{none}}\n{{^}}\n{{/people}}\n'
       )

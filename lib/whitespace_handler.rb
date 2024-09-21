@@ -41,9 +41,8 @@ class WhitespaceHandler < SexpProcessor
       strip_final_whitespace(statements.last, close_strip)
     end
 
-    inverse_statements = inverse_chain&.at(2)&.sexp_body
-    if statements && inverse_statements
-      strip_standalone_whitespace(statements.last, inverse_statements.first)
+    if statements && inverse_chain
+      strip_standalone_whitespace(statements.last, first_item(inverse_chain))
     end
 
     s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)
@@ -78,15 +77,42 @@ class WhitespaceHandler < SexpProcessor
       strip_initial_whitespace(item, close_strip_for(prev)) if prev.sexp_type != :content
 
       strip_standalone_whitespace(prev, item.dig(4, 2, 1)) if item.sexp_type == :block
-      if prev.sexp_type == :block
-        inner = prev[5] || prev[4]
-        strip_standalone_whitespace(inner.dig(2, -1), item)
-      end
+      strip_standalone_whitespace(last_item(prev), item) if prev.sexp_type == :block
     end
     s(:statements, *statements)
   end
 
   private
+
+  def first_item(container)
+    case container.sexp_type
+    when :statements
+      container.sexp_body.first
+    when :block
+      container.dig(4, 2, 1)
+    when :inverse
+      first_item container[2]
+    else
+      raise NotImplementedError
+    end
+  end
+
+  def last_item(container)
+    return if container.nil?
+
+    case container.sexp_type
+    when :block
+      last_item(container[5] || container[4])
+    when :statements
+      container.sexp_body.last
+    when :inverse, :program
+      last_item container[2]
+    when :content
+      container
+    else
+      raise NotImplementedError
+    end
+  end
 
   def strip_initial_whitespace(item, strip)
     item[1] = item[1].sub(/^\s*/, "") if item.sexp_type == :content && strip[2]
