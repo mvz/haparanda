@@ -21,9 +21,15 @@ class WhitespaceHandler < SexpProcessor
     end
     inverse_chain = process(inverse_chain)
 
-    if program && (statements = program[2]&.sexp_body)
+    statements = program&.at(2)&.sexp_body
+    if statements
       strip_initial_whitespace(statements.first, open_strip)
       strip_final_whitespace(statements.last, close_strip)
+    end
+
+    inverse_statements = inverse_chain&.at(2)&.sexp_body
+    if statements && inverse_statements
+      strip_standalone_whitespace(statements.last, inverse_statements.first)
     end
 
     s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)

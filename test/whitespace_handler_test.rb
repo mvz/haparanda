@@ -97,4 +97,20 @@ describe WhitespaceHandler do
                              s(:strip, false, false), s(:strip, false, false)),
                            s(:content, " baz \n "))
   end
+
+  it "strips whitespace around standalone inverse delimiter" do
+    raw = parser.parse "foo \n {{# foo}}bar\n {{else}}\n  qux\n {{/foo}} baz \n "
+    result = handler.process raw
+    _(result).must_equal s(:statements,
+                           s(:content, "foo \n "),
+                           s(:block,
+                             s(:path, false, s(:id, "foo")),
+                             s(:exprs), nil,
+                             s(:program, nil, s(:statements, s(:content, "bar\n"))),
+                             s(:inverse, nil,
+                               s(:statements, s(:content, "  qux\n ")),
+                               s(:strip, false, false), s(:strip, false, false)),
+                             s(:strip, false, false), s(:strip, false, false)),
+                           s(:content, " baz \n "))
+  end
 end

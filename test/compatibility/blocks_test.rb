@@ -219,11 +219,11 @@ describe 'blocks' do
 
   describe 'standalone sections' do
     it 'block standalone else sections' do
-      skip
       expectTemplate('{{#people}}\n{{name}}\n{{^}}\n{{none}}\n{{/people}}\n')
         .withInput({ none: 'No people' })
         .toCompileTo('No people\n');
 
+      skip
       expectTemplate('{{#none}}\n{{.}}\n{{^}}\n{{none}}\n{{/none}}\n')
         .withInput({ none: 'No people' })
         .toCompileTo('No people\n');
