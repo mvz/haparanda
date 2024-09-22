@@ -70,7 +70,6 @@ class WhitespaceHandler < SexpProcessor
     statements = expr.sexp_body
 
     statements = statements.map { process(_1) }
-    statements = combine_contents(statements)
 
     statements.each_cons(2) do |prev, item|
       strip_final_whitespace(prev, open_strip_for(item)) if item.sexp_type != :content
@@ -163,28 +162,5 @@ class WhitespaceHandler < SexpProcessor
 
   def close_strip_for(item)
     item.last
-  end
-
-  def combine_contents(statements)
-    return statements if statements.length < 2
-
-    prev = nil
-    result = []
-
-    statements.each do |item|
-      if prev
-        if item.sexp_type == :content
-          prev[1] += item[1]
-        else
-          result << item
-          prev = nil
-        end
-      else
-        result << item
-        prev = item if item.sexp_type == :content
-      end
-    end
-
-    result
   end
 end

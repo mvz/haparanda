@@ -47,7 +47,7 @@ class TemplateTester
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
     expected = expected.gsub('\n', "\n")
     template = HandlebarsParser.new.parse(@str)
-    compiled_template = WhitespaceHandler.new(**whitespace_options).process(template)
+    compiled_template = HandlebarsCompiler.new(**@compile_options).process(template)
     processor = HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
     actual = processor.apply(compiled_template)
     @spec._(actual).must_equal expected, @message
@@ -63,9 +63,5 @@ class TemplateTester
     opts.transform_keys do |k|
       k.to_s.gsub(/[A-Z]/) { |a| "_#{a.downcase}" }.to_sym
     end
-  end
-
-  def whitespace_options
-    @compile_options.slice(:ignore_standalone)
   end
 end
