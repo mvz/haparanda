@@ -219,7 +219,6 @@ describe 'blocks' do
 
   describe 'standalone sections' do
     it 'block standalone else sections' do
-      skip
       expectTemplate('{{#people}}\n{{name}}\n{{^}}\n{{none}}\n{{/people}}\n')
         .withInput({ none: 'No people' })
         .toCompileTo('No people\n');
@@ -234,7 +233,6 @@ describe 'blocks' do
     end
 
     it 'block standalone else sections can be disabled' do
-      skip
       expectTemplate('{{#people}}\n{{name}}\n{{^}}\n{{none}}\n{{/people}}\n')
         .withInput({ none: 'No people' })
         .withCompileOptions({ ignoreStandalone: true })
@@ -247,7 +245,6 @@ describe 'blocks' do
     end
 
     it 'block standalone chained else sections' do
-      skip
       expectTemplate(
         '{{#people}}\n{{name}}\n{{else if none}}\n{{none}}\n{{/people}}\n'
       )
@@ -262,7 +259,6 @@ describe 'blocks' do
     end
 
     it 'should handle nesting' do
-      skip
       expectTemplate('{{#data}}\n{{#if true}}\n{{.}}\n{{/if}}\n{{/data}}\nOK.')
         .withInput({
           data: [1, 3, 5],

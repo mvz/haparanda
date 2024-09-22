@@ -145,6 +145,11 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     result[1]
   end
 
+  def process_root(expr)
+    _, statements = expr
+    process(statements)
+  end
+
   def process_mustache(expr)
     _, path, params, hash, escaped, _strip = expr
     params = process(params)[1]

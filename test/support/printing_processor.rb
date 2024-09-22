@@ -10,6 +10,11 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     result.sexp_body[0]
   end
 
+  def process_root(expr)
+    _, statements = expr.shift(2)
+    process(statements)
+  end
+
   def process_statements(expr)
     expr.shift
     printed = print_all(expr)
