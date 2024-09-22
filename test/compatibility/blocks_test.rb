@@ -251,7 +251,6 @@ describe 'blocks' do
         .withInput({ none: 'No people' })
         .toCompileTo('No people\n');
 
-      skip
       expectTemplate(
         '{{#people}}\n{{name}}\n{{else if none}}\n{{none}}\n{{^}}\n{{/people}}\n'
       )
@@ -260,7 +259,6 @@ describe 'blocks' do
     end
 
     it 'should handle nesting' do
-      skip
       expectTemplate('{{#data}}\n{{#if true}}\n{{.}}\n{{/if}}\n{{/data}}\nOK.')
         .withInput({
           data: [1, 3, 5],

@@ -69,8 +69,6 @@ class WhitespaceHandler < SexpProcessor
   def process_statements(expr)
     statements = expr.sexp_body
 
-    statements = statements.map { process(_1) }
-
     statements.each_cons(2) do |prev, item|
       strip_final_whitespace(prev, open_strip_for(item)) if item.sexp_type != :content
       strip_initial_whitespace(item, close_strip_for(prev)) if prev.sexp_type != :content
@@ -78,6 +76,8 @@ class WhitespaceHandler < SexpProcessor
       strip_standalone_whitespace(prev, item.dig(4, 2, 1)) if item.sexp_type == :block
       strip_standalone_whitespace(last_item(prev), item) if prev.sexp_type == :block
     end
+    statements = statements.map { process(_1) }
+
     s(:statements, *statements)
   end
 
