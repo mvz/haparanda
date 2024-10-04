@@ -20,6 +20,11 @@ template = hbs.compile(template_text) # Returns Haparanda::Template
 template.call input  # or template.call foo: "Bar", baz: "Qux"
 ```
 
+## Goals
+
+- Fast parsing
+- Implement all of handlebars
+
 ## Compatibility Notes
 
 - When using a hash as input, symbols keys and string keys are considered different
@@ -30,6 +35,57 @@ template.call input  # or template.call foo: "Bar", baz: "Qux"
 ```bash
 gem install haparanda
 ```
+
+## Related Work
+
+- The [handlebars](https://rubygems.org/gems/handlebars) gem is a wrapper
+  around the JavaScript library. It seems to support all of handlebars.
+  However, it requires a separate javascript runtime and suffers from memory
+  leaks.
+
+  handlebars-rb uses the following API:
+
+  ```ruby
+  handlebars = Handlebars::Context.new
+  handlebars.register_helper(:foo) do
+    ...
+  end
+  template = handlebars.compile("{{say}} {{what}}")
+  template.call(:say => "Hey", :what => "Yuh!") #=> "Hey Yuh!"
+  ```
+
+- Alternative gems that also use the JavaScript implementation are
+  [handlebars_exec](https://github.com/vibes/handlebars_exec),
+  [minibars](https://github.com/combinaut/minibars) and
+  [handlebars-engine](https://github.com/gi/handlebars-ruby).
+
+- [ruby-handlebars](https://github.com/smartbear/ruby-handlebars) is a pure
+  Ruby handlebars parser that uses the [parslet](https://github.com/kschiess/parslet/)
+  gem for parsing. Parsing is slow for large templates and it does not
+  implement whitespace handling.
+
+  It uses the following API:
+
+  ```ruby
+  hbs = Handlebars::Handlebars.new
+  hbs.register_partial('full_name', "{{person.first_name}} {{person.last_name}}")
+  template = hbs.compile("Hello {{> full_name}}")
+  template.call({person: {first_name: 'Pinkie', last_name: 'Pie'}})
+  ```
+
+- [curlybars](https://github.com/zendesk/curlybars) is a pure Ruby parser aimed
+  at using handlebars templates with Rails. It uses [RLTK](https://github.com/chriswailes/RLTK)
+  for parsing and supports a subset of handlebars. In particular, it seems
+  custom block helpers are not supported.
+
+- [FlavourSaver](https://github.com/FlavourSaver/FlavourSaver) is a pure Ruby
+  Handlebars parser that also uses [RLTK](https://github.com/chriswailes/RLTK).
+  It provides a [Tilt](https://github.com/jeremyevans/tilt) based interface.
+  This is the most complete Ruby implementation of Handlebars but unfortunately
+  parsing is slow.
+
+- [Steering](https://github.com/pixeltrix/steering) is a compiler for
+  handlebars templates. Also uses the JavaScript handlebars implementation.
 
 ## License
 
