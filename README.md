@@ -1,15 +1,41 @@
-# Experimental: Ruby Handlebars Parser using upstream .l and .y files
+# Haparanda
+
+by Matijs van Zuijlen
+
+## Description
+
+Pure Ruby Handlebars Parser using upstream .l and .y files
+
+## Usage
+
+```ruby
+require "haparanda"
+
+hbs = Haparanda::Compiler.new
+hbs.register_partial 'full_name', "{{person.first_name}} {{person.last_name}}"
+hbs.register_helper :foo do
+  ...
+end
+template = hbs.compile(template_text) # Returns Haparanda::Template
+template.call input  # or template.call foo: "Bar", baz: "Qux"
+```
 
 ## Compatibility Notes
 
 - When using a hash as input, symbols keys and string keys are considered different
 - Currently targets handlebars.js master
 
+## Install
+
+```bash
+gem install haparanda
+```
+
 ## License
 
 Copyright &copy; 2024 [Matijs van Zuijlen](http://www.matijs.net)
 
-This project is free software, distributed under the terms of the GNU Lesser
+Haparanda is free software, distributed under the terms of the GNU Lesser
 General Public License, version 2.1 or later. See the file COPYING.LIB for
 more information.
 
