@@ -6,13 +6,14 @@ require "pathname"
 
 # Transform one original javascript spec file to ruby-ish target
 class FileTransformer
-  def initialize(spec_file, target_base, source_name)
+  def initialize(spec_file, target_base, source_name, license)
     @spec_file = spec_file
     @target_base = target_base
     @source_name = source_name
+    @license = license
   end
 
-  attr_reader :spec_file, :target_base, :source_name
+  attr_reader :spec_file, :target_base, :source_name, :license
 
   def process
     transform_file
@@ -36,6 +37,9 @@ class FileTransformer
         # Based on spec/#{base} in #{source_name}. The content of the specs should
         # mostly be identical to the content there, so a side-by-side diff should show
         # spec equivalence, and show any new specs that should be added.
+        #
+        # spec/#{base} in #{source_name} is covered by the #{license} license. See README.md
+        # for details.
 
       PREAMBLE
 
@@ -94,7 +98,7 @@ specs.each do |spec_file|
   base = spec_file.basename
   next if MAIN_SKIPS.include? base.to_s
 
-  FileTransformer.new(spec_file, target_base, main_js_repo.basename).process
+  FileTransformer.new(spec_file, target_base, main_js_repo.basename, "MIT").process
 end
 
 specs = js_parser_repo.glob "spec/*.js"
@@ -102,5 +106,5 @@ specs.each do |spec_file|
   base = spec_file.basename
   next if PARSER_SKIPS.include? base.to_s
 
-  FileTransformer.new(spec_file, target_base, js_parser_repo.basename).process
+  FileTransformer.new(spec_file, target_base, js_parser_repo.basename, "ICS").process
 end

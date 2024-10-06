@@ -15,6 +15,9 @@ start root
 #
 # Similarly, an extra rule is needed to replace '?' signifyling zero or one of
 # an item.
+#
+# src/handlebars.yy in handlebars-parser is covered by the ICS license. See README.md
+# for details.
 
 root
   : program { result = s(:root, val[0]) }

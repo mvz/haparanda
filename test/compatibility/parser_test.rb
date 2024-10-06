@@ -6,6 +6,9 @@ require "test_helper"
 # mostly be identical to the content there, so a side-by-side diff should show
 # spec equivalence, and show any new specs that should be added.
 #
+# spec/parser.js in handlebars-parser is covered by the ICS license. See README.md
+# for details.
+
 describe 'parser' do
   def astFor(str) # rubocop:disable Naming/MethodName
     str = str.gsub('\n', "\n")
