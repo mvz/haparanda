@@ -1,6 +1,6 @@
-lib/handlebars_lexer.rb
-lib/handlebars_parser.rb
-lib/handlebars_parser.output
+lib/haparanda/handlebars_lexer.rb
+lib/haparanda/handlebars_parser.rb
+lib/haparanda/handlebars_parser.output
 handlebars.tab.rb
 Gemfile.lock
 coverage/

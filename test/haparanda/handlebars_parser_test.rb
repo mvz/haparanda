@@ -2,8 +2,8 @@
 
 require "test_helper"
 
-describe HandlebarsParser do
-  let(:parser) { HandlebarsParser.new }
+describe Haparanda::HandlebarsParser do
+  let(:parser) { Haparanda::HandlebarsParser.new }
 
   it "parses simple content" do
     result = parser.parse "Hello!"

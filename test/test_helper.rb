@@ -3,10 +3,7 @@
 require "minitest/autorun"
 require "minitest/focus"
 
-require "handlebars_lexer"
-require "handlebars_parser"
-require "handlebars_compiler"
-require "handlebars_processor"
+require "haparanda"
 
 require_relative "support/compatibility_test_helpers"
 require_relative "support/printing_processor"

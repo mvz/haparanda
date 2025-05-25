@@ -3,7 +3,7 @@
 # src/handlebars.l in handlebars-parser is covered by the ICS license. See README.md
 # for details.
 
-class HandlebarsLexer
+class Haparanda::HandlebarsLexer
 %x mu emu com raw
 
 inner

@@ -166,7 +166,7 @@ describe 'basic context' do
           );
         },
       })
-      .toCompileTo('true true HandlebarsProcessor::Options');
+      .toCompileTo('true true Haparanda::HandlebarsProcessor::Options');
     # rubocop:enable Lint/UnderscorePrefixedVariableName
 
     expectTemplate('{{undefined}}')
@@ -243,7 +243,7 @@ describe 'basic context' do
     expectTemplate('{{awesome}}')
       .withInput({
         awesome: lambda {
-          return HandlebarsProcessor::SafeString.new("&'\\<>");
+          return Haparanda::HandlebarsProcessor::SafeString.new("&'\\<>");
         },
       })
       .withMessage("functions returning safestrings aren't escaped")

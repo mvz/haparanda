@@ -31,4 +31,4 @@ Style/CaseEquality:
 # Configuration parameters: AllowedConstants.
 Style/Documentation:
   Exclude:
-    - 'lib/handlebars_processor.rb'
+    - 'lib/haparanda/handlebars_processor.rb'

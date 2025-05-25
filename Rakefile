@@ -10,15 +10,16 @@ Minitest::TestTask.create(:test) do |t|
   t.test_prelude = %(require "simplecov"; SimpleCov.start)
 end
 
-file "lib/handlebars_lexer.rb" => "lib/handlebars_lexer.rex" do
-  sh "rex lib/handlebars_lexer.rex --independent -o lib/handlebars_lexer.rb"
+file "lib/haparanda/handlebars_lexer.rb" => "lib/haparanda/handlebars_lexer.rex" do
+  sh "rex lib/haparanda/handlebars_lexer.rex --independent " \
+     "-o lib/haparanda/handlebars_lexer.rb"
 end
 
-file "lib/handlebars_parser.rb" => "lib/handlebars_parser.y" do
-  sh "racc lib/handlebars_parser.y -v -F -o lib/handlebars_parser.rb"
+file "lib/haparanda/handlebars_parser.rb" => "lib/haparanda/handlebars_parser.y" do
+  sh "racc lib/haparanda/handlebars_parser.y -v -F -o lib/haparanda/handlebars_parser.rb"
 end
 
-task generate: ["lib/handlebars_lexer.rb", "lib/handlebars_parser.rb"]
+task generate: ["lib/haparanda/handlebars_lexer.rb", "lib/haparanda/handlebars_parser.rb"]
 
 task test: :generate
 

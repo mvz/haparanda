@@ -1,4 +1,4 @@
-class HandlebarsParser
+class Haparanda::HandlebarsParser
 rule
 start root
 

@@ -85,7 +85,7 @@ describe 'helpers' do
 
     it 'helper for nested raw block throw exception when with missing closing braces' do
       string = '{{{{a}}}} {{{{/a';
-      expectTemplate(string).toThrow HandlebarsLexer::ScanError;
+      expectTemplate(string).toThrow Haparanda::HandlebarsLexer::ScanError;
     end
   end
 

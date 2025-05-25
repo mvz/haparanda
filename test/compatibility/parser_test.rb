@@ -12,7 +12,7 @@ require "test_helper"
 describe 'parser' do
   def astFor(str) # rubocop:disable Naming/MethodName
     str = str.gsub('\n', "\n")
-    parser = HandlebarsParser.new
+    parser = Haparanda::HandlebarsParser.new
     result = parser.parse str
     PrintingProcessor.new.print(result)
   end
