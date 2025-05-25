@@ -5,6 +5,9 @@ inherit_mode:
     - Exclude
     - CountAsOne
 
+plugins:
+  - rubocop-minitest
+
 AllCops:
   Exclude:
     - 'lib/handlebars_lexer.rb'
