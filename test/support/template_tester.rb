@@ -46,18 +46,27 @@ class TemplateTester
 
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
     expected = expected.gsub('\n', "\n")
-    template = HandlebarsParser.new.parse(@str)
-    compiled_template = HandlebarsCompiler.new(**@compile_options).process(template)
-    processor = HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
-    actual = processor.apply(compiled_template)
-    @spec._(actual).must_equal expected, @message
+    actual = compile_and_process_template
+    _(actual).must_equal expected, @message
   end
 
   def toThrow(error, message = nil) # rubocop:disable Naming/MethodName
-    @spec.shouldThrow(-> { toCompileTo("") }, error, message)
+    exception = _(-> { compile_and_process_template }).must_raise error
+    _(exception.message).must_match message if message
   end
 
   private
+
+  def _(actual)
+    @spec.expect(actual)
+  end
+
+  def compile_and_process_template
+    template = HandlebarsParser.new.parse(@str)
+    compiled_template = HandlebarsCompiler.new(**@compile_options).process(template)
+    processor = HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
+    processor.apply(compiled_template)
+  end
 
   def underscore_opts(opts)
     opts.transform_keys do |k|
