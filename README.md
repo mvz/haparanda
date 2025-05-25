@@ -89,7 +89,7 @@ gem install haparanda
 
 ## License
 
-Copyright &copy; 2024 [Matijs van Zuijlen](http://www.matijs.net)
+Copyright &copy; 2024&ndash;2025 [Matijs van Zuijlen](http://www.matijs.net)
 
 Haparanda is free software, distributed under the terms of the GNU Lesser
 General Public License, version 2.1 or later. See the file COPYING.LIB for
