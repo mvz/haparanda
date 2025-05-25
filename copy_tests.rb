@@ -66,6 +66,7 @@ class FileTransformer
     [/^( *)var (.*)$/,
      ->(md) { "#{md[1]}#{md[2]}" }]
   ].freeze
+  private_constant :MATCHERS
 
   def process_line(line)
     MATCHERS.each do |rx, action|

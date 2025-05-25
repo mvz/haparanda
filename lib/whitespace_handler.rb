@@ -3,7 +3,7 @@
 require "sexp_processor"
 
 # Process the handlebars AST just to do the whitespace stripping.
-class WhitespaceHandler < SexpProcessor
+class WhitespaceHandler < SexpProcessor # rubocop:disable Metrics/ClassLength
   def initialize(ignore_standalone: false)
     super()
 

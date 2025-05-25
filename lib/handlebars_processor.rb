@@ -333,6 +333,7 @@ class HandlebarsProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     "`" => "&#x60;",
     "=" => "&#x3D;"
   }.freeze
+  private_constant :ESCAPE
 
   def escape(str)
     return str if str.is_a? SafeString
