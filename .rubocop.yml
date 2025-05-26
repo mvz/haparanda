@@ -5,6 +5,9 @@ inherit_mode:
     - Exclude
     - CountAsOne
 
+plugins:
+  - rubocop-minitest
+
 AllCops:
   Exclude:
     - 'lib/handlebars_lexer.rb'
@@ -33,6 +36,11 @@ Lint/AmbiguousBlockAssociation:
 Metrics/BlockLength:
   Exclude:
     - 'test/**/*'
+
+# Leave plain skips in compatibility tests
+Minitest/SkipWithoutReason:
+  Exclude:
+    - 'test/compatibility/*'
 
 Naming/MethodParameterName:
   AllowedNames:
