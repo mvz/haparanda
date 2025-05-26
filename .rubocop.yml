@@ -37,6 +37,11 @@ Metrics/BlockLength:
   Exclude:
     - 'test/**/*'
 
+# Leave plain skips in compatibility tests
+Minitest/SkipWithoutReason:
+  Exclude:
+    - 'test/compatibility/*'
+
 Naming/MethodParameterName:
   AllowedNames:
     - fn
