@@ -455,7 +455,7 @@ describe 'basic context' do
     null = nil
     expectTemplate('test: {{.}}')
       .withInput(null)
-      .withHelpers({ helper: 'awesome' })
+      .withHelpers({ helper: -> { 'awesome' } })
       .toCompileTo('test: ');
   end
 

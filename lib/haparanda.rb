@@ -9,3 +9,5 @@ require_relative "haparanda/handlebars_lexer"
 require_relative "haparanda/handlebars_parser"
 require_relative "haparanda/handlebars_compiler"
 require_relative "haparanda/handlebars_processor"
+
+require_relative "haparanda/compiler"

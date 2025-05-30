@@ -17,7 +17,7 @@ hbs.register_helper :foo do
   ...
 end
 template = hbs.compile(template_text) # Returns Haparanda::Template
-template.call input  # or template.call foo: "Bar", baz: "Qux"
+template.call input  # or template.call({ foo: "Bar", baz: "Qux" })
 ```
 
 ## Goals
