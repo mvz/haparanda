@@ -7,6 +7,7 @@ module Haparanda
   class Compiler
     def initialize(**compile_options)
       @parser = HandlebarsParser.new
+      # TODO: Rename to PostProcessor
       @post_processor = HandlebarsCompiler.new(**compile_options)
       @helpers = {}
     end
