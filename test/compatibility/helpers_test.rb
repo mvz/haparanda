@@ -5,6 +5,9 @@ require "test_helper"
 # Based on spec/helpers.js in handlebars.js. The content of the specs should
 # mostly be identical to the content there, so a side-by-side diff should show
 # spec equivalence, and show any new specs that should be added.
+#
+# spec/helpers.js in handlebars.js is covered by the MIT license. See README.md
+# for details.
 
 describe 'helpers' do
   it 'helper with complex lookup$' do
@@ -82,7 +85,7 @@ describe 'helpers' do
 
     it 'helper for nested raw block throw exception when with missing closing braces' do
       string = '{{{{a}}}} {{{{/a';
-      expectTemplate(string).toThrow HandlebarsLexer::ScanError;
+      expectTemplate(string).toThrow Haparanda::HandlebarsLexer::ScanError;
     end
   end
 

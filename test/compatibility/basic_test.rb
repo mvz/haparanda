@@ -5,6 +5,9 @@ require "test_helper"
 # Based on spec/basic.js in handlebars.js. The content of the specs should
 # mostly be identical to the content there, so a side-by-side diff should show
 # spec equivalence, and show any new specs that should be added.
+#
+# spec/basic.js in handlebars.js is covered by the MIT license. See README.md
+# for details.
 
 describe 'basic context' do
   it 'most basic' do
@@ -163,7 +166,7 @@ describe 'basic context' do
           );
         },
       })
-      .toCompileTo('true true HandlebarsProcessor::Options');
+      .toCompileTo('true true Haparanda::HandlebarsProcessor::Options');
     # rubocop:enable Lint/UnderscorePrefixedVariableName
 
     expectTemplate('{{undefined}}')
@@ -240,7 +243,7 @@ describe 'basic context' do
     expectTemplate('{{awesome}}')
       .withInput({
         awesome: lambda {
-          return HandlebarsProcessor::SafeString.new("&'\\<>");
+          return Haparanda::HandlebarsProcessor::SafeString.new("&'\\<>");
         },
       })
       .withMessage("functions returning safestrings aren't escaped")
@@ -452,7 +455,7 @@ describe 'basic context' do
     null = nil
     expectTemplate('test: {{.}}')
       .withInput(null)
-      .withHelpers({ helper: 'awesome' })
+      .withHelpers({ helper: -> { 'awesome' } })
       .toCompileTo('test: ');
   end
 

@@ -2,9 +2,9 @@
 
 require "test_helper"
 
-describe HandlebarsCompiler do
-  let(:parser) { HandlebarsParser.new }
-  let(:compiler) { HandlebarsCompiler.new }
+describe Haparanda::HandlebarsCompiler do
+  let(:parser) { Haparanda::HandlebarsParser.new }
+  let(:compiler) { Haparanda::HandlebarsCompiler.new }
 
   it "strips whitespace around simple mustaches" do
     raw = parser.parse "  {{~foo~}} "

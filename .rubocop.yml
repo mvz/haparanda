@@ -10,10 +10,10 @@ plugins:
 
 AllCops:
   Exclude:
-    - 'lib/handlebars_lexer.rb'
-    - 'lib/handlebars_parser.rb'
+    - 'lib/haparanda/handlebars_lexer.rb'
+    - 'lib/haparanda/handlebars_parser.rb'
   NewCops: enable
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.2
 
 Layout/FirstHashElementIndentation:
   Exclude:

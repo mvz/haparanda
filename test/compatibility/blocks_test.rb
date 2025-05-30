@@ -5,6 +5,9 @@ require "test_helper"
 # Based on spec/blocks.js in handlebars.js. The content of the specs should
 # mostly be identical to the content there, so a side-by-side diff should show
 # spec equivalence, and show any new specs that should be added.
+#
+# spec/blocks.js in handlebars.js is covered by the MIT license. See README.md
+# for details.
 
 describe 'blocks' do
   it 'array' do

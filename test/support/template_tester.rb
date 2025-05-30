@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "handlebars_parser"
-require "whitespace_handler"
-require "handlebars_processor"
+require "haparanda/handlebars_parser"
+require "haparanda/whitespace_handler"
+require "haparanda/handlebars_processor"
 
 class TemplateTester
   def initialize(str, spec)
@@ -62,10 +62,18 @@ class TemplateTester
   end
 
   def compile_and_process_template
-    template = HandlebarsParser.new.parse(@str)
-    compiled_template = HandlebarsCompiler.new(**@compile_options).process(template)
-    processor = HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
-    processor.apply(compiled_template)
+    compiler = Haparanda::Compiler.new(**@compile_options)
+    @helpers.each do |name, definition|
+      compiler.register_helper name, &definition
+    end
+    compiled_template = compiler.compile(@str)
+    compiled_template.call(@input, **@runtime_options)
+
+    # template = Haparanda::HandlebarsParser.new.parse(@str)
+    # compiled_template = Haparanda::HandlebarsCompiler.new(**@compile_options)
+    #                                                  .process(template)
+    # processor = Haparanda::HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
+    # processor.apply(compiled_template)
   end
 
   def underscore_opts(opts)

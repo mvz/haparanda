@@ -2,13 +2,14 @@
 
 source "https://rubygems.org"
 
-gem "racc"
-gem "rake"
-gem "rexical"
-gem "sexp_processor"
+# The gem's dependencies are specified in haparanda.gemspec
+gemspec
 
-gem "minitest"
-gem "minitest-focus"
-gem "rubocop"
-gem "rubocop-minitest"
-gem "simplecov"
+gem "minitest", "~> 5.25"
+gem "minitest-focus", "~> 1.4"
+gem "rake", "~> 13.2"
+gem "rake-manifest", "~> 0.2.0"
+gem "rexical", "~> 1.0"
+gem "rubocop", "~> 1.75"
+gem "rubocop-minitest", "~> 0.38.0"
+gem "simplecov", "~> 0.22.0"

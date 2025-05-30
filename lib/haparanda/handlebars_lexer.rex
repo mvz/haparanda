@@ -1,4 +1,9 @@
-class HandlebarsLexer
+# Based on src/handlebars.l in handlebars-parser.
+#
+# src/handlebars.l in handlebars-parser is covered by the ICS license. See README.md
+# for details.
+
+class Haparanda::HandlebarsLexer
 %x mu emu com raw
 
 inner
