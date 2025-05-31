@@ -27,7 +27,9 @@ end
 
 task generate: ["lib/haparanda/handlebars_lexer.rb", "lib/haparanda/handlebars_parser.rb"]
 
+task build: :generate
 task test: :generate
 task "manifest:generate" => :generate
+task "manifest:check" => :generate
 
 task default: :test
