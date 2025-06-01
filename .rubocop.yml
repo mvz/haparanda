@@ -37,6 +37,10 @@ Metrics/BlockLength:
   Exclude:
     - 'test/**/*'
 
+# Expect syntax already marks assertions clearly
+Minitest/EmptyLineBeforeAssertionMethods:
+  Enabled: false
+
 # Leave plain skips in compatibility tests
 Minitest/SkipWithoutReason:
   Exclude:
