@@ -107,8 +107,8 @@ describe 'helpers' do
     expectTemplate('{{#goodbyes}}{{../name}}{{/goodbyes}}')
       .withInput({ name: 'Alan' })
       .withHelper('goodbyes', lambda { |options|
-        var out = '';
-        var byes = ['Goodbye', 'goodbye', 'GOODBYE'];
+        out = '';
+        byes = ['Goodbye', 'goodbye', 'GOODBYE'];
         byes.length.times do |i|
           out += byes[i] + ' ' + options.fn({}) + '! ';
         end
@@ -260,7 +260,7 @@ describe 'helpers' do
     string = "{{#list people}}{{name}}{{^}}<em>Nobody's here</em>{{/list}}";
     list = lambda { |context, options|
       if context.length > 0
-        var out = '<ul>';
+        out = '<ul>';
         context.length.times do |i|
           out += '<li>';
           out += options.fn(context[i]);

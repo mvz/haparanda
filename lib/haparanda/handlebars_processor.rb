@@ -124,6 +124,16 @@ module Haparanda
       end
     end
 
+    class HelperContext
+      def initialize(input)
+        @input = input
+      end
+
+      def this
+        @input
+      end
+    end
+
     def initialize(input, custom_helpers = nil, data: {})
       super()
 
@@ -131,6 +141,7 @@ module Haparanda
 
       @input = Input.new(input)
       @data = data ? Data.new(data) : NoData.new
+      @helper_context = HelperContext.new(@input)
 
       custom_helpers ||= {}
       @helpers = {
@@ -290,7 +301,7 @@ module Haparanda
 
       args = [*params, Options.new(fn: fn, inverse: inverse, hash: hash, data: @data)]
       args = args.take(num_params)
-      @input.instance_exec(*args, &callable)
+      @helper_context.instance_exec(*args, &callable)
     end
 
     def handle_if(value, options)
