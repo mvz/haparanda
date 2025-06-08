@@ -5,8 +5,9 @@ require "haparanda/whitespace_handler"
 require "haparanda/handlebars_processor"
 
 class TemplateTester
-  def initialize(str, spec)
-    @str = str
+  def initialize(text:, compiler:, spec:)
+    @compiler = compiler
+    @text = text
     @spec = spec
     @input = {}
     @helpers = {}
@@ -62,14 +63,10 @@ class TemplateTester
   end
 
   def compile_and_process_template
-    compiler = Haparanda::Compiler.new(**@compile_options)
-    @helpers.each do |name, definition|
-      compiler.register_helper name, &definition
-    end
-    compiled_template = compiler.compile(@str)
-    compiled_template.call(@input, **@runtime_options)
+    compiled_template = @compiler.compile(@text, **@compile_options)
+    compiled_template.call(@input, helpers: @helpers, **@runtime_options)
 
-    # template = Haparanda::HandlebarsParser.new.parse(@str)
+    # template = Haparanda::HandlebarsParser.new.parse(@text)
     # compiled_template = Haparanda::HandlebarsCompiler.new(**@compile_options)
     #                                                  .process(template)
     # processor = Haparanda::HandlebarsProcessor.new(@input, @helpers, **@runtime_options)

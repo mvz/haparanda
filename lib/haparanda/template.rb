@@ -8,10 +8,10 @@ module Haparanda
       @helpers = helpers
     end
 
-    def call(input, **runtime_options)
+    def call(input, helpers: {}, **runtime_options)
       # TODO: Change interface of HandlebarsProcessor so it can be instantiated
       # in Template#initialize
-      processor = HandlebarsProcessor.new(input, @helpers, **runtime_options)
+      processor = HandlebarsProcessor.new(input, @helpers.merge(helpers), **runtime_options)
       processor.apply(@expr)
     end
   end

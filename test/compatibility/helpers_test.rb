@@ -379,10 +379,9 @@ describe 'helpers' do
     end
 
     it 'the helper hash should augment the global hash' do
-      skip
-      handlebarsEnv.registerHelper('test_helper', lambda {
+      handlebarsEnv.register_helper('test_helper') do
         return 'found it!';
-      });
+      end
 
       expectTemplate(
         '{{test_helper}} {{#if cruel}}Goodbye {{cruel}} {{world}}!{{/if}}'

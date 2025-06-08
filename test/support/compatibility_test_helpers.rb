@@ -17,7 +17,11 @@ module CompatibilityTestHelpers
 
   def expectTemplate(template) # rubocop:disable Naming/MethodName
     template = template.gsub('\n', "\n")
-    TemplateTester.new(template, self)
+    TemplateTester.new(text: template, compiler: handlebarsEnv, spec: self)
+  end
+
+  def handlebarsEnv # rubocop:disable Naming/MethodName
+    @handlebarsEnv ||= Haparanda::Compiler.new # rubocop:disable Naming/VariableName
   end
 end
 
