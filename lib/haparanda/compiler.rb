@@ -19,7 +19,7 @@ module Haparanda
     end
 
     def register_helper(name, &definition)
-      @helpers[name] = definition
+      @helpers[name.to_sym] = definition
     end
 
     private

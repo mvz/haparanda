@@ -11,4 +11,13 @@ describe Haparanda::Compiler do
       _(result).must_be_instance_of Haparanda::Template
     end
   end
+
+  describe "#register_helper" do
+    it "allows registering using a string" do
+      compiler.register_helper("foo") { "bar" }
+      template = compiler.compile "{{foo}}"
+      result = template.call({})
+      _(result).must_equal "bar"
+    end
+  end
 end
