@@ -289,28 +289,38 @@ module Haparanda
       end
     end
 
-    def make_contextual_lambda(program, block_params = [])
+    def make_contextual_lambda(program, block_param_names = [])
       if program
-        if block_params.any?
+        if block_param_names.any?
           lambda { |item, options = {}|
-            @input.with_new_context(item) do
-              @block_parameter_list.with_new_values do
-                if (param_values = options[:block_params])
-                  block_params.zip(param_values) do |name, value|
-                    @block_parameter_list.set_value(name, value)
-                  end
-                end
+            with_new_input_context(item) do
+              with_block_params(block_param_names, options[:block_params]) do
                 apply(program)
               end
             end
           }
         else
           lambda { |item, _options = {}|
-            @input.with_new_context(item) { apply(program) }
+            with_new_input_context(item) { apply(program) }
           }
         end
       else
         ->(_item) { "" }
+      end
+    end
+
+    def with_new_input_context(item, &)
+      @input.with_new_context(item, &)
+    end
+
+    def with_block_params(block_param_names, block_param_values, &block)
+      @block_parameter_list.with_new_values do
+        if block_param_values
+          block_param_names.zip(block_param_values) do |name, value|
+            @block_parameter_list.set_value(name, value)
+          end
+        end
+        block.call
       end
     end
 
