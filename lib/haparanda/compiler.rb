@@ -22,6 +22,14 @@ module Haparanda
       @helpers[name.to_sym] = definition
     end
 
+    def unregister_helper(name)
+      @helpers.delete(name.to_sym)
+    end
+
+    def get_helper(name)
+      @helpers[name.to_sym]
+    end
+
     private
 
     attr_reader :parser, :post_processor
