@@ -59,7 +59,7 @@ module Haparanda
         self
       end
 
-      def respond_to_missing?(_method_name)
+      def respond_to_missing?(_method_name, *_args)
         true
       end
 
@@ -106,17 +106,18 @@ module Haparanda
     end
 
     class Options
-      def initialize(fn:, inverse:, hash:, data:)
+      def initialize(fn:, inverse:, hash:, data:, block_params:)
         @fn = fn
         @inverse = inverse
         @hash = hash
         @data = data
+        @block_params = block_params
       end
 
-      attr_reader :hash, :data
+      attr_reader :hash, :data, :block_params
 
-      def fn(arg = nil)
-        @fn&.call(arg)
+      def fn(arg = nil, options = {})
+        @fn&.call(arg, options)
       end
 
       def inverse(arg = nil)
@@ -134,6 +135,31 @@ module Haparanda
       end
     end
 
+    class BlockParameterList
+      def initialize
+        @values = {}
+      end
+
+      def with_new_values(&block)
+        values = @values.clone
+        result = block.call
+        @values = values
+        result
+      end
+
+      def key?(key)
+        @values.key? key
+      end
+
+      def set_value(key, value)
+        @values[key] = value
+      end
+
+      def value(key)
+        @values.fetch(key)
+      end
+    end
+
     def initialize(input, custom_helpers = nil, data: {})
       super()
 
@@ -142,6 +168,7 @@ module Haparanda
       @input = Input.new(input)
       @data = data ? Data.new(data) : NoData.new
       @helper_context = HelperContext.new(@input)
+      @block_parameter_list = BlockParameterList.new
 
       custom_helpers ||= {}
       @helpers = {
@@ -227,11 +254,13 @@ module Haparanda
     private
 
     def evaluate_program_with_value(value, arguments, program, else_program, hash)
-      fn = make_contextual_lambda(program)
+      block_params = extract_block_param_names(program)
+      fn = make_contextual_lambda(program, block_params)
       inverse = make_contextual_lambda(else_program)
 
       if value.respond_to? :call
-        value = execute_in_context(value, arguments, fn: fn, inverse: inverse, hash: hash)
+        value = execute_in_context(value, arguments, fn: fn, inverse: inverse, hash: hash,
+                                                     block_params: block_params&.count)
         return s(:result, value.to_s)
       end
 
@@ -250,11 +279,48 @@ module Haparanda
       end
     end
 
-    def make_contextual_lambda(program)
+    def extract_block_param_names(program)
+      return [] unless program&.sexp_type == :program
+
+      if (params_definition = program[1])
+        params_definition.sexp_body.map { _1[1].to_sym }
+      else
+        []
+      end
+    end
+
+    def make_contextual_lambda(program, block_param_names = [])
       if program
-        ->(item) { @input.with_new_context(item) { apply(program) } }
+        if block_param_names.any?
+          lambda { |item, options = {}|
+            with_new_input_context(item) do
+              with_block_params(block_param_names, options[:block_params]) do
+                apply(program)
+              end
+            end
+          }
+        else
+          lambda { |item, _options = {}|
+            with_new_input_context(item) { apply(program) }
+          }
+        end
       else
         ->(_item) { "" }
+      end
+    end
+
+    def with_new_input_context(item, &)
+      @input.with_new_context(item, &)
+    end
+
+    def with_block_params(block_param_names, block_param_values, &block)
+      @block_parameter_list.with_new_values do
+        if block_param_values
+          block_param_names.zip(block_param_values) do |name, value|
+            @block_parameter_list.set_value(name, value)
+          end
+        end
+        block.call
       end
     end
 
@@ -288,6 +354,8 @@ module Haparanda
     def lookup_path(data, elements)
       if data
         @data.data(*elements)
+      elsif elements.count == 1 && @block_parameter_list.key?(elements.first)
+        @block_parameter_list.value(elements.first)
       elsif elements.count == 1 && @helpers.key?(elements.first)
         @helpers[elements.first]
       else
@@ -295,11 +363,14 @@ module Haparanda
       end
     end
 
-    def execute_in_context(callable, params = [], fn: nil, inverse: nil, hash: nil)
+    def execute_in_context(callable, params = [],
+                           fn: nil, inverse: nil, block_params: 0, hash: nil)
       num_params = callable.arity
       raise NotImplementedError if num_params < 0
 
-      args = [*params, Options.new(fn: fn, inverse: inverse, hash: hash, data: @data)]
+      args = [*params, Options.new(fn: fn, inverse: inverse,
+                                   block_params: block_params, hash: hash,
+                                   data: @data)]
       args = args.take(num_params)
       @helper_context.instance_exec(*args, &callable)
     end

@@ -6,7 +6,7 @@ require_relative "template_tester"
 # handlebars-parser and handlebars.js specs.
 module CompatibilityTestHelpers
   def equals(act, exp)
-    exp = exp.gsub('\n', "\n")
+    exp = exp.gsub('\n', "\n") if exp.is_a? String
     _(act).must_equal exp
   end
 

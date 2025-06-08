@@ -953,32 +953,32 @@ describe 'helpers' do
   end
 
   describe 'block params' do
-    it 'should take presedence over context values' do
-      skip
+    it 'should take precedence over context values' do
+      test = self
       expectTemplate('{{#goodbyes as |value|}}{{value}}{{/goodbyes}}{{value}}')
         .withInput({ value: 'foo' })
         .withHelper('goodbyes', lambda { |options|
-          equals(options.fn.blockParams, 1);
-          return options.fn({ value: 'bar' }, { blockParams: [1, 2] });
+          test.equals(options.block_params, 1);
+          return options.fn({ value: 'bar' }, { block_params: [1, 2] });
         })
         .toCompileTo('1foo');
     end
 
-    it 'should take presedence over helper values' do
-      skip
+    it 'should take precedence over helper values' do
+      test = self
       expectTemplate('{{#goodbyes as |value|}}{{value}}{{/goodbyes}}{{value}}')
         .withHelper('value', lambda {
           return 'foo';
         })
         .withHelper('goodbyes', lambda { |options|
-          equals(options.fn.blockParams, 1);
-          return options.fn({}, { blockParams: [1, 2] });
+          test.equals(options.block_params, 1);
+          return options.fn({}, { block_params: [1, 2] });
         })
         .toCompileTo('1foo');
     end
 
-    it 'should not take presedence over pathed values' do
-      skip
+    it 'should not take precedence over pathed values' do
+      test = self
       expectTemplate(
         '{{#goodbyes as |value|}}{{./value}}{{/goodbyes}}{{value}}'
       )
@@ -987,15 +987,15 @@ describe 'helpers' do
           return 'foo';
         })
         .withHelper('goodbyes', lambda { |options|
-          equals(options.fn.blockParams, 1);
-          return options.fn(this, { blockParams: [1, 2] });
+          test.equals(options.block_params, 1);
+          return options.fn(this, { block_params: [1, 2] });
         })
         .toCompileTo('barfoo');
     end
 
-    it 'should take presednece over parent block params' do
-      skip
-      var value = 1;
+    it 'should take precedence over parent block params' do
+      value = 0;
+      undefined = nil
       expectTemplate(
         '{{#goodbyes as |value|}}{{#goodbyes}}{{value}}{{#goodbyes as |value|}}{{value}}{{/goodbyes}}{{/goodbyes}}{{/goodbyes}}{{value}}'
       )
@@ -1004,8 +1004,8 @@ describe 'helpers' do
           return options.fn(
             { value: 'bar' },
             {
-              blockParams:
-                options.fn.blockParams == 1 ? [value += 1, value += 1] : undefined,
+              block_params:
+                options.block_params == 1 ? [value += 1, value += 1] : undefined,
             }
           );
         })
@@ -1013,14 +1013,14 @@ describe 'helpers' do
     end
 
     it 'should allow block params on chained helpers' do
-      skip
+      test = self
       expectTemplate(
         '{{#if bar}}{{else goodbyes as |value|}}{{value}}{{/if}}{{value}}'
       )
         .withInput({ value: 'foo' })
         .withHelper('goodbyes', lambda { |options|
-          equals(options.fn.blockParams, 1);
-          return options.fn({ value: 'bar' }, { blockParams: [1, 2] });
+          test.equals(options.block_params, 1);
+          return options.fn({ value: 'bar' }, { block_params: [1, 2] });
         })
         .toCompileTo('1foo');
     end
