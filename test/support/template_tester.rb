@@ -63,11 +63,8 @@ class TemplateTester
 
   def compile_and_process_template
     compiler = Haparanda::Compiler.new
-    @helpers.each do |name, definition|
-      compiler.register_helper name, &definition
-    end
     compiled_template = compiler.compile(@str, **@compile_options)
-    compiled_template.call(@input, **@runtime_options)
+    compiled_template.call(@input, helpers: @helpers, **@runtime_options)
 
     # template = Haparanda::HandlebarsParser.new.parse(@str)
     # compiled_template = Haparanda::HandlebarsCompiler.new(**@compile_options)
