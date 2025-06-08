@@ -398,14 +398,13 @@ describe 'helpers' do
 
   describe 'registration' do
     it 'unregisters' do
-      skip
-      handlebarsEnv.helpers = {};
+      # handlebarsEnv.helpers = {};
 
-      handlebarsEnv.registerHelper('foo', function do
+      handlebarsEnv.register_helper('foo') do
         return 'fail';
-      end);
-      handlebarsEnv.unregisterHelper('foo');
-      equals(handlebarsEnv.helpers.foo, undefined);
+      end
+      handlebarsEnv.unregister_helper('foo');
+      equals(handlebarsEnv.get_helper('foo'), nil);
     end
 
     it 'allows multiple globals' do
