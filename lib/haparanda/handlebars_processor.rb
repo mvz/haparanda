@@ -35,7 +35,18 @@ module Haparanda
       include ValueDigger
 
       def initialize(value)
-        @stack = [value]
+        @value = value
+      end
+
+      def dig(*keys)
+        dig_value(@value, keys)
+      end
+    end
+
+    class InputStack
+      def initialize(value)
+        input = Input.new(value)
+        @stack = [input]
       end
 
       def dig(*keys)
@@ -46,24 +57,23 @@ module Haparanda
         end
 
         value = @stack[index]
-        dig_value(value, keys)
+        value&.dig(*keys)
+      end
+
+      def [](key)
+        dig(key)
       end
 
       def with_new_context(value, &block)
-        # TODO: This prevents a SystemStackError. Make this unnecessary, for
-        # example by moving the stacking behavior out of the Input class.
+        # TODO: See if this can be removed
         if self == value
           block.call
         else
-          @stack.push value
+          @stack.push Input.new(value)
           result = block.call
           @stack.pop
           result
         end
-      end
-
-      def to_s
-        @stack.last.to_s
       end
 
       def this
@@ -146,8 +156,8 @@ module Haparanda
 
       def lookup_property(item, index)
         case item
-        when Input
-          item.send index
+        when InputStack
+          item[index.to_sym]
         when Array, Hash
           item[index]
         when nil
@@ -159,12 +169,12 @@ module Haparanda
     end
 
     class HelperContext
-      def initialize(input)
-        @input = input
+      def initialize(input_stack)
+        @input_stack = input_stack
       end
 
       def this
-        @input
+        @input_stack
       end
     end
 
@@ -213,9 +223,9 @@ module Haparanda
 
       self.require_empty = false
 
-      @input = Input.new(input)
+      @input_stack = InputStack.new(input)
       @data = data ? Data.new(data) : NoData.new
-      @helper_context = HelperContext.new(@input)
+      @helper_context = HelperContext.new(@input_stack)
       @block_parameter_list = BlockParameterList.new
 
       @helpers = {
@@ -385,7 +395,7 @@ module Haparanda
 
       case value
       when Array
-        return s(:result, inverse.call(@input)) if value.empty?
+        return s(:result, inverse.call(@input_stack)) if value.empty?
 
         parts = value.each_with_index.map do |elem, index|
           @data.set_data(:index, index)
@@ -393,7 +403,7 @@ module Haparanda
         end
         s(:result, parts.join)
       else
-        result = value ? fn.call(value) : inverse.call(@input)
+        result = value ? fn.call(value) : inverse.call(@input_stack)
         s(:result, result)
       end
     end
@@ -433,7 +443,7 @@ module Haparanda
     end
 
     def with_new_input_context(item, &)
-      @input.with_new_context(item, &)
+      @input_stack.with_new_context(item, &)
     end
 
     def with_block_params(block_param_names, block_param_values, &block)
@@ -489,7 +499,7 @@ module Haparanda
       elsif elements.one? && @helpers.key?(elements.first)
         @helpers[elements.first]
       else
-        @input.dig(*elements)
+        @input_stack.dig(*elements)
       end
     end
 
