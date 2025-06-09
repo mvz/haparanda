@@ -17,13 +17,15 @@ module Haparanda
 
       def dig(*keys)
         index = -1
+        while keys.first == :".."
+          keys.shift
+          index -= 1
+        end
+
         value = @stack[index]
+
         keys.each do |key|
-          if key == :".."
-            index -= 1
-            value = @stack[index]
-          end
-          next if %i[.. . this].include? key
+          next if %i[. this].include? key
 
           value = case value
                   when Hash
