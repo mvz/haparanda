@@ -365,29 +365,33 @@ module Haparanda
 
     def execute_in_context(callable, params = [],
                            fn: nil, inverse: nil, block_params: 0, hash: nil)
-      num_params = callable.arity
-      raise NotImplementedError if num_params < 0
+      arity = callable.arity
+      num_params = params.count
+      raise NotImplementedError if arity < 0
 
-      args = [*params, Options.new(fn: fn, inverse: inverse,
-                                   block_params: block_params, hash: hash,
-                                   data: @data)]
-      args = args.take(num_params)
-      @helper_context.instance_exec(*args, &callable)
+      params = params.take(arity) if num_params > arity
+
+      options = Options.new(fn: fn, inverse: inverse,
+                            block_params: block_params, hash: hash,
+                            data: @data)
+      params.push options if arity > num_params
+      params.unshift @helper_context.this if arity > num_params + 1
+      @helper_context.instance_exec(*params, &callable)
     end
 
-    def handle_if(value, options)
+    def handle_if(context, value, options)
       if value
-        options.fn(@input)
+        options.fn(context)
       else
-        options.inverse(@input)
+        options.inverse(context)
       end
     end
 
-    def handle_unless(value, options)
-      options.fn(@input) unless value
+    def handle_unless(context, value, options)
+      options.fn(context) unless value
     end
 
-    def handle_with(value, options)
+    def handle_with(_context, value, options)
       if value
         options.fn(value)
       else
@@ -395,7 +399,7 @@ module Haparanda
       end
     end
 
-    def handle_each(value, options)
+    def handle_each(_context, value, options)
       return unless value
 
       value = value.values if value.is_a? Hash

@@ -13,7 +13,7 @@ require "haparanda"
 
 hbs = Haparanda::Compiler.new
 hbs.register_partial 'full_name', "{{person.first_name}} {{person.last_name}}"
-hbs.register_helper :foo do
+hbs.register_helper :foo do |context, bar, baz, options|
   ...
 end
 template = hbs.compile(template_text) # Returns Haparanda::Template
@@ -69,6 +69,9 @@ gem install haparanda
   ```ruby
   hbs = Handlebars::Handlebars.new
   hbs.register_partial('full_name', "{{person.first_name}} {{person.last_name}}")
+  hbs.register_helper(:foo) do |context, bar, baz, block, else_block|
+    ...
+  end
   template = hbs.compile("Hello {{> full_name}}")
   template.call({person: {first_name: 'Pinkie', last_name: 'Pie'}})
   ```
