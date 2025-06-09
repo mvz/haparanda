@@ -346,7 +346,6 @@ describe 'basic context' do
   end
 
   it 'pathed block functions without context argument' do
-    skip
     expectTemplate('{{#foo.awesome}}inner{{/foo.awesome}}')
       .withInput({
         foo: {
@@ -360,7 +359,6 @@ describe 'basic context' do
   end
 
   it 'depthed block functions without context argument' do
-    skip
     expectTemplate(
       '{{#with value}}{{#../awesome}}inner{{/../awesome}}{{/with}}'
     )

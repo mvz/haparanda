@@ -376,7 +376,9 @@ module Haparanda
                             data: @data)
       params.push options if arity > num_params
       params.unshift @helper_context.this if arity > num_params + 1
-      @helper_context.instance_exec(*params, &callable)
+      result = @helper_context.instance_exec(*params, &callable)
+      result = fn.call(result) if fn && arity <= num_params
+      result
     end
 
     def handle_if(context, value, options)
