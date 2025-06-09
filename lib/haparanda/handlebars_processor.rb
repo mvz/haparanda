@@ -10,20 +10,10 @@ module Haparanda
       end
     end
 
-    class Input
-      def initialize(value)
-        @stack = [value]
-      end
+    module ValueDigger
+      private
 
-      def dig(*keys)
-        index = -1
-        while keys.first == :".."
-          keys.shift
-          index -= 1
-        end
-
-        value = @stack[index]
-
+      def dig_value(value, keys)
         keys.each do |key|
           next if %i[. this].include? key
 
@@ -38,6 +28,25 @@ module Haparanda
         end
 
         value
+      end
+    end
+
+    class Input
+      include ValueDigger
+
+      def initialize(value)
+        @stack = [value]
+      end
+
+      def dig(*keys)
+        index = -1
+        while keys.first == :".."
+          keys.shift
+          index -= 1
+        end
+
+        value = @stack[index]
+        dig_value(value, keys)
       end
 
       def with_new_context(value, &block)
@@ -138,6 +147,8 @@ module Haparanda
     end
 
     class BlockParameterList
+      include ValueDigger
+
       def initialize
         @values = {}
       end
@@ -159,25 +170,6 @@ module Haparanda
 
       def value(key, *rest)
         dig_value(@values.fetch(key), rest)
-      end
-
-      private
-
-      def dig_value(value, keys)
-        keys.each do |key|
-          next if %i[. this].include? key
-
-          value = case value
-                  when Hash
-                    value[key]
-                  when nil
-                    nil
-                  else
-                    value.send key
-                  end
-        end
-
-        value
       end
     end
 
