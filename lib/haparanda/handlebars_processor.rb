@@ -41,6 +41,26 @@ module Haparanda
       def dig(*keys)
         dig_value(@value, keys)
       end
+
+      def [](key)
+        dig(key)
+      end
+
+      def respond_to_missing?(method_name, *_args)
+        value = @value
+        case value
+        when Hash
+          value.key? method_name
+        when nil
+          false
+        else
+          value.respond_to? method_name
+        end
+      end
+
+      def method_missing(method_name, *_args)
+        dig(method_name)
+      end
     end
 
     class InputStack
@@ -66,7 +86,7 @@ module Haparanda
 
       def with_new_context(value, &block)
         # TODO: See if this can be removed
-        if self == value
+        if self == value || value == @stack.last
           block.call
         else
           @stack.push Input.new(value)
@@ -76,24 +96,8 @@ module Haparanda
         end
       end
 
-      def this
-        self
-      end
-
-      def respond_to_missing?(method_name, *_args)
-        value = @stack.last
-        case value
-        when Hash
-          value.key? method_name
-        when nil
-          false
-        else
-          value.respond_to? method_name
-        end
-      end
-
-      def method_missing(method_name, *_args)
-        dig(method_name)
+      def top
+        @stack.last
       end
     end
 
@@ -156,7 +160,7 @@ module Haparanda
 
       def lookup_property(item, index)
         case item
-        when InputStack
+        when Input
           item[index.to_sym]
         when Array, Hash
           item[index]
@@ -174,7 +178,7 @@ module Haparanda
       end
 
       def this
-        @input_stack
+        @input_stack.top
       end
     end
 
