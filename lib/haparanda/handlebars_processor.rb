@@ -32,6 +32,14 @@ module Haparanda
 
         value
       end
+
+      def respond_to_missing?(_method_name, *_args)
+        true
+      end
+
+      def method_missing(method_name, *_args)
+        dig(method_name)
+      end
     end
 
     class InputStack
@@ -63,16 +71,8 @@ module Haparanda
         end
       end
 
-      def this
-        self
-      end
-
-      def respond_to_missing?(_method_name, *_args)
-        true
-      end
-
-      def method_missing(method_name, *_args)
-        dig(method_name)
+      def top
+        @stack.last
       end
     end
 
@@ -139,7 +139,7 @@ module Haparanda
       end
 
       def this
-        @input
+        @input.top
       end
     end
 
