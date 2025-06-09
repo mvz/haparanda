@@ -12,18 +12,11 @@ module Haparanda
 
     class Input
       def initialize(value)
-        @stack = [value]
+        @value = value
       end
 
       def dig(*keys)
-        index = -1
-        while keys.first == :".."
-          keys.shift
-          index -= 1
-        end
-
-        value = @stack[index]
-
+        value = @value
         keys.each do |key|
           next if %i[. this].include? key
 
@@ -39,22 +32,35 @@ module Haparanda
 
         value
       end
+    end
+
+    class InputStack
+      def initialize(value)
+        input_foo = Input.new(value)
+        @stack = [input_foo]
+      end
+
+      def dig(*keys)
+        index = -1
+        while keys.first == :".."
+          keys.shift
+          index -= 1
+        end
+
+        value = @stack[index]
+        value&.dig(*keys)
+      end
 
       def with_new_context(value, &block)
-        # TODO: This prevents a SystemStackError. Make this unnecessary, for
-        # example by moving the stacking behavior out of the Input class.
+        # TODO: See if this can be removed
         if self == value
           block.call
         else
-          @stack.push value
+          @stack.push Input.new(value)
           result = block.call
           @stack.pop
           result
         end
-      end
-
-      def to_s
-        @stack.last.to_s
       end
 
       def this
@@ -167,7 +173,7 @@ module Haparanda
 
       self.require_empty = false
 
-      @input = Input.new(input)
+      @input = InputStack.new(input)
       @data = data ? Data.new(data) : NoData.new
       @helper_context = HelperContext.new(@input)
       @block_parameter_list = BlockParameterList.new
