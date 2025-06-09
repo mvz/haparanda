@@ -157,8 +157,27 @@ module Haparanda
         @values[key] = value
       end
 
-      def value(key)
-        @values.fetch(key)
+      def value(key, *rest)
+        dig_value(@values.fetch(key), rest)
+      end
+
+      private
+
+      def dig_value(value, keys)
+        keys.each do |key|
+          next if %i[. this].include? key
+
+          value = case value
+                  when Hash
+                    value[key]
+                  when nil
+                    nil
+                  else
+                    value.send key
+                  end
+        end
+
+        value
       end
     end
 
@@ -356,8 +375,8 @@ module Haparanda
     def lookup_path(data, elements)
       if data
         @data.data(*elements)
-      elsif elements.count == 1 && @block_parameter_list.key?(elements.first)
-        @block_parameter_list.value(elements.first)
+      elsif @block_parameter_list.key?(elements.first)
+        @block_parameter_list.value(*elements)
       elsif elements.count == 1 && @helpers.key?(elements.first)
         @helpers[elements.first]
       else
@@ -397,7 +416,7 @@ module Haparanda
 
     def handle_with(_context, value, options)
       if value
-        options.fn(value)
+        options.fn(value, block_params: [value])
       else
         options.inverse(value)
       end
