@@ -418,10 +418,12 @@ module Haparanda
       return unless value
 
       value = value.values if value.is_a? Hash
+      last = value.length - 1
       @data.with_new_data do
         value.each_with_index.map do |item, index|
           @data.set_data(:index, index)
           @data.set_data(:first, index == 0)
+          @data.set_data(:last, index == last)
           options.fn(item, block_params: [item, index])
         end.join
       end

@@ -412,7 +412,6 @@ describe 'builtin helpers' do
     end
 
     it 'each with @last' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}{{#if @last}}{{text}}! {{/if}}{{/each}}cruel {{world}}!'
       )
@@ -429,7 +428,6 @@ describe 'builtin helpers' do
     end
 
     it 'each object with @last' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}{{#if @last}}{{text}}! {{/if}}{{/each}}cruel {{world}}!'
       )
@@ -442,7 +440,6 @@ describe 'builtin helpers' do
     end
 
     it 'each with nested @last' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}({{#if @last}}{{text}}! {{/if}}{{#each ../goodbyes}}{{#if @last}}{{text}}!{{/if}}{{/each}}{{#if @last}} {{text}}!{{/if}}) {{/each}}cruel {{world}}!'
       )
