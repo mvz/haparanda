@@ -327,7 +327,6 @@ describe 'builtin helpers' do
     end
 
     it 'each with block params' do
-      skip
       expectTemplate(
         '{{#each goodbyes as |value index|}}{{index}}. {{value.text}}! {{#each ../goodbyes as |childValue childIndex|}} {{index}} {{childIndex}}{{/each}} After {{index}} {{/each}}{{index}}cruel {{world}}!'
       )

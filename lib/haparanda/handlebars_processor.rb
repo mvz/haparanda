@@ -421,7 +421,7 @@ module Haparanda
       @data.with_new_data do
         value.each_with_index.map do |item, index|
           @data.set_data(:index, index)
-          options.fn(item)
+          options.fn(item, block_params: [item, index])
         end.join
       end
     end
