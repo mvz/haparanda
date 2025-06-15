@@ -366,7 +366,6 @@ describe 'builtin helpers' do
     end
 
     it 'each with @first' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}{{#if @first}}{{text}}! {{/if}}{{/each}}cruel {{world}}!'
       )
@@ -383,7 +382,6 @@ describe 'builtin helpers' do
     end
 
     it 'each with nested @first' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}({{#if @first}}{{text}}! {{/if}}{{#each ../goodbyes}}{{#if @first}}{{text}}!{{/if}}{{/each}}{{#if @first}} {{text}}!{{/if}}) {{/each}}cruel {{world}}!'
       )
@@ -402,7 +400,6 @@ describe 'builtin helpers' do
     end
 
     it 'each object with @first' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}{{#if @first}}{{text}}! {{/if}}{{/each}}cruel {{world}}!'
       )
