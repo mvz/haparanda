@@ -10,20 +10,12 @@ module Haparanda
       end
     end
 
-    class Input
-      def initialize(value)
-        @stack = [value]
-      end
+    module ValueDigger
+      private
 
-      def dig(*keys)
-        index = -1
-        value = @stack[index]
+      def dig_value(value, keys)
         keys.each do |key|
-          if key == :".."
-            index -= 1
-            value = @stack[index]
-          end
-          next if %i[.. . this].include? key
+          next if %i[. this].include? key
 
           value = case value
                   when Hash
@@ -36,6 +28,25 @@ module Haparanda
         end
 
         value
+      end
+    end
+
+    class Input
+      include ValueDigger
+
+      def initialize(value)
+        @stack = [value]
+      end
+
+      def dig(*keys)
+        index = -1
+        while keys.first == :".."
+          keys.shift
+          index -= 1
+        end
+
+        value = @stack[index]
+        dig_value(value, keys)
       end
 
       def with_new_context(value, &block)
@@ -136,6 +147,8 @@ module Haparanda
     end
 
     class BlockParameterList
+      include ValueDigger
+
       def initialize
         @values = {}
       end
@@ -155,8 +168,8 @@ module Haparanda
         @values[key] = value
       end
 
-      def value(key)
-        @values.fetch(key)
+      def value(key, *rest)
+        dig_value(@values.fetch(key), rest)
       end
     end
 
@@ -354,8 +367,8 @@ module Haparanda
     def lookup_path(data, elements)
       if data
         @data.data(*elements)
-      elsif elements.count == 1 && @block_parameter_list.key?(elements.first)
-        @block_parameter_list.value(elements.first)
+      elsif @block_parameter_list.key?(elements.first)
+        @block_parameter_list.value(*elements)
       elsif elements.count == 1 && @helpers.key?(elements.first)
         @helpers[elements.first]
       else
@@ -395,7 +408,7 @@ module Haparanda
 
     def handle_with(_context, value, options)
       if value
-        options.fn(value)
+        options.fn(value, block_params: [value])
       else
         options.inverse(value)
       end

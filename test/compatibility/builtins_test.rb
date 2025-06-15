@@ -177,7 +177,6 @@ describe 'builtin helpers' do
     end
 
     it 'with provides block parameter' do
-      skip
       expectTemplate('{{#with person as |foo|}}{{foo.first}} {{last}}{{/with}}')
         .withInput({
           person: {
