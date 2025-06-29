@@ -448,6 +448,7 @@ module Haparanda
       arity = callable.arity
       num_params = params.count
       arity = num_params + 2 if arity < 0
+      raise ArgumentError, "expected #{arity - 2} arguments" if arity > num_params + 2
 
       params = params.take(arity) if num_params > arity
 
