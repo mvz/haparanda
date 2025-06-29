@@ -523,13 +523,12 @@ describe 'builtin helpers' do
       );
     end
 
-    it 'each on Map' do
-      skip
-      var map = Map.new([
+    it 'each on Hash' do
+      map = [
         [1, 'one'],
         [2, 'two'],
         [3, 'three'],
-      ]);
+      ].to_h
 
       expectTemplate('{{#each map}}{{@key}}(i{{@index}}) {{.}} {{/each}}')
         .withInput({ map: map })
@@ -544,7 +543,7 @@ describe 'builtin helpers' do
         .toCompileTo('three');
 
       expectTemplate('{{#each map}}{{.}}{{/each}}not-in-each')
-        .withInput({ map: Map.new })
+        .withInput({ map: {} })
         .toCompileTo('not-in-each');
     end
 
