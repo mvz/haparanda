@@ -548,8 +548,7 @@ describe 'builtin helpers' do
     end
 
     it 'each on Set' do
-      skip
-      var set = Set.new([1, 2, 3]);
+      set = Set.new([1, 2, 3]);
 
       expectTemplate('{{#each set}}{{@key}}(i{{@index}}) {{.}} {{/each}}')
         .withInput({ set: set })

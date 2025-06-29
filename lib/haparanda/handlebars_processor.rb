@@ -429,6 +429,7 @@ module Haparanda
           end.join
         else
           value.each_with_index.map do |item, index|
+            @data.set_data(:key, index)
             @data.set_data(:index, index)
             @data.set_data(:first, index == 0)
             @data.set_data(:last, index == last)
