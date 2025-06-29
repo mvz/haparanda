@@ -369,7 +369,7 @@ module Haparanda
         @data.data(*elements)
       elsif @block_parameter_list.key?(elements.first)
         @block_parameter_list.value(*elements)
-      elsif elements.count == 1 && @helpers.key?(elements.first)
+      elsif elements.one? && @helpers.key?(elements.first)
         @helpers[elements.first]
       else
         @input.dig(*elements)
