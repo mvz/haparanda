@@ -529,7 +529,7 @@ module Haparanda
     def handle_each(_context, value, options)
       return unless value
 
-      last = value.length - 1
+      last = value.respond_to?(:length) ? value.length - 1 : -1
       @data.with_new_data do
         if value.is_a? Hash
           value.each_with_index.map do |(key, item), index|
