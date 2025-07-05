@@ -95,6 +95,10 @@ Style/RegexpLiteral:
   Exclude:
     - 'test/compatibility/*'
 
+Style/SafeNavigation:
+  Exclude:
+    - 'test/compatibility/*'
+
 Style/Semicolon:
   Exclude:
     - 'test/compatibility/*'

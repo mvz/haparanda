@@ -369,7 +369,7 @@ module Haparanda
         @data.data(*elements)
       elsif @block_parameter_list.key?(elements.first)
         @block_parameter_list.value(*elements)
-      elsif elements.count == 1 && @helpers.key?(elements.first)
+      elsif elements.one? && @helpers.key?(elements.first)
         @helpers[elements.first]
       else
         @input.dig(*elements)
@@ -417,15 +417,25 @@ module Haparanda
     def handle_each(_context, value, options)
       return unless value
 
-      value = value.values if value.is_a? Hash
       last = value.length - 1
       @data.with_new_data do
-        value.each_with_index.map do |item, index|
-          @data.set_data(:index, index)
-          @data.set_data(:first, index == 0)
-          @data.set_data(:last, index == last)
-          options.fn(item, block_params: [item, index])
-        end.join
+        if value.is_a? Hash
+          value.each_with_index.map do |(key, item), index|
+            @data.set_data(:key, key)
+            @data.set_data(:index, index)
+            @data.set_data(:first, index == 0)
+            @data.set_data(:last, index == last)
+            options.fn(item, block_params: [item, index])
+          end.join
+        else
+          value.each_with_index.map do |item, index|
+            @data.set_data(:key, index)
+            @data.set_data(:index, index)
+            @data.set_data(:first, index == 0)
+            @data.set_data(:last, index == last)
+            options.fn(item, block_params: [item, index])
+          end.join
+        end
       end
     end
 

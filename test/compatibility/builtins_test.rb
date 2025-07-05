@@ -188,7 +188,6 @@ describe 'builtin helpers' do
     end
 
     it 'works when data is disabled' do
-      skip
       expectTemplate('{{#with person as |foo|}}{{foo.first}} {{last}}{{/with}}')
         .withInput({ person: { first: 'Alan', last: 'Johnson' } })
         .withCompileOptions({ data: false })
@@ -198,9 +197,9 @@ describe 'builtin helpers' do
 
   describe '#each' do
     before do
-      # handlebarsEnv.registerHelper('detectDataInsideEach', ->(options) {
-      #   return options.data && options.data.exclaim;
-      # });
+      handlebarsEnv.register_helper('detectDataInsideEach') do |options|
+        options.data && options.data.exclaim;
+      end;
     end
 
     it 'each' do
@@ -340,7 +339,6 @@ describe 'builtin helpers' do
     end
 
     it 'each with block params and strict compilation' do
-      skip
       expectTemplate(
         '{{#each goodbyes as |value index|}}{{index}}. {{value.text}}!{{/each}}'
       )
@@ -488,7 +486,6 @@ describe 'builtin helpers' do
     end
 
     it 'each object when last key is an empty string' do
-      skip
       expectTemplate(
         '{{#each goodbyes}}{{@index}}. {{text}}! {{/each}}cruel {{world}}!'
       )
@@ -505,7 +502,6 @@ describe 'builtin helpers' do
     end
 
     it 'data passed to helpers' do
-      skip
       expectTemplate(
         '{{#each letters}}{{this}}{{detectDataInsideEach}}{{/each}}'
       )
@@ -527,13 +523,12 @@ describe 'builtin helpers' do
       );
     end
 
-    it 'each on Map' do
-      skip
-      var map = Map.new([
+    it 'each on Hash' do
+      map = [
         [1, 'one'],
         [2, 'two'],
         [3, 'three'],
-      ]);
+      ].to_h
 
       expectTemplate('{{#each map}}{{@key}}(i{{@index}}) {{.}} {{/each}}')
         .withInput({ map: map })
@@ -548,13 +543,12 @@ describe 'builtin helpers' do
         .toCompileTo('three');
 
       expectTemplate('{{#each map}}{{.}}{{/each}}not-in-each')
-        .withInput({ map: Map.new })
+        .withInput({ map: {} })
         .toCompileTo('not-in-each');
     end
 
     it 'each on Set' do
-      skip
-      var set = Set.new([1, 2, 3]);
+      set = Set.new([1, 2, 3]);
 
       expectTemplate('{{#each set}}{{@key}}(i{{@index}}) {{.}} {{/each}}')
         .withInput({ set: set })
