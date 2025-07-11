@@ -11,10 +11,9 @@ require "test_helper"
 
 describe 'partials' do
   it 'basic partials' do
-    skip
-    var string = 'Dudes: {{#dudes}}{{> dude}}{{/dudes}}';
-    var partial = '{{name}} ({{url}}) ';
-    var hash = {
+    string = 'Dudes: {{#dudes}}{{> dude}}{{/dudes}}';
+    partial = '{{name}} ({{url}}) ';
+    hash = {
       dudes: [
         { name: 'Yehuda', url: 'http://yehuda' },
         { name: 'Alan', url: 'http://alan' },
