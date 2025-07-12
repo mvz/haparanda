@@ -228,11 +228,24 @@ module Haparanda
     end
 
     def process_partial(expr)
-      _, name, = expr
+      _, name, context, = expr
+
       path = process(name)
       _data, elements = path_segments(path)
+
       partial = @partials.fetch elements.first
-      process(partial)
+
+      values = process(context)
+      value = values[1].first
+
+      if value
+        program = make_contextual_lambda partial
+
+        result = value.map { |item| program.call item }.join
+        s(:result, result)
+      else
+        process(partial)
+      end
     end
 
     def process_statements(expr)

@@ -84,7 +84,6 @@ describe 'partials' do
   end
 
   it 'partials with context' do
-    skip
     expectTemplate('Dudes: {{>dude dudes}}')
       .withInput({
         dudes: [

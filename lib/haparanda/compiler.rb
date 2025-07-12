@@ -29,7 +29,7 @@ module Haparanda
     end
 
     def register_partial(name, content)
-      @partials[name] = template_to_ast(content)
+      @partials[name.to_sym] = template_to_ast(content)
     end
 
     private
