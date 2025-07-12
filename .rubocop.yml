@@ -51,6 +51,10 @@ Minitest/SkipWithoutReason:
   Exclude:
     - 'test/compatibility/*'
 
+Naming/BlockParameterName:
+  Exclude:
+    - 'test/compatibility/*'
+
 Naming/MethodParameterName:
   AllowedNames:
     - fn
@@ -72,6 +76,10 @@ Style/IfUnlessModifier:
     - 'test/compatibility/*'
 
 Style/LineEndConcatenation:
+  Exclude:
+    - 'test/compatibility/*'
+
+Style/MethodCallWithoutArgsParentheses:
   Exclude:
     - 'test/compatibility/*'
 
