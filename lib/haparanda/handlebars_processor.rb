@@ -241,7 +241,12 @@ module Haparanda
       if value
         program = make_contextual_lambda partial
 
-        result = value.map { |item| program.call item }.join
+        result = case value
+                 when Array
+                   value.map { |item| program.call item }.join
+                 else
+                   program.call value
+                 end
         s(:result, result)
       else
         process(partial)

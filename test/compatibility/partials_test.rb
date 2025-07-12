@@ -120,7 +120,6 @@ describe 'partials' do
   end
 
   it 'partials with string context' do
-    skip
     expectTemplate('Dudes: {{>dude "dudes"}}')
       .withPartial('dude', '{{.}}')
       .toCompileTo('Dudes: dudes');
