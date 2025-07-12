@@ -173,6 +173,18 @@ module Haparanda
       end
     end
 
+    module Utils
+      module_function
+
+      def escape(str)
+        return str if str.is_a? SafeString
+
+        str.gsub(/[&<>"'`=]/) do |chr|
+          ESCAPE[chr]
+        end
+      end
+    end
+
     def initialize(input, helpers: {}, partials: {}, data: {})
       super()
 
@@ -210,7 +222,7 @@ module Haparanda
       value = lookup_path(data, elements)
       value = execute_in_context(value, params, hash: hash) if value.respond_to? :call
       value = value.to_s
-      value = escape(value) if escaped
+      value = Utils.escape(value) if escaped
       s(:result, value)
     end
 
@@ -364,17 +376,25 @@ module Haparanda
     end
 
     def evaluate_expr(expr)
-      path = process(expr)
-      case path.sexp_type
+      expr = process(expr)
+      case expr.sexp_type
       when :segments
-        data, elements = path.sexp_body
+        data, elements = expr.sexp_body
         value = lookup_path(data, elements)
         value = execute_in_context(value) if value.respond_to? :call
         value
       when :undefined, :null
         nil
+      when :sub_expression
+        path, args, hash = expr.sexp_body
+        data, elements = path_segments(path)
+        value = lookup_path(data, elements)
+        params = args[1]
+        hash = hash[1] if hash
+
+        execute_in_context(value, params, hash: hash) # if value.respond_to? :call
       else
-        path[1]
+        expr[1]
       end
     end
 
@@ -475,13 +495,5 @@ module Haparanda
       "=" => "&#x3D;"
     }.freeze
     private_constant :ESCAPE
-
-    def escape(str)
-      return str if str.is_a? SafeString
-
-      str.gsub(/[&<>"'`=]/) do |chr|
-        ESCAPE[chr]
-      end
-    end
   end
 end

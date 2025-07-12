@@ -11,7 +11,6 @@ require "test_helper"
 
 describe 'subexpressions' do
   it 'arg-less helper' do
-    skip
     expectTemplate('{{foo (bar)}}!')
       .withHelpers({
         foo: lambda { |val|
@@ -25,12 +24,11 @@ describe 'subexpressions' do
   end
 
   it 'helper w args' do
-    skip
     expectTemplate('{{blog (equal a b)}}')
       .withInput({ bar: 'LOL' })
       .withHelpers({
         blog: lambda { |val|
-          return 'val is ' + val;
+          return 'val is ' + val.to_s;
         },
         equal: lambda { |x, y|
           return x == y;
@@ -40,12 +38,11 @@ describe 'subexpressions' do
   end
 
   it 'mixed paths and helpers' do
-    skip
     expectTemplate('{{blog baz.bat (equal a b) baz.bar}}')
       .withInput({ bar: 'LOL', baz: { bat: 'foo!', bar: 'bar!' } })
       .withHelpers({
         blog: lambda { |val, that, theOther|
-          return 'val is ' + val + ', ' + that + ' and ' + theOther;
+          return 'val is ' + val.to_s + ', ' + that.to_s + ' and ' + theOther.to_s;
         },
         equal: lambda { |x, y|
           return x == y;
@@ -55,12 +52,11 @@ describe 'subexpressions' do
   end
 
   it 'supports much nesting' do
-    skip
     expectTemplate('{{blog (equal (equal true true) true)}}')
       .withInput({ bar: 'LOL' })
       .withHelpers({
         blog: lambda { |val|
-          return 'val is ' + val;
+          return 'val is ' + val.to_s;
         },
         equal: lambda { |x, y|
           return x == y;
@@ -70,7 +66,6 @@ describe 'subexpressions' do
   end
 
   it 'GH-800 : Complex subexpressions' do
-    skip
     context = { a: 'a', b: 'b', c: { c: 'c' }, d: 'd', e: { e: 'e' } };
     helpers = {
       dash: lambda { |a, b|
@@ -108,8 +103,7 @@ describe 'subexpressions' do
   end
 
   it 'provides each nested helper invocation its own options hash' do
-    skip
-    lastOptions = null;
+    lastOptions = nil;
     helpers = {
       equal: lambda { |x, y, options|
         if !options || options == lastOptions
@@ -125,12 +119,11 @@ describe 'subexpressions' do
   end
 
   it 'with hashes' do
-    skip
     expectTemplate("{{blog (equal (equal true true) true fun='yes')}}")
       .withInput({ bar: 'LOL' })
       .withHelpers({
         blog: lambda { |val|
-          return 'val is ' + val;
+          return 'val is ' + val.to_s;
         },
         equal: lambda { |x, y|
           return x == y;
@@ -140,11 +133,10 @@ describe 'subexpressions' do
   end
 
   it 'as hashes' do
-    skip
     expectTemplate("{{blog fun=(equal (blog fun=1) 'val is 1')}}")
       .withHelpers({
         blog: lambda { |options|
-          return 'val is ' + options.hash.fun;
+          return 'val is ' + options.hash[:fun].to_s;
         },
         equal: lambda { |x, y|
           return x == y;
@@ -154,16 +146,15 @@ describe 'subexpressions' do
   end
 
   it 'multiple subexpressions in a hash' do
-    skip
     expectTemplate(
       '{{input aria-label=(t "Name") placeholder=(t "Example User")}}'
     )
       .withHelpers({
         input: lambda { |options|
           hash = options.hash;
-          ariaLabel = Handlebars.Utils.escapeExpression(hash['aria-label']);
-          placeholder = Handlebars.Utils.escapeExpression(hash.placeholder);
-          return new Handlebars.SafeString(
+          ariaLabel = Haparanda::HandlebarsProcessor::Utils.escape(hash[:'aria-label']);
+          placeholder = Haparanda::HandlebarsProcessor::Utils.escape(hash[:placeholder]);
+          return Haparanda::HandlebarsProcessor::SafeString.new(
             '<input aria-label="' +
               ariaLabel +
               '" placeholder="' +
@@ -172,14 +163,13 @@ describe 'subexpressions' do
           );
         },
         t: lambda { |defaultString|
-          return new Handlebars.SafeString(defaultString);
+          return Haparanda::HandlebarsProcessor::SafeString.new(defaultString);
         },
       })
       .toCompileTo('<input aria-label="Name" placeholder="Example User" />');
   end
 
   it 'multiple subexpressions in a hash with context' do
-    skip
     expectTemplate(
       '{{input aria-label=(t item.field) placeholder=(t item.placeholder)}}'
     )
@@ -192,9 +182,9 @@ describe 'subexpressions' do
       .withHelpers({
         input: lambda { |options|
           hash = options.hash;
-          ariaLabel = Handlebars.Utils.escapeExpression(hash['aria-label']);
-          placeholder = Handlebars.Utils.escapeExpression(hash.placeholder);
-          return new Handlebars.SafeString(
+          ariaLabel = Haparanda::HandlebarsProcessor::Utils.escape(hash[:'aria-label']);
+          placeholder = Haparanda::HandlebarsProcessor::Utils.escape(hash[:placeholder]);
+          return Haparanda::HandlebarsProcessor::SafeString.new(
             '<input aria-label="' +
               ariaLabel +
               '" placeholder="' +
@@ -203,14 +193,13 @@ describe 'subexpressions' do
           );
         },
         t: lambda { |defaultString|
-          return new Handlebars.SafeString(defaultString);
+          return Haparanda::HandlebarsProcessor::SafeString.new(defaultString);
         },
       })
       .toCompileTo('<input aria-label="Name" placeholder="Example User" />');
   end
 
   it 'subexpression functions on the context' do
-    skip
     expectTemplate('{{foo (bar)}}!')
       .withInput({
         bar: lambda {
@@ -226,7 +215,6 @@ describe 'subexpressions' do
   end
 
   it "subexpressions can't just be property lookups" do
-    skip
     expectTemplate('{{foo (bar)}}!')
       .withInput({
         bar: 'LOL',
@@ -236,6 +224,6 @@ describe 'subexpressions' do
           return val + val;
         },
       })
-      .toThrow();
+      .toThrow(NoMethodError);
   end
 end
