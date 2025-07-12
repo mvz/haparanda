@@ -173,7 +173,7 @@ module Haparanda
       end
     end
 
-    def initialize(input, custom_helpers = nil, data: {})
+    def initialize(input, helpers: {}, partials: {}, data: {})
       super()
 
       self.require_empty = false
@@ -183,13 +183,13 @@ module Haparanda
       @helper_context = HelperContext.new(@input)
       @block_parameter_list = BlockParameterList.new
 
-      custom_helpers ||= {}
       @helpers = {
         if: method(:handle_if),
         unless: method(:handle_unless),
         with: method(:handle_with),
         each: method(:handle_each)
-      }.merge(custom_helpers)
+      }.merge(helpers)
+      @partials = partials
     end
 
     def apply(expr)
@@ -225,6 +225,32 @@ module Haparanda
       value = lookup_path(data, elements)
 
       evaluate_program_with_value(value, arguments, program, else_program, hash)
+    end
+
+    def process_partial(expr)
+      _, name, context, = expr
+
+      path = process(name)
+      _data, elements = path_segments(path)
+
+      partial = @partials.fetch elements.first
+
+      values = process(context)
+      value = values[1].first
+
+      if value
+        program = make_contextual_lambda partial
+
+        result = case value
+                 when Array
+                   value.map { |item| program.call item }.join
+                 else
+                   program.call value
+                 end
+        s(:result, result)
+      else
+        process(partial)
+      end
     end
 
     def process_statements(expr)

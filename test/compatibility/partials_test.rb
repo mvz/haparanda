@@ -11,10 +11,9 @@ require "test_helper"
 
 describe 'partials' do
   it 'basic partials' do
-    skip
-    var string = 'Dudes: {{#dudes}}{{> dude}}{{/dudes}}';
-    var partial = '{{name}} ({{url}}) ';
-    var hash = {
+    string = 'Dudes: {{#dudes}}{{> dude}}{{/dudes}}';
+    partial = '{{name}} ({{url}}) ';
+    hash = {
       dudes: [
         { name: 'Yehuda', url: 'http://yehuda' },
         { name: 'Alan', url: 'http://alan' },
@@ -85,7 +84,6 @@ describe 'partials' do
   end
 
   it 'partials with context' do
-    skip
     expectTemplate('Dudes: {{>dude dudes}}')
       .withInput({
         dudes: [
@@ -122,14 +120,12 @@ describe 'partials' do
   end
 
   it 'partials with string context' do
-    skip
     expectTemplate('Dudes: {{>dude "dudes"}}')
       .withPartial('dude', '{{.}}')
       .toCompileTo('Dudes: dudes');
   end
 
   it 'partials with undefined context' do
-    skip
     expectTemplate('Dudes: {{>dude dudes}}')
       .withPartial('dude', '{{foo}} Empty')
       .toCompileTo('Dudes:  Empty');
@@ -159,7 +155,6 @@ describe 'partials' do
   end
 
   it 'partial in a partial' do
-    skip
     expectTemplate('Dudes: {{#dudes}}{{>dude}}{{/dudes}}')
       .withInput({
         dudes: [
@@ -223,7 +218,6 @@ describe 'partials' do
   end
 
   it 'GH-14: a partial preceding a selector' do
-    skip
     expectTemplate('Dudes: {{>dude}} {{anotherDude}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('dude', '{{name}}')
@@ -296,7 +290,6 @@ describe 'partials' do
   end
 
   it 'Partials with escaped' do
-    skip
     expectTemplate('Dudes: {{> [+404/asdf?.bar]}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('+404/asdf?.bar', '{{name}}')

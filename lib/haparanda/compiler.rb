@@ -8,14 +8,12 @@ module Haparanda
     def initialize
       @parser = HandlebarsParser.new
       @helpers = {}
+      @partials = {}
     end
 
     def compile(text, **compile_options)
-      template = parser.parse(text)
-      # TODO: Rename to PostProcessor
-      post_processor = HandlebarsCompiler.new(**compile_options)
-      compiled_template = post_processor.process(template)
-      Template.new(compiled_template, @helpers)
+      ast = template_to_ast text, **compile_options
+      Template.new(ast, @helpers, @partials)
     end
 
     def register_helper(name, &definition)
@@ -30,7 +28,18 @@ module Haparanda
       @helpers[name.to_sym]
     end
 
+    def register_partial(name, content)
+      @partials[name.to_sym] = template_to_ast(content)
+    end
+
     private
+
+    def template_to_ast(text, **compile_options)
+      template = parser.parse(text)
+      # TODO: Rename to PostProcessor
+      post_processor = HandlebarsCompiler.new(**compile_options)
+      post_processor.process(template)
+    end
 
     attr_reader :parser, :post_processor
   end

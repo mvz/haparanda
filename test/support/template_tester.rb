@@ -45,6 +45,18 @@ class TemplateTester
     self
   end
 
+  def withPartials(partials) # rubocop:disable Naming/MethodName
+    partials.each do |name, content|
+      @compiler.register_partial(name, content)
+    end
+    self
+  end
+
+  def withPartial(name, content) # rubocop:disable Naming/MethodName
+    @compiler.register_partial(name, content)
+    self
+  end
+
   def toCompileTo(expected) # rubocop:disable Naming/MethodName
     expected = expected.gsub('\n', "\n")
     actual = compile_and_process_template
