@@ -34,16 +34,15 @@ describe 'partials' do
   end
 
   it 'dynamic partials' do
-    skip
-    var string = 'Dudes: {{#dudes}}{{> (partial)}}{{/dudes}}';
-    var partial = '{{name}} ({{url}}) ';
-    var hash = {
+    string = 'Dudes: {{#dudes}}{{> (partial)}}{{/dudes}}';
+    partial = '{{name}} ({{url}}) ';
+    hash = {
       dudes: [
         { name: 'Yehuda', url: 'http://yehuda' },
         { name: 'Alan', url: 'http://alan' },
       ],
     };
-    var helpers = {
+    helpers = {
       partial: lambda {
         return 'dude';
       },
@@ -272,7 +271,6 @@ describe 'partials' do
   end
 
   it 'Partials with integer path' do
-    skip
     expectTemplate('Dudes: {{> 404}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial(404, '{{name}}')
@@ -298,7 +296,6 @@ describe 'partials' do
   end
 
   it 'Partials with string' do
-    skip
     expectTemplate("Dudes: {{> '+404/asdf?.bar'}}")
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('+404/asdf?.bar', '{{name}}')
