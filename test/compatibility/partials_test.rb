@@ -272,7 +272,6 @@ describe 'partials' do
   end
 
   it 'Partials with integer path' do
-    skip
     expectTemplate('Dudes: {{> 404}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial(404, '{{name}}')
@@ -298,7 +297,6 @@ describe 'partials' do
   end
 
   it 'Partials with string' do
-    skip
     expectTemplate("Dudes: {{> '+404/asdf?.bar'}}")
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('+404/asdf?.bar', '{{name}}')

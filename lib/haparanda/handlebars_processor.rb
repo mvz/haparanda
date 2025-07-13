@@ -245,7 +245,7 @@ module Haparanda
       path = process(name)
       _data, elements = path_segments(path)
 
-      partial = @partials.fetch elements.first
+      partial = @partials.fetch elements.first.to_s
 
       values = process(context)
       value = values[1].first
