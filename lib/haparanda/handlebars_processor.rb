@@ -302,6 +302,19 @@ module Haparanda
       s(:hash, hash)
     end
 
+    def process_sub_expression(expr)
+      _, name, params, hash = expr
+      path = process(name)
+      data, elements = path_segments(path)
+      value = lookup_path(data, elements)
+
+      arguments = process(params)[1]
+      hash = process(hash)[1] if hash
+
+      result = execute_in_context(value, arguments, hash: hash)
+      s(:result, result)
+    end
+
     private
 
     def evaluate_program_with_value(value, arguments, program, else_program, hash)
@@ -385,14 +398,6 @@ module Haparanda
         value
       when :undefined, :null
         nil
-      when :sub_expression
-        path, args, hash = expr.sexp_body
-        data, elements = path_segments(path)
-        value = lookup_path(data, elements)
-        params = args[1]
-        hash = hash[1] if hash
-
-        execute_in_context(value, params, hash: hash) # if value.respond_to? :call
       else
         expr[1]
       end

@@ -34,16 +34,15 @@ describe 'partials' do
   end
 
   it 'dynamic partials' do
-    skip
-    var string = 'Dudes: {{#dudes}}{{> (partial)}}{{/dudes}}';
-    var partial = '{{name}} ({{url}}) ';
-    var hash = {
+    string = 'Dudes: {{#dudes}}{{> (partial)}}{{/dudes}}';
+    partial = '{{name}} ({{url}}) ';
+    hash = {
       dudes: [
         { name: 'Yehuda', url: 'http://yehuda' },
         { name: 'Alan', url: 'http://alan' },
       ],
     };
-    var helpers = {
+    helpers = {
       partial: lambda {
         return 'dude';
       },
