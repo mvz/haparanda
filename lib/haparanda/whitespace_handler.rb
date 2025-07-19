@@ -70,26 +70,34 @@ module Haparanda
     def process_statements(expr)
       statements = expr.sexp_body
 
-      statements.each_cons(3) do |prev, partial, item|
-        next if partial.sexp_type != :partial
-        next unless preceding_whitespace? prev
+      strip_whitespace_after_standalone_partials(statements)
+      strip_pairwise_sibling_whitespace(statements)
 
-        strip_initial_whitespace(item, s(:strip, true, true))
-      end
-
-      statements.each_cons(2) do |prev, item|
-        strip_final_whitespace(prev, open_strip_for(item)) if item.sexp_type != :content
-        strip_initial_whitespace(item, close_strip_for(prev)) if prev.sexp_type != :content
-
-        strip_standalone_whitespace(prev, item.dig(4, 2, 1)) if item.sexp_type == :block
-        strip_standalone_whitespace(last_item(prev), item) if prev.sexp_type == :block
-      end
       statements = statements.map { process(_1) }
 
       s(:statements, *statements)
     end
 
     private
+
+    def strip_whitespace_after_standalone_partials(statements)
+      statements.each_cons(3) do |prev, partial, item|
+        next if partial.sexp_type != :partial
+        next unless preceding_whitespace? prev
+
+        strip_initial_whitespace(item, s(:strip, true, true))
+      end
+    end
+
+    def strip_pairwise_sibling_whitespace(statements)
+      statements.each_cons(2) do |prev, item|
+        strip_final_whitespace(prev, open_strip_for(item)) if item.sexp_type != :content
+        strip_initial_whitespace(item, close_strip_for(prev)) if prev.sexp_type != :content
+
+        strip_standalone_whitespace(prev, first_item(item)) if item.sexp_type == :block
+        strip_standalone_whitespace(last_item(prev), item) if prev.sexp_type == :block
+      end
+    end
 
     def first_item(container)
       case container.sexp_type
