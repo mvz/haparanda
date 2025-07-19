@@ -70,6 +70,13 @@ module Haparanda
     def process_statements(expr)
       statements = expr.sexp_body
 
+      statements.each_cons(3) do |prev, partial, item|
+        next if partial.sexp_type != :partial
+        next unless preceding_whitespace? prev
+
+        strip_initial_whitespace(item, s(:strip, true, true))
+      end
+
       statements.each_cons(2) do |prev, item|
         strip_final_whitespace(prev, open_strip_for(item)) if item.sexp_type != :content
         strip_initial_whitespace(item, close_strip_for(prev)) if prev.sexp_type != :content

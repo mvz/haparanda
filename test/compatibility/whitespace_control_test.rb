@@ -129,7 +129,6 @@ describe 'whitespace control' do
   end
 
   it 'should strip whitespace around partials' do
-    skip
     expectTemplate('foo {{~> dude~}} ')
       .withPartials({ dude: 'bar' })
       .toCompileTo('foobar');
