@@ -57,10 +57,9 @@ module Haparanda
 
       case statements.sexp_type
       when :statements
-        if (items = statements&.sexp_body)
-          strip_initial_whitespace(items.first, open_strip)
-          strip_final_whitespace(items.last, close_strip)
-        end
+        items = statements.sexp_body
+        strip_initial_whitespace(items.first, open_strip)
+        strip_final_whitespace(items.last, close_strip)
       end
       # TODO: Handle :block sexp_type
 
