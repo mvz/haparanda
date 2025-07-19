@@ -657,8 +657,8 @@ describe 'helpers' do
 
   describe 'helperMissing' do
     it 'if a context is not found, helperMissing is used' do
-      skip
       expectTemplate('{{hello}} {{link_to world}}').toThrow(
+        RuntimeError,
         /Missing helper: "link_to"/
       );
     end

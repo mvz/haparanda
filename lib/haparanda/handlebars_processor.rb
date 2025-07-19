@@ -220,7 +220,11 @@ module Haparanda
       hash = process(hash)[1] if hash
       data, elements = path_segments process(path)
       value = lookup_path(data, elements)
-      value = execute_in_context(value, params, hash: hash) if value.respond_to? :call
+      if value.respond_to? :call
+        value = execute_in_context(value, params, hash: hash)
+      elsif !params.empty?
+        raise "Missing helper: \"#{elements.first}\""
+      end
       value = value.to_s
       value = Utils.escape(value) if escaped
       s(:result, value)
