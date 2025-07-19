@@ -152,7 +152,6 @@ describe 'whitespace control' do
   end
 
   it 'should only strip whitespace once' do
-    skip
     expectTemplate(' {{~foo~}} {{foo}} {{foo}} ')
       .withInput({ foo: 'bar' })
       .toCompileTo('barbar bar ');
