@@ -231,16 +231,14 @@ module Haparanda
     end
 
     def process_block(expr)
-      _, name, params, hash, program, inverse_chain, = expr
+      _, path, params, hash, program, inverse_chain, = expr
       hash = process(hash)[1] if hash
       else_program = inverse_chain.sexp_body[1] if inverse_chain
       arguments = process(params)[1]
 
-      path = process(name)
-      data, elements = path_segments(path)
-      value = lookup_path(data, elements)
+      value, name = lookup_value process(path)
 
-      evaluate_program_with_value(value, arguments, program, else_program, hash)
+      evaluate_program_with_value(value, arguments, program, else_program, hash, name: name)
     end
 
     def process_partial(expr)
@@ -321,13 +319,15 @@ module Haparanda
 
     private
 
-    def evaluate_program_with_value(value, arguments, program, else_program, hash)
+    def evaluate_program_with_value(value, arguments, program, else_program, hash,
+                                    name: nil)
       block_params = extract_block_param_names(program)
       fn = make_contextual_lambda(program, block_params)
       inverse = make_contextual_lambda(else_program)
 
       if value.respond_to? :call
-        value = execute_in_context(value, arguments, fn: fn, inverse: inverse, hash: hash,
+        value = execute_in_context(value, arguments, name: name,
+                                                     fn: fn, inverse: inverse, hash: hash,
                                                      block_params: block_params&.count)
         return s(:result, value.to_s)
       end
