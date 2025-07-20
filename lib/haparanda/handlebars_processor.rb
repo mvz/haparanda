@@ -117,15 +117,16 @@ module Haparanda
     end
 
     class Options
-      def initialize(fn:, inverse:, hash:, data:, block_params:)
+      def initialize(fn:, inverse:, hash:, data:, block_params:, name: nil)
         @fn = fn
         @inverse = inverse
+        @name = name
         @hash = hash
         @data = data
         @block_params = block_params
       end
 
-      attr_reader :hash, :data, :block_params
+      attr_reader :name, :hash, :data, :block_params
 
       def fn(arg = nil, options = {})
         @fn&.call(arg, options)
@@ -218,12 +219,11 @@ module Haparanda
       _, path, params, hash, escaped, _strip = expr
       params = process(params)[1]
       hash = process(hash)[1] if hash
-      data, elements = path_segments process(path)
-      value = lookup_path(data, elements)
+      value, name = lookup_value process(path)
       if value.respond_to? :call
-        value = execute_in_context(value, params, hash: hash)
+        value = execute_in_context(value, params, name: name, hash: hash)
       elsif !params.empty?
-        raise "Missing helper: \"#{elements.first}\""
+        raise "Missing helper: \"#{name}\""
       end
       value = value.to_s
       value = Utils.escape(value) if escaped
@@ -407,6 +407,13 @@ module Haparanda
       end
     end
 
+    def lookup_value(path)
+      data, elements = path_segments(path)
+      value = lookup_path(data, elements)
+      name = elements.last
+      return value, name
+    end
+
     def path_segments(path)
       case path.sexp_type
       when :segments
@@ -431,7 +438,7 @@ module Haparanda
       end
     end
 
-    def execute_in_context(callable, params = [],
+    def execute_in_context(callable, params = [], name: nil,
                            fn: nil, inverse: nil, block_params: 0, hash: nil)
       arity = callable.arity
       num_params = params.count
@@ -439,7 +446,8 @@ module Haparanda
 
       params = params.take(arity) if num_params > arity
 
-      options = Options.new(fn: fn, inverse: inverse,
+      options = Options.new(name: name,
+                            fn: fn, inverse: inverse,
                             block_params: block_params, hash: hash,
                             data: @data)
       params.push options if arity > num_params
