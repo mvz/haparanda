@@ -221,15 +221,13 @@ module Haparanda
       hash = process(hash)[1] if hash
       value, name = lookup_value process(path)
 
+      if value.nil?
+        value = @helpers[:helper_missing]
+        raise "Missing helper: \"#{name}\"" if value.nil? && !params.empty?
+      end
+
       if value.respond_to? :call
         value = execute_in_context(value, params, name: name, hash: hash)
-      elsif !params.empty?
-        value = @helpers[:helper_missing] or raise "Missing helper: \"#{name}\""
-
-        value = execute_in_context(value, params, name: name, hash: hash)
-      elsif value.nil?
-        value = @helpers[:helper_missing]
-        value = execute_in_context(value, params, name: name, hash: hash) if value
       end
 
       value = value.to_s
