@@ -516,10 +516,9 @@ describe 'builtin helpers' do
     end
 
     it 'each on implicit context' do
-      skip
       expectTemplate('{{#each}}{{text}}! {{/each}}cruel world!').toThrow(
-        handlebarsEnv.Exception,
-        'Must pass iterator to #each'
+        ArgumentError,
+        'Expected 1 argument for #each'
       );
     end
 

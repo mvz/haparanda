@@ -311,14 +311,12 @@ module Haparanda
 
     def process_sub_expression(expr)
       _, name, params, hash = expr
-      path = process(name)
-      data, elements = path_segments(path)
-      value = lookup_path(data, elements)
+      value, name = lookup_value process(name)
 
       arguments = process(params)[1]
       hash = process(hash)[1] if hash
 
-      result = execute_in_context(value, arguments, hash: hash)
+      result = execute_in_context(value, arguments, hash: hash, name: name)
       s(:result, result)
     end
 
@@ -401,9 +399,8 @@ module Haparanda
       expr = process(expr)
       case expr.sexp_type
       when :segments
-        data, elements = expr.sexp_body
-        value = lookup_path(data, elements)
-        value = execute_in_context(value) if value.respond_to? :call
+        value, name = lookup_value expr
+        value = execute_in_context(value, name: name) if value.respond_to? :call
         value
       when :undefined, :null
         nil
@@ -443,11 +440,12 @@ module Haparanda
       end
     end
 
-    def execute_in_context(callable, params = [], name: nil,
+    def execute_in_context(callable, params = [], name:,
                            fn: nil, inverse: nil, block_params: 0, hash: nil)
       arity = callable.arity
       num_params = params.count
       arity = num_params + 2 if arity < 0
+      raise_arity_error(arity, name, is_block: !fn.nil?) if arity > num_params + 2
 
       params = params.take(arity) if num_params > arity
 
@@ -460,6 +458,13 @@ module Haparanda
       result = @helper_context.instance_exec(*params, &callable)
       result = fn.call(result) if fn && arity <= num_params
       result
+    end
+
+    def raise_arity_error(arity, name, is_block: false)
+      expected = arity - 2
+      identifier = is_block ? "##{name}" : name
+      raise ArgumentError,
+            "Expected #{expected} argument#{'s' if expected > 1} for #{identifier}"
     end
 
     def handle_if(context, value, options)
