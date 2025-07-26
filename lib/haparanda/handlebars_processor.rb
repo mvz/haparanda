@@ -117,15 +117,16 @@ module Haparanda
     end
 
     class Options
-      def initialize(fn:, inverse:, hash:, data:, block_params:)
+      def initialize(fn:, inverse:, hash:, data:, block_params:, name: nil)
         @fn = fn
         @inverse = inverse
+        @name = name
         @hash = hash
         @data = data
         @block_params = block_params
       end
 
-      attr_reader :hash, :data, :block_params
+      attr_reader :name, :hash, :data, :block_params
 
       def fn(arg = nil, options = {})
         @fn&.call(arg, options)
@@ -218,25 +219,31 @@ module Haparanda
       _, path, params, hash, escaped, _strip = expr
       params = process(params)[1]
       hash = process(hash)[1] if hash
-      data, elements = path_segments process(path)
-      value = lookup_path(data, elements)
-      value = execute_in_context(value, params, hash: hash) if value.respond_to? :call
+      value, name = lookup_value process(path)
+
+      if value.nil?
+        value = @helpers[:helperMissing]
+        raise "Missing helper: \"#{name}\"" if value.nil? && !params.empty?
+      end
+
+      if value.respond_to? :call
+        value = execute_in_context(value, params, name: name, hash: hash)
+      end
+
       value = value.to_s
       value = Utils.escape(value) if escaped
       s(:result, value)
     end
 
     def process_block(expr)
-      _, name, params, hash, program, inverse_chain, = expr
+      _, path, params, hash, program, inverse_chain, = expr
       hash = process(hash)[1] if hash
       else_program = inverse_chain.sexp_body[1] if inverse_chain
       arguments = process(params)[1]
 
-      path = process(name)
-      data, elements = path_segments(path)
-      value = lookup_path(data, elements)
+      value, name = lookup_value process(path)
 
-      evaluate_program_with_value(value, arguments, program, else_program, hash)
+      evaluate_program_with_value(value, arguments, program, else_program, hash, name: name)
     end
 
     def process_partial(expr)
@@ -317,13 +324,15 @@ module Haparanda
 
     private
 
-    def evaluate_program_with_value(value, arguments, program, else_program, hash)
+    def evaluate_program_with_value(value, arguments, program, else_program, hash,
+                                    name: nil)
       block_params = extract_block_param_names(program)
       fn = make_contextual_lambda(program, block_params)
       inverse = make_contextual_lambda(else_program)
 
       if value.respond_to? :call
-        value = execute_in_context(value, arguments, fn: fn, inverse: inverse, hash: hash,
+        value = execute_in_context(value, arguments, name: name,
+                                                     fn: fn, inverse: inverse, hash: hash,
                                                      block_params: block_params&.count)
         return s(:result, value.to_s)
       end
@@ -403,6 +412,13 @@ module Haparanda
       end
     end
 
+    def lookup_value(path)
+      data, elements = path_segments(path)
+      value = lookup_path(data, elements)
+      name = elements.last
+      return value, name
+    end
+
     def path_segments(path)
       case path.sexp_type
       when :segments
@@ -427,15 +443,16 @@ module Haparanda
       end
     end
 
-    def execute_in_context(callable, params = [],
+    def execute_in_context(callable, params = [], name: nil,
                            fn: nil, inverse: nil, block_params: 0, hash: nil)
       arity = callable.arity
       num_params = params.count
-      raise NotImplementedError if arity < 0
+      arity = num_params + 2 if arity < 0
 
       params = params.take(arity) if num_params > arity
 
-      options = Options.new(fn: fn, inverse: inverse,
+      options = Options.new(name: name,
+                            fn: fn, inverse: inverse,
                             block_params: block_params, hash: hash,
                             data: @data)
       params.push options if arity > num_params
@@ -488,6 +505,10 @@ module Haparanda
           end.join
         end
       end
+    end
+
+    def raise_helper_missing(name)
+      raise "Missing helper: \"#{name}\""
     end
 
     ESCAPE = {
