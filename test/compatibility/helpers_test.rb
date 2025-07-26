@@ -688,7 +688,6 @@ describe 'helpers' do
 
   describe 'knownHelpers' do
     it 'Known helper should render helper' do
-      skip
       expectTemplate('{{hello}}')
         .withCompileOptions({
           knownHelpers: { hello: true },
@@ -700,19 +699,18 @@ describe 'helpers' do
     end
 
     it 'Unknown helper in knownHelpers only mode should be passed as undefined' do
-      skip
       expectTemplate('{{typeof hello}}')
         .withCompileOptions({
           knownHelpers: { typeof: true },
           knownHelpersOnly: true,
         })
         .withHelper('typeof', lambda { |arg|
-          return typeof arg;
+          return arg.class;
         })
         .withHelper('hello', lambda {
           return 'foo';
         })
-        .toCompileTo('undefined');
+        .toCompileTo('NilClass');
     end
 
     it 'Builtin helpers available in knownHelpers only mode' do
@@ -735,7 +733,6 @@ describe 'helpers' do
     end
 
     it 'Conditional blocks work in knownHelpers only mode' do
-      skip
       expectTemplate('{{#foo}}bar{{/foo}}')
         .withCompileOptions({
           knownHelpersOnly: true,
@@ -745,7 +742,6 @@ describe 'helpers' do
     end
 
     it 'Invert blocks work in knownHelpers only mode' do
-      skip
       expectTemplate('{{^foo}}bar{{/foo}}')
         .withCompileOptions({
           knownHelpersOnly: true,
@@ -755,7 +751,6 @@ describe 'helpers' do
     end
 
     it 'Functions are bound to the context in knownHelpers only mode' do
-      skip
       expectTemplate('{{foo}}')
         .withCompileOptions({
           knownHelpersOnly: true,
@@ -770,10 +765,9 @@ describe 'helpers' do
     end
 
     it 'Unknown helper call in knownHelpers only mode should throw' do
-      skip
       expectTemplate('{{typeof hello}}')
         .withCompileOptions({ knownHelpersOnly: true })
-        .toThrow(Error);
+        .toThrow(RuntimeError);
     end
   end
 
@@ -847,7 +841,6 @@ describe 'helpers' do
     end
 
     it 'should include in known helper calls' do
-      skip
       expectTemplate('{{helper}}')
         .withCompileOptions({
           knownHelpers: { helper: true },
