@@ -242,7 +242,14 @@ module Haparanda
       arguments = process(params)[1]
 
       value, name = lookup_value(path)
-      value = @helpers[:blockHelperMissing] if value.nil?
+      if value.nil?
+        # TODO: What should happen if hash is nil but arguments are present?
+        value = if hash
+                  @helpers[:helperMissing]
+                else
+                  @helpers[:blockHelperMissing]
+                end
+      end
 
       evaluate_program_with_value(value, arguments, program, else_program, hash, name: name)
     end

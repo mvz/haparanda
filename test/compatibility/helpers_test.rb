@@ -865,7 +865,6 @@ describe 'helpers' do
     end
 
     it 'should include full id if a hash is passed' do
-      skip
       expectTemplate('{{#foo.helper bar=baz}}{{/foo.helper}}')
         .withInput({ foo: {} })
         .withHelpers(helpers)
