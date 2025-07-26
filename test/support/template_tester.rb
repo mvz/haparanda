@@ -77,12 +77,6 @@ class TemplateTester
   def compile_and_process_template
     compiled_template = @compiler.compile(@text, **@compile_options)
     compiled_template.call(@input, helpers: @helpers, **@runtime_options)
-
-    # template = Haparanda::HandlebarsParser.new.parse(@text)
-    # compiled_template = Haparanda::HandlebarsCompiler.new(**@compile_options)
-    #                                                  .process(template)
-    # processor = Haparanda::HandlebarsProcessor.new(@input, @helpers, **@runtime_options)
-    # processor.apply(compiled_template)
   end
 
   def underscore_opts(opts)
