@@ -222,7 +222,7 @@ module Haparanda
       value, name = lookup_value process(path)
 
       if value.nil?
-        value = @helpers[:helper_missing]
+        value = @helpers[:helperMissing]
         raise "Missing helper: \"#{name}\"" if value.nil? && !params.empty?
       end
 

@@ -666,7 +666,7 @@ describe 'helpers' do
     it 'if a context is not found, custom helperMissing is used' do
       expectTemplate('{{hello}} {{link_to world}}')
         .withInput({ hello: 'Hello', world: 'world' })
-        .withHelper('helper_missing', lambda { |mesg, options|
+        .withHelper('helperMissing', lambda { |mesg, options|
           if options.name == :link_to
             return Haparanda::HandlebarsProcessor::SafeString.new('<a>' + mesg + '</a>');
           end
@@ -677,7 +677,7 @@ describe 'helpers' do
     it 'if a value is not found, custom helperMissing is used' do
       expectTemplate('{{hello}} {{link_to}}')
         .withInput({ hello: 'Hello', world: 'world' })
-        .withHelper('helper_missing', lambda { |options|
+        .withHelper('helperMissing', lambda { |options|
           if options.name == :link_to
             return Haparanda::HandlebarsProcessor::SafeString.new('<a>winning</a>');
           end
