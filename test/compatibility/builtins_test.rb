@@ -518,7 +518,7 @@ describe 'builtin helpers' do
     it 'each on implicit context' do
       expectTemplate('{{#each}}{{text}}! {{/each}}cruel world!').toThrow(
         ArgumentError,
-        'expected 1 arguments'
+        'Expected 1 argument for #each'
       );
     end
 

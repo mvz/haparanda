@@ -445,7 +445,7 @@ module Haparanda
       arity = callable.arity
       num_params = params.count
       arity = num_params + 2 if arity < 0
-      raise ArgumentError, "expected #{arity - 2} arguments" if arity > num_params + 2
+      raise_arity_error(arity, name, is_block: !fn.nil?) if arity > num_params + 2
 
       params = params.take(arity) if num_params > arity
 
@@ -458,6 +458,13 @@ module Haparanda
       result = @helper_context.instance_exec(*params, &callable)
       result = fn.call(result) if fn && arity <= num_params
       result
+    end
+
+    def raise_arity_error(arity, name, is_block: false)
+      expected = arity - 2
+      identifier = is_block ? "##{name}" : name
+      raise ArgumentError,
+            "Expected #{expected} argument#{'s' if expected > 1} for #{identifier}"
     end
 
     def handle_if(context, value, options)
