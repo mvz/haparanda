@@ -675,12 +675,11 @@ describe 'helpers' do
     end
 
     it 'if a value is not found, custom helperMissing is used' do
-      skip
       expectTemplate('{{hello}} {{link_to}}')
         .withInput({ hello: 'Hello', world: 'world' })
-        .withHelper('helperMissing', lambda { |options|
-          if options.name == 'link_to'
-            return new Handlebars.SafeString('<a>winning</a>');
+        .withHelper('helper_missing', lambda { |options|
+          if options.name == :link_to
+            return Haparanda::HandlebarsProcessor::SafeString.new('<a>winning</a>');
           end
         })
         .toCompileTo('Hello <a>winning</a>');

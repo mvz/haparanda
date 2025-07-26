@@ -200,8 +200,7 @@ module Haparanda
         if: method(:handle_if),
         unless: method(:handle_unless),
         with: method(:handle_with),
-        each: method(:handle_each),
-        helper_missing: method(:handle_helper_missing)
+        each: method(:handle_each)
       }.merge(helpers)
       @partials = partials
     end
@@ -221,12 +220,18 @@ module Haparanda
       params = process(params)[1]
       hash = process(hash)[1] if hash
       value, name = lookup_value process(path)
+
       if value.respond_to? :call
         value = execute_in_context(value, params, name: name, hash: hash)
       elsif !params.empty?
-        value = @helpers[:helper_missing]
+        value = @helpers[:helper_missing] or raise "Missing helper: \"#{name}\""
+
         value = execute_in_context(value, params, name: name, hash: hash)
+      elsif value.nil?
+        value = @helpers[:helper_missing]
+        value = execute_in_context(value, params, name: name, hash: hash) if value
       end
+
       value = value.to_s
       value = Utils.escape(value) if escaped
       s(:result, value)
@@ -504,8 +509,8 @@ module Haparanda
       end
     end
 
-    def handle_helper_missing(_context, *_values, options)
-      raise "Missing helper: \"#{options.name}\""
+    def raise_helper_missing(name)
+      raise "Missing helper: \"#{name}\""
     end
 
     ESCAPE = {
