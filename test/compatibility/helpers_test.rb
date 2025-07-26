@@ -667,7 +667,7 @@ describe 'helpers' do
       expectTemplate('{{hello}} {{link_to world}}')
         .withInput({ hello: 'Hello', world: 'world' })
         .withHelper('helperMissing', lambda { |mesg, options|
-          if options.name == :link_to
+          if options.name == "link_to"
             return Haparanda::HandlebarsProcessor::SafeString.new('<a>' + mesg + '</a>');
           end
         })
@@ -678,7 +678,7 @@ describe 'helpers' do
       expectTemplate('{{hello}} {{link_to}}')
         .withInput({ hello: 'Hello', world: 'world' })
         .withHelper('helperMissing', lambda { |options|
-          if options.name == :link_to
+          if options.name == "link_to"
             return Haparanda::HandlebarsProcessor::SafeString.new('<a>winning</a>');
           end
         })
@@ -835,7 +835,6 @@ describe 'helpers' do
     end
 
     it 'should include in simple block calls' do
-      skip
       expectTemplate('{{#./helper}}{{/./helper}}')
         .withHelpers(helpers)
         .toCompileTo('missing: ./helper');
@@ -859,7 +858,6 @@ describe 'helpers' do
     end
 
     it 'should include full id' do
-      skip
       expectTemplate('{{#foo.helper}}{{/foo.helper}}')
         .withInput({ foo: {} })
         .withHelpers(helpers)
