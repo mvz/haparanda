@@ -23,7 +23,19 @@ describe "helpers" do
     end
   end
 
-  describe "blockHelperMissing" do
+  describe "default missing block helper handling" do
+    it "emits no output for missing values by default" do
+      result = compiler.compile("{{#foo}}{{/foo}}").call({})
+      _(result).must_equal ""
+    end
+
+    it "emits no output for missing helpers by default" do
+      template = compiler.compile("{{#foo 1}}{{/foo}}")
+      _(-> { template.call({}) }).must_raise RuntimeError, "Missing helper: \"foo\""
+    end
+  end
+
+  describe "custom blockHelperMissing" do
     before do
       compiler.register_helper("blockHelperMissing") do |*, options|
         "block helper missing: #{options.name}"

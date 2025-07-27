@@ -330,7 +330,9 @@ module Haparanda
       fn = make_contextual_lambda(program, block_params)
       inverse = make_contextual_lambda(else_program)
 
-      value = @helpers[:helperMissing] if value.nil? && (hash || arguments.any?)
+      if value.nil? && (hash || arguments.any?)
+        value = @helpers[:helperMissing] or raise "Missing helper: \"#{name}\""
+      end
 
       if value.respond_to? :call
         value = execute_in_context(value, arguments, name: name,
