@@ -242,13 +242,6 @@ module Haparanda
       arguments = process(params)[1]
 
       value, name = lookup_value(path)
-      if value.nil?
-        value = if hash || arguments.any?
-                  @helpers[:helperMissing]
-                else
-                  @helpers[:blockHelperMissing]
-                end
-      end
 
       evaluate_program_with_value(value, arguments, program, else_program, hash, name: name)
     end
@@ -337,10 +330,19 @@ module Haparanda
       fn = make_contextual_lambda(program, block_params)
       inverse = make_contextual_lambda(else_program)
 
+      value = @helpers[:helperMissing] if value.nil? && (hash || arguments.any?)
+
       if value.respond_to? :call
         value = execute_in_context(value, arguments, name: name,
                                                      fn: fn, inverse: inverse, hash: hash,
                                                      block_params: block_params&.count)
+        return s(:result, value.to_s)
+      end
+
+      if (helper = @helpers[:blockHelperMissing])
+        value = execute_in_context(helper, [value], name: name,
+                                                    fn: fn, inverse: inverse, hash: hash,
+                                                    block_params: block_params&.count)
         return s(:result, value.to_s)
       end
 
