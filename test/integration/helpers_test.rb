@@ -22,4 +22,25 @@ describe "helpers" do
       _(result).must_equal "foobarfoo"
     end
   end
+
+  describe "blockHelperMissing" do
+    before do
+      compiler.register_helper("blockHelperMissing") do |*, options|
+        "block helper missing: #{options.name}"
+      end
+      compiler.register_helper("helperMissing") do |*, options|
+        "helper missing: #{options.name}"
+      end
+    end
+
+    it "is called for missing values in ambiguous block calls" do
+      result = compiler.compile("{{#helper}}{{/helper}}").call({})
+      _(result).must_equal "block helper missing: helper"
+    end
+
+    it "is not called for missing helper block calls with params" do
+      result = compiler.compile("{{#helper 1}}{{/helper}}").call({})
+      _(result).must_equal "helper missing: helper"
+    end
+  end
 end

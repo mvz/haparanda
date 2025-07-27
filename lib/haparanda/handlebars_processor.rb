@@ -243,8 +243,7 @@ module Haparanda
 
       value, name = lookup_value(path)
       if value.nil?
-        # TODO: What should happen if hash is nil but arguments are present?
-        value = if hash
+        value = if hash || arguments.any?
                   @helpers[:helperMissing]
                 else
                   @helpers[:blockHelperMissing]
