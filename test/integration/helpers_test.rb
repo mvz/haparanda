@@ -55,6 +55,11 @@ describe "helpers" do
       _(result).must_equal "block helper missing: foo"
     end
 
+    it "is called for non-missing callable values in ambiguous block calls" do
+      result = compiler.compile("{{#foo}}{{/foo}}").call({ foo: -> { "baz" } })
+      _(result).must_equal "block helper missing: foo"
+    end
+
     it "is not called for missing helper block calls with params" do
       result = compiler.compile("{{#helper 1}}{{/helper}}").call({})
       _(result).must_equal "helper missing: helper"

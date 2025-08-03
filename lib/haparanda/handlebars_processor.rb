@@ -338,7 +338,7 @@ module Haparanda
         value = execute_in_context(value, arguments, name: name,
                                                      fn: fn, inverse: inverse, hash: hash,
                                                      block_params: block_params&.count)
-        return s(:result, value.to_s)
+        return s(:result, value.to_s) if arguments.any?
       end
 
       if (helper = @helpers[:blockHelperMissing])
