@@ -19,7 +19,9 @@ module Haparanda
 
           value = case value
                   when Hash
-                    value[key]
+                    value.fetch(key) do |k|
+                      value.fetch(k.to_s, nil)
+                    end
                   when nil
                     nil
                   else
