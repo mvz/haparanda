@@ -667,7 +667,7 @@ describe 'helpers' do
       expectTemplate('{{hello}} {{link_to world}}')
         .withInput({ hello: 'Hello', world: 'world' })
         .withHelper('helperMissing', lambda { |mesg, options|
-          if options.name == :link_to
+          if options.name == "link_to"
             return Haparanda::HandlebarsProcessor::SafeString.new('<a>' + mesg + '</a>');
           end
         })
@@ -678,7 +678,7 @@ describe 'helpers' do
       expectTemplate('{{hello}} {{link_to}}')
         .withInput({ hello: 'Hello', world: 'world' })
         .withHelper('helperMissing', lambda { |options|
-          if options.name == :link_to
+          if options.name == "link_to"
             return Haparanda::HandlebarsProcessor::SafeString.new('<a>winning</a>');
           end
         })
@@ -779,7 +779,6 @@ describe 'helpers' do
 
   describe 'blockHelperMissing' do
     it 'lambdas are resolved by blockHelperMissing, not handlebars proper' do
-      skip
       expectTemplate('{{#truthy}}yep{{/truthy}}')
         .withInput({
           truthy: lambda {
@@ -806,47 +805,42 @@ describe 'helpers' do
 
   describe 'name field' do
     helpers = {
-      blockHelperMissing: lambda {
-        return 'missing: ' + arguments[arguments.length - 1].name;
+      blockHelperMissing: lambda { |*arguments|
+        return 'missing: ' + arguments[arguments.length - 1].name.to_s;
       },
-      helperMissing: lambda {
-        return 'helper missing: ' + arguments[arguments.length - 1].name;
+      helperMissing: lambda { |*arguments|
+        return 'helper missing: ' + arguments[arguments.length - 1].name.to_s;
       },
-      helper: lambda {
-        return 'ran: ' + arguments[arguments.length - 1].name;
+      helper: lambda { |*arguments|
+        return 'ran: ' + arguments[arguments.length - 1].name.to_s;
       },
     };
 
     it 'should include in ambiguous mustache calls' do
-      skip
       expectTemplate('{{helper}}')
         .withHelpers(helpers)
         .toCompileTo('ran: helper');
     end
 
     it 'should include in helper mustache calls' do
-      skip
       expectTemplate('{{helper 1}}')
         .withHelpers(helpers)
         .toCompileTo('ran: helper');
     end
 
     it 'should include in ambiguous block calls' do
-      skip
       expectTemplate('{{#helper}}{{/helper}}')
         .withHelpers(helpers)
         .toCompileTo('ran: helper');
     end
 
     it 'should include in simple block calls' do
-      skip
       expectTemplate('{{#./helper}}{{/./helper}}')
         .withHelpers(helpers)
         .toCompileTo('missing: ./helper');
     end
 
     it 'should include in helper block calls' do
-      skip
       expectTemplate('{{#helper 1}}{{/helper}}')
         .withHelpers(helpers)
         .toCompileTo('ran: helper');
@@ -864,7 +858,6 @@ describe 'helpers' do
     end
 
     it 'should include full id' do
-      skip
       expectTemplate('{{#foo.helper}}{{/foo.helper}}')
         .withInput({ foo: {} })
         .withHelpers(helpers)
@@ -872,7 +865,6 @@ describe 'helpers' do
     end
 
     it 'should include full id if a hash is passed' do
-      skip
       expectTemplate('{{#foo.helper bar=baz}}{{/foo.helper}}')
         .withInput({ foo: {} })
         .withHelpers(helpers)

@@ -219,7 +219,7 @@ module Haparanda
       _, path, params, hash, escaped, _strip = expr
       params = process(params)[1]
       hash = process(hash)[1] if hash
-      value, name = lookup_value process(path)
+      value, name = lookup_value(path)
 
       if value.nil?
         value = @helpers[:helperMissing]
@@ -241,7 +241,7 @@ module Haparanda
       else_program = inverse_chain.sexp_body[1] if inverse_chain
       arguments = process(params)[1]
 
-      value, name = lookup_value process(path)
+      value, name = lookup_value(path)
 
       evaluate_program_with_value(value, arguments, program, else_program, hash, name: name)
     end
@@ -250,7 +250,7 @@ module Haparanda
       _, name, context, = expr
 
       path = process(name)
-      _data, elements = path_segments(path)
+      _data, _name, elements = path_segments(path)
 
       partial = @partials.fetch elements.first.to_s
 
@@ -290,8 +290,10 @@ module Haparanda
 
     def process_path(expr)
       _, data, *segments = expr
-      segments = segments.each_slice(2).map { |elem, _sep| elem[1].to_sym }
-      s(:segments, data, segments)
+      name_parts = segments.map { |seg| seg[1] }
+      segments = name_parts.each_slice(2).map { |elem, _sep| elem.to_sym }
+      name = name_parts.join
+      s(:segments, data, name, segments)
     end
 
     def process_exprs(expr)
@@ -310,8 +312,8 @@ module Haparanda
     end
 
     def process_sub_expression(expr)
-      _, name, params, hash = expr
-      value, name = lookup_value process(name)
+      _, path, params, hash = expr
+      value, name = lookup_value(path)
 
       arguments = process(params)[1]
       hash = process(hash)[1] if hash
@@ -328,10 +330,21 @@ module Haparanda
       fn = make_contextual_lambda(program, block_params)
       inverse = make_contextual_lambda(else_program)
 
+      if value.nil? && (hash || arguments.any?)
+        value = @helpers[:helperMissing] or raise "Missing helper: \"#{name}\""
+      end
+
       if value.respond_to? :call
         value = execute_in_context(value, arguments, name: name,
                                                      fn: fn, inverse: inverse, hash: hash,
                                                      block_params: block_params&.count)
+        return s(:result, value.to_s) if arguments.any?
+      end
+
+      if (helper = @helpers[:blockHelperMissing])
+        value = execute_in_context(helper, [value], name: name,
+                                                    fn: fn, inverse: inverse, hash: hash,
+                                                    block_params: block_params&.count)
         return s(:result, value.to_s)
       end
 
@@ -396,36 +409,37 @@ module Haparanda
     end
 
     def evaluate_expr(expr)
-      expr = process(expr)
       case expr.sexp_type
-      when :segments
-        value, name = lookup_value expr
+      when :path
+        value, name = lookup_value(expr)
         value = execute_in_context(value, name: name) if value.respond_to? :call
         value
       when :undefined, :null
         nil
       else
-        expr[1]
+        process(expr)[1]
       end
     end
 
-    def lookup_value(path)
-      data, elements = path_segments(path)
+    def lookup_value(expr)
+      path = process(expr)
+      data, name, elements = path_segments(path)
       value = lookup_path(data, elements)
-      name = elements.last
       return value, name
     end
 
     def path_segments(path)
       case path.sexp_type
       when :segments
-        data, elements = path.sexp_body
+        data, name, elements = path.sexp_body
       when :undefined, :null
         elements = [path.sexp_type]
+        name = elements.join
       else
         elements = [path[1]]
+        name = elements.join
       end
-      return data, elements
+      return data, name, elements
     end
 
     def lookup_path(data, elements)
