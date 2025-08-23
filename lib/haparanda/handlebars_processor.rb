@@ -70,8 +70,16 @@ module Haparanda
         self
       end
 
-      def respond_to_missing?(_method_name, *_args)
-        true
+      def respond_to_missing?(method_name, *_args)
+        value = @stack.last
+        case value
+        when Hash
+          value.key? method_name
+        when nil
+          false
+        else
+          value.respond_to? method_name
+        end
       end
 
       def method_missing(method_name, *_args)
