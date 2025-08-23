@@ -7,7 +7,11 @@ require_relative "template_tester"
 module CompatibilityTestHelpers
   def equals(act, exp)
     exp = exp.gsub('\n', "\n") if exp.is_a? String
-    _(act).must_equal exp
+    if exp.nil?
+      _(act).must_be_nil
+    else
+      _(act).must_equal exp
+    end
   end
 
   def shouldThrow(function, error, message = nil) # rubocop:disable Naming/MethodName
