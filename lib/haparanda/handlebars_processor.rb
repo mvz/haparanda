@@ -324,6 +324,10 @@ module Haparanda
 
     private
 
+    # rubocop:todo Metrics/PerceivedComplexity
+    # rubocop:todo Metrics/MethodLength
+    # rubocop:todo Metrics/AbcSize
+    # rubocop:todo Metrics/CyclomaticComplexity
     def evaluate_program_with_value(value, arguments, program, else_program, hash,
                                     name: nil)
       block_params = extract_block_param_names(program)
@@ -362,6 +366,10 @@ module Haparanda
         s(:result, result)
       end
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     def extract_block_param_names(program)
       return [] unless program&.sexp_type == :program
