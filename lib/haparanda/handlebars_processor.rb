@@ -463,11 +463,13 @@ module Haparanda
 
       params = params.take(arity) if num_params > arity
 
-      options = Options.new(name: name,
-                            fn: fn, inverse: inverse,
-                            block_params: block_params, hash: hash,
-                            data: @data)
-      params.push options if arity > num_params
+      if arity > num_params
+        options = Options.new(name: name,
+                              fn: fn, inverse: inverse,
+                              block_params: block_params, hash: hash,
+                              data: @data)
+        params.push options
+      end
       params.unshift @helper_context.this if arity > num_params + 1
       result = @helper_context.instance_exec(*params, &callable)
       result = fn.call(result) if fn && arity <= num_params
