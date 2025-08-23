@@ -783,7 +783,6 @@ describe 'helpers' do
     end
 
     it 'lambdas resolved by blockHelperMissing are bound to the context' do
-      skip
       expectTemplate('{{#truthy}}yep{{/truthy}}')
         .withInput({
           truthy: lambda {

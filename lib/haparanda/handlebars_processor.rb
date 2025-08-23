@@ -346,12 +346,12 @@ module Haparanda
         value = @helpers[:helperMissing] or raise "Missing helper: \"#{name}\""
       end
 
-      if value.respond_to? :call
+      while value.respond_to?(:call)
         value = execute_in_context(value, arguments, name: name,
                                                      fn: fn, inverse: inverse, hash: hash,
                                                      block_params: block_params&.count)
-        return s(:result, value.to_s) if arguments.any?
       end
+      return s(:result, value.to_s) if arguments.any?
 
       if (helper = @helpers[:blockHelperMissing])
         value = execute_in_context(helper, [value], name: name,
