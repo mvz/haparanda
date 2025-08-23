@@ -13,7 +13,7 @@ module Haparanda
 
     def compile(text, **compile_options)
       ast = template_to_ast text, **compile_options
-      Template.new(ast, @helpers, @partials)
+      Template.new(ast, @helpers, @partials, **compile_options)
     end
 
     def register_helper(name, &definition)
