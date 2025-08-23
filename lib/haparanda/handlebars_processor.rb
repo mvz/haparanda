@@ -487,9 +487,7 @@ module Haparanda
         params.push options
       end
       params.unshift @helper_context.this if arity > num_params + 1
-      result = @helper_context.instance_exec(*params, &callable)
-      result = fn.call(result) if fn && arity <= num_params
-      result
+      @helper_context.instance_exec(*params, &callable)
     end
 
     def raise_arity_error(arity, name, is_block: false)
