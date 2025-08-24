@@ -257,7 +257,7 @@ describe 'builtin helpers' do
     end
 
     it 'each with an object and @key' do
-      skip
+      skip "we don't support using #each with an arbitrary object"
       var string =
             '{{#each goodbyes}}{{@key}}. {{text}}! {{/each}}cruel {{world}}!';
 
