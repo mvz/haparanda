@@ -515,7 +515,10 @@ module Haparanda
       options.fn(context) unless value
     end
 
-    def handle_with(_context, value, options)
+    def handle_with(_context, *values, options)
+      raise ArgumentError, "#with requires exactly one argument" unless values.size == 1
+
+      value = values.first
       if value
         options.fn(value, block_params: [value])
       else

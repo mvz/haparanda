@@ -1042,14 +1042,12 @@ describe 'helpers' do
     end
 
     it 'with helper - too few arguments' do
-      skip
       expectTemplate('{{#with}}{{/with}}').toThrow(
         /#with requires exactly one argument/
       );
     end
 
     it 'with helper - too many arguments' do
-      skip
       expectTemplate('{{#with test "string"}}{{/with}}').toThrow(
         /#with requires exactly one argument/
       );
