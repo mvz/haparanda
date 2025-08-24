@@ -531,23 +531,17 @@ module Haparanda
 
       last = value.respond_to?(:length) ? value.length - 1 : -1
       @data.with_new_data do
-        if value.is_a? Hash
-          value.each_with_index.map do |(key, item), index|
-            @data.set_data(:key, key)
-            @data.set_data(:index, index)
-            @data.set_data(:first, index == 0)
-            @data.set_data(:last, index == last)
-            options.fn(item, block_params: [item, index])
-          end.join
-        else
-          value.each_with_index.map do |item, index|
-            @data.set_data(:key, index)
-            @data.set_data(:index, index)
-            @data.set_data(:first, index == 0)
-            @data.set_data(:last, index == last)
-            options.fn(item, block_params: [item, index])
-          end.join
+        unless value.is_a? Hash
+          value = value.each_with_index.lazy.map { |item, index| [index, item] }
         end
+        items = value.each_with_index.map do |(key, item), index|
+          @data.set_data(:key, key)
+          @data.set_data(:index, index)
+          @data.set_data(:first, index == 0)
+          @data.set_data(:last, index == last)
+          options.fn(item, block_params: [item, index])
+        end
+        items.to_a.join
       end
     end
 
