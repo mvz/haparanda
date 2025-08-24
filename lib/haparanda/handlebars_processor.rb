@@ -508,7 +508,10 @@ module Haparanda
       end
     end
 
-    def handle_unless(context, value, options)
+    def handle_unless(context, *values, options)
+      raise ArgumentError, "#unless requires exactly one argument" unless values.size == 1
+
+      value = values.first
       options.fn(context) unless value
     end
 

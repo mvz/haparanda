@@ -1030,14 +1030,12 @@ describe 'helpers' do
     end
 
     it 'unless helper - too few arguments' do
-      skip
       expectTemplate('{{#unless}}{{/unless}}').toThrow(
         /#unless requires exactly one argument/
       );
     end
 
     it 'unless helper - too many arguments' do
-      skip
       expectTemplate('{{#unless test null}}{{/unless}}').toThrow(
         /#unless requires exactly one argument/
       );
