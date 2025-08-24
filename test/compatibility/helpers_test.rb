@@ -1006,28 +1006,24 @@ describe 'helpers' do
 
   describe 'built-in helpers malformed arguments ' do
     it 'if helper - too few arguments' do
-      skip
       expectTemplate('{{#if}}{{/if}}').toThrow(
         /#if requires exactly one argument/
       );
     end
 
     it 'if helper - too many arguments, string' do
-      skip
       expectTemplate('{{#if test "string"}}{{/if}}').toThrow(
         /#if requires exactly one argument/
       );
     end
 
     it 'if helper - too many arguments, undefined' do
-      skip
       expectTemplate('{{#if test undefined}}{{/if}}').toThrow(
         /#if requires exactly one argument/
       );
     end
 
     it 'if helper - too many arguments, null' do
-      skip
       expectTemplate('{{#if test null}}{{/if}}').toThrow(
         /#if requires exactly one argument/
       );

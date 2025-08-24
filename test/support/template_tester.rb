@@ -64,6 +64,10 @@ class TemplateTester
   end
 
   def toThrow(error, message = nil) # rubocop:disable Naming/MethodName
+    if message.nil? && !error.is_a?(Class)
+      message = error
+      error = StandardError
+    end
     exception = _(-> { compile_and_process_template }).must_raise error
     _(exception.message).must_match message if message
   end
