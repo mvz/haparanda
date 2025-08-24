@@ -611,21 +611,12 @@ describe 'builtin helpers' do
   end
 
   describe '#log' do
-    # /* eslint-disable no-console */
-    # if (typeof console === 'undefined')
-    #   return;
-    # end
-
-    # var $log, $info, $error;
     before do
-      # $log = console.log;
-      # $info = console.info;
-      # $error = console.error;
+      @stderr = $stderr
     end
+
     after do
-      # console.log = $log;
-      # console.info = $info;
-      # console.error = $error;
+      $stderr = @stderr
     end
 
     it 'should call logger at default level' do
@@ -660,26 +651,17 @@ describe 'builtin helpers' do
     end
 
     it 'should output to info' do
-      skip
-      var called;
-
-      # console.info = lambda { |info|
-      #   equals('whee', info);
-      #   called = true;
-      #   console.info = $info;
-      #   console.log = $log;
-      # };
-      # console.log = lambda { |log|
-      #   equals('whee', log);
-      #   called = true;
-      #   console.info = $info;
-      #   console.log = $log;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/INFO -- : whee/)
     end
 
     it 'should log at data level' do

@@ -549,8 +549,16 @@ module Haparanda
 
     def handle_log(_context, value, _options)
       level = @data.data(:level) || 1
-      @log&.call(level, value)
+      if @log
+        @log.call(level, value)
+      else
+        logger.add(level, value)
+      end
       nil
+    end
+
+    def logger
+      @logger ||= Logger.new($stderr)
     end
 
     def raise_helper_missing(name)
