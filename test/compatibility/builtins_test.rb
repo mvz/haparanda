@@ -257,7 +257,7 @@ describe 'builtin helpers' do
     end
 
     it 'each with an object and @key' do
-      skip
+      skip "we don't support using #each with an arbitrary object"
       var string =
             '{{#each goodbyes}}{{@key}}. {{text}}! {{/each}}cruel {{world}}!';
 
@@ -568,28 +568,24 @@ describe 'builtin helpers' do
 
     if true || global.Symbol&.iterator
       it 'each on iterable' do
-        skip
-        function Iterator(arr) {
-          this.arr = arr;
-          this.index = 0;
-        }
-        Iterator.prototype.next = lambda {
-          var value = this.arr[this.index];
-          var done = this.index === this.arr.length;
-          this.index += 1 if !done
-          return { value: value, done: done };
-        };
-        function Iterable(arr) {
-          this.arr = arr;
-        }
-        Iterable.prototype[global.Symbol.iterator] = lambda {
-          return new Iterator(this.arr);
-        };
-        var string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!';
+        klass = Class.new do
+          attr_accessor :arr
+
+          def initialize(arr)
+            self.arr = arr;
+          end
+
+          def each
+            arr.each { yield _1 }
+          end
+
+          include Enumerable
+        end
+        string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!';
 
         expectTemplate(string)
           .withInput({
-            goodbyes: Iterable.new([
+            goodbyes: klass.new([
               { text: 'goodbye' },
               { text: 'Goodbye' },
               { text: 'GOODBYE' },
@@ -603,7 +599,7 @@ describe 'builtin helpers' do
 
         expectTemplate(string)
           .withInput({
-            goodbyes: Iterable.new([]),
+            goodbyes: klass.new([]),
             world: 'world',
           })
           .withMessage(
