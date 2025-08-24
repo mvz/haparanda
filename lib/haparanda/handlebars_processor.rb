@@ -332,6 +332,8 @@ module Haparanda
       s(:result, result)
     end
 
+    LOG_LEVELS = %w[debug info warn error].freeze
+
     private
 
     # rubocop:todo Metrics/PerceivedComplexity
@@ -552,7 +554,11 @@ module Haparanda
       if @log
         @log.call(level, value)
       else
-        level = Integer(level)
+        case level
+        when String
+          level = Integer(level, exception: false) || LOG_LEVELS.index(level.downcase)
+        end
+        level ||= Logger::UNKNOWN
         logger.add(level, value)
       end
       nil

@@ -681,8 +681,8 @@ describe 'builtin helpers' do
     end
 
     it 'should handle missing logger' do
-      skip
-      var called = false;
+      skip "no ruby equivalent of this case exists really"
+      called = false;
 
       console.error = undefined;
       # console.log = lambda { |log|
@@ -700,29 +700,33 @@ describe 'builtin helpers' do
     end
 
     it 'should handle string log levels' do
-      skip
-      var called;
-
-      # console.error = lambda { |log|
-      #   equals('whee', log);
-      #   called = true;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: 'error' } })
         .withCompileOptions({ data: true })
         .toCompileTo('');
-      equals(true, called);
 
-      called = false;
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/ERROR -- : whee/)
+
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: 'ERROR' } })
         .withCompileOptions({ data: true })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/ERROR -- : whee/)
     end
 
     it 'should handle hash log levels' do
