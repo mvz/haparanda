@@ -129,7 +129,7 @@ module Haparanda
         @fn = fn
         @inverse = inverse
         @name = name
-        @hash = hash
+        @hash = hash || {}
         @data = data
         @block_params = block_params
       end
@@ -549,8 +549,8 @@ module Haparanda
       end
     end
 
-    def handle_log(_context, value, _options)
-      level = @data.data(:level) || 1
+    def handle_log(_context, value, options)
+      level = options.hash[:level] || @data.data(:level) || 1
       if @log
         @log.call(level, value)
       else

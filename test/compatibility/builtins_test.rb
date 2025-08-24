@@ -730,37 +730,31 @@ describe 'builtin helpers' do
     end
 
     it 'should handle hash log levels' do
-      skip
-      var called;
-
-      # console.error = lambda { |log|
-      #   equals('whee', log);
-      #   called = true;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah level="error"}}')
         .withInput({ blah: 'whee' })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/ERROR -- : whee/)
     end
 
     it 'should handle hash log levels' do
-      skip
-      var called = false;
-
-      # console.info =
-      #   console.log =
-      #   console.error =
-      #   console.debug =
-      #     lambda {
-      #       called = true;
-      #       console.info = console.log = console.error = console.debug = $log;
-      #     };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah level="debug"}}')
         .withInput({ blah: 'whee' })
         .toCompileTo('');
-      equals(false, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/DEBUG -- : whee/)
     end
 
     it 'should pass multiple log arguments' do
