@@ -194,7 +194,7 @@ module Haparanda
       end
     end
 
-    def initialize(input, helpers: {}, partials: {}, data: {})
+    def initialize(input, helpers: {}, partials: {}, data: {}, log: nil)
       super()
 
       self.require_empty = false
@@ -208,9 +208,11 @@ module Haparanda
         if: method(:handle_if),
         unless: method(:handle_unless),
         with: method(:handle_with),
-        each: method(:handle_each)
+        each: method(:handle_each),
+        log: method(:handle_log)
       }.merge(helpers)
       @partials = partials
+      @log = log
     end
 
     def apply(expr)
@@ -543,6 +545,11 @@ module Haparanda
         end
         items.to_a.join
       end
+    end
+
+    def handle_log(_context, value, _options)
+      @log&.call(1, value)
+      nil
     end
 
     def raise_helper_missing(name)

@@ -9,11 +9,12 @@ module Haparanda
       @parser = HandlebarsParser.new
       @helpers = {}
       @partials = {}
+      @log = nil
     end
 
     def compile(text, **compile_options)
       ast = template_to_ast text, **compile_options
-      Template.new(ast, @helpers, @partials, **compile_options)
+      Template.new(ast, @helpers, @partials, @log, **compile_options)
     end
 
     def register_helper(name, &definition)
@@ -31,6 +32,8 @@ module Haparanda
     def register_partial(name, content)
       @partials[name.to_s] = template_to_ast(content)
     end
+
+    attr_accessor :log
 
     private
 

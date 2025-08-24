@@ -629,12 +629,11 @@ describe 'builtin helpers' do
     end
 
     it 'should call logger at default level' do
-      skip
-      # var levelArg, logArg;
-      # handlebarsEnv.log = lambda { |level, arg|
-      #   levelArg = level;
-      #   logArg = arg;
-      # };
+      levelArg, logArg = nil, nil
+      handlebarsEnv.log = lambda { |level, arg|
+        levelArg = level;
+        logArg = arg;
+      };
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
