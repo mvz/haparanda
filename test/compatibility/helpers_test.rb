@@ -408,7 +408,7 @@ describe 'helpers' do
     end
 
     it 'allows multiple globals' do
-      skip
+      skip "we only allow calling this method with a name and block"
       var helpers = handlebarsEnv.helpers;
       handlebarsEnv.helpers = {};
 
@@ -430,7 +430,7 @@ describe 'helpers' do
     end
 
     it 'fails with multiple and args' do
-      skip
+      skip "we only allow calling this method with a name and block"
       shouldThrow(
         lambda {
           handlebarsEnv.registerHelper(
