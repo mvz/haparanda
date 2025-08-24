@@ -408,7 +408,7 @@ describe 'helpers' do
     end
 
     it 'allows multiple globals' do
-      skip
+      skip "we only allow calling this method with a name and block"
       var helpers = handlebarsEnv.helpers;
       handlebarsEnv.helpers = {};
 
@@ -430,7 +430,7 @@ describe 'helpers' do
     end
 
     it 'fails with multiple and args' do
-      skip
+      skip "we only allow calling this method with a name and block"
       shouldThrow(
         lambda {
           handlebarsEnv.registerHelper(
@@ -714,7 +714,6 @@ describe 'helpers' do
     end
 
     it 'Builtin helpers available in knownHelpers only mode' do
-      skip
       expectTemplate('{{#unless foo}}bar{{/unless}}')
         .withCompileOptions({
           knownHelpersOnly: true,
@@ -723,7 +722,6 @@ describe 'helpers' do
     end
 
     it 'Field lookup works in knownHelpers only mode' do
-      skip
       expectTemplate('{{foo}}')
         .withCompileOptions({
           knownHelpersOnly: true,
@@ -1008,56 +1006,48 @@ describe 'helpers' do
 
   describe 'built-in helpers malformed arguments ' do
     it 'if helper - too few arguments' do
-      skip
       expectTemplate('{{#if}}{{/if}}').toThrow(
         /#if requires exactly one argument/
       );
     end
 
     it 'if helper - too many arguments, string' do
-      skip
       expectTemplate('{{#if test "string"}}{{/if}}').toThrow(
         /#if requires exactly one argument/
       );
     end
 
     it 'if helper - too many arguments, undefined' do
-      skip
       expectTemplate('{{#if test undefined}}{{/if}}').toThrow(
         /#if requires exactly one argument/
       );
     end
 
     it 'if helper - too many arguments, null' do
-      skip
       expectTemplate('{{#if test null}}{{/if}}').toThrow(
         /#if requires exactly one argument/
       );
     end
 
     it 'unless helper - too few arguments' do
-      skip
       expectTemplate('{{#unless}}{{/unless}}').toThrow(
         /#unless requires exactly one argument/
       );
     end
 
     it 'unless helper - too many arguments' do
-      skip
       expectTemplate('{{#unless test null}}{{/unless}}').toThrow(
         /#unless requires exactly one argument/
       );
     end
 
     it 'with helper - too few arguments' do
-      skip
       expectTemplate('{{#with}}{{/with}}').toThrow(
         /#with requires exactly one argument/
       );
     end
 
     it 'with helper - too many arguments' do
-      skip
       expectTemplate('{{#with test "string"}}{{/with}}').toThrow(
         /#with requires exactly one argument/
       );

@@ -497,7 +497,10 @@ module Haparanda
             "Expected #{expected} argument#{'s' if expected > 1} for #{identifier}"
     end
 
-    def handle_if(context, value, options)
+    def handle_if(context, *values, options)
+      raise ArgumentError, "#if requires exactly one argument" unless values.size == 1
+
+      value = values.first
       if value
         options.fn(context)
       else
@@ -505,11 +508,17 @@ module Haparanda
       end
     end
 
-    def handle_unless(context, value, options)
+    def handle_unless(context, *values, options)
+      raise ArgumentError, "#unless requires exactly one argument" unless values.size == 1
+
+      value = values.first
       options.fn(context) unless value
     end
 
-    def handle_with(_context, value, options)
+    def handle_with(_context, *values, options)
+      raise ArgumentError, "#with requires exactly one argument" unless values.size == 1
+
+      value = values.first
       if value
         options.fn(value, block_params: [value])
       else
