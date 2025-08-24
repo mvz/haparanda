@@ -552,6 +552,7 @@ module Haparanda
       if @log
         @log.call(level, value)
       else
+        level = Integer(level)
         logger.add(level, value)
       end
       nil

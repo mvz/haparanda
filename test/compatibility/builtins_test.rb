@@ -665,21 +665,19 @@ describe 'builtin helpers' do
     end
 
     it 'should log at data level' do
-      skip
-      var called;
-
-      # console.error = lambda { |log|
-      #   equals('whee', log);
-      #   called = true;
-      #   console.error = $error;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: '03' } })
         .withCompileOptions({ data: true })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/ERROR -- : whee/)
     end
 
     it 'should handle missing logger' do
