@@ -548,7 +548,8 @@ module Haparanda
     end
 
     def handle_log(_context, value, _options)
-      @log&.call(1, value)
+      level = @data.data(:level) || 1
+      @log&.call(level, value)
       nil
     end
 
