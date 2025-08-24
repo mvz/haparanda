@@ -70,8 +70,16 @@ module Haparanda
         self
       end
 
-      def respond_to_missing?(_method_name, *_args)
-        true
+      def respond_to_missing?(method_name, *_args)
+        value = @stack.last
+        case value
+        when Hash
+          value.key? method_name
+        when nil
+          false
+        else
+          value.respond_to? method_name
+        end
       end
 
       def method_missing(method_name, *_args)
@@ -324,6 +332,10 @@ module Haparanda
 
     private
 
+    # rubocop:todo Metrics/PerceivedComplexity
+    # rubocop:todo Metrics/MethodLength
+    # rubocop:todo Metrics/AbcSize
+    # rubocop:todo Metrics/CyclomaticComplexity
     def evaluate_program_with_value(value, arguments, program, else_program, hash,
                                     name: nil)
       block_params = extract_block_param_names(program)
@@ -334,12 +346,12 @@ module Haparanda
         value = @helpers[:helperMissing] or raise "Missing helper: \"#{name}\""
       end
 
-      if value.respond_to? :call
+      while value.respond_to?(:call)
         value = execute_in_context(value, arguments, name: name,
                                                      fn: fn, inverse: inverse, hash: hash,
                                                      block_params: block_params&.count)
-        return s(:result, value.to_s) if arguments.any?
       end
+      return s(:result, value.to_s) if arguments.any?
 
       if (helper = @helpers[:blockHelperMissing])
         value = execute_in_context(helper, [value], name: name,
@@ -362,6 +374,10 @@ module Haparanda
         s(:result, result)
       end
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     def extract_block_param_names(program)
       return [] unless program&.sexp_type == :program
@@ -463,15 +479,15 @@ module Haparanda
 
       params = params.take(arity) if num_params > arity
 
-      options = Options.new(name: name,
-                            fn: fn, inverse: inverse,
-                            block_params: block_params, hash: hash,
-                            data: @data)
-      params.push options if arity > num_params
+      if arity > num_params
+        options = Options.new(name: name,
+                              fn: fn, inverse: inverse,
+                              block_params: block_params, hash: hash,
+                              data: @data)
+        params.push options
+      end
       params.unshift @helper_context.this if arity > num_params + 1
-      result = @helper_context.instance_exec(*params, &callable)
-      result = fn.call(result) if fn && arity <= num_params
-      result
+      @helper_context.instance_exec(*params, &callable)
     end
 
     def raise_arity_error(arity, name, is_block: false)
