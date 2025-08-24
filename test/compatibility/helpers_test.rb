@@ -714,7 +714,6 @@ describe 'helpers' do
     end
 
     it 'Builtin helpers available in knownHelpers only mode' do
-      skip
       expectTemplate('{{#unless foo}}bar{{/unless}}')
         .withCompileOptions({
           knownHelpersOnly: true,
@@ -723,7 +722,6 @@ describe 'helpers' do
     end
 
     it 'Field lookup works in knownHelpers only mode' do
-      skip
       expectTemplate('{{foo}}')
         .withCompileOptions({
           knownHelpersOnly: true,
