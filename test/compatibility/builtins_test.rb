@@ -758,37 +758,30 @@ describe 'builtin helpers' do
     end
 
     it 'should pass multiple log arguments' do
-      skip
-      var called;
-
-      # console.info = console.log = lambda { |log1, log2, log3|
-      #   equals('whee', log1);
-      #   equals('foo', log2);
-      #   equals(1, log3);
-      #   called = true;
-      #   console.log = $log;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah "foo" 1}}')
         .withInput({ blah: 'whee' })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/INFO -- : whee foo 1/)
     end
 
     it 'should pass zero log arguments' do
-      skip
-      var called;
-
-      # console.info = console.log = lambda {
-      #   expect(arguments.length).to.equal(0);
-      #   called = true;
-      #   console.log = $log;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log}}').withInput({ blah: 'whee' }).toCompileTo('');
-      expect(called).to.be.true;
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/INFO -- : $/)
     end
-    # /* eslint-enable no-console */
   end
 
   describe '#lookup' do

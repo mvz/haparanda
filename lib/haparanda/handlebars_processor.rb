@@ -549,19 +549,19 @@ module Haparanda
       end
     end
 
-    def handle_log(_context, value, options)
+    def handle_log(_context, *values, options)
       level = options.hash[:level] || @data.data(:level) || 1
-      @log.call(level, value)
+      @log.call(level, *values)
       nil
     end
 
-    def default_log(level, value)
+    def default_log(level, *values)
       case level
       when String
         level = Integer(level, exception: false) || LOG_LEVELS.index(level.downcase)
       end
       level ||= Logger::UNKNOWN
-      logger.add(level, value)
+      logger.add(level, values.join(" "))
     end
 
     def logger
