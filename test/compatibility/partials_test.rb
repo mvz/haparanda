@@ -64,7 +64,6 @@ describe 'partials' do
   end
 
   it 'failing dynamic partials' do
-    skip
     expectTemplate('Dudes: {{#dudes}}{{> (partial)}}{{/dudes}}')
       .withInput({
         dudes: [
@@ -77,7 +76,7 @@ describe 'partials' do
       })
       .withPartial('dude', '{{name}} ({{url}}) ')
       .toThrow(
-        Handlebars.Exception,
+        KeyError,
         'The partial "missing" could not be found'
       );
   end
@@ -172,9 +171,8 @@ describe 'partials' do
   end
 
   it 'rendering undefined partial throws an exception' do
-    skip
     expectTemplate('{{> whatever}}').toThrow(
-      Handlebars.Exception,
+      KeyError,
       'The partial "whatever" could not be found'
     );
   end
@@ -192,9 +190,8 @@ describe 'partials' do
   end
 
   it 'rendering template partial in vm mode throws an exception' do
-    skip
     expectTemplate('{{> whatever}}').toThrow(
-      Handlebars.Exception,
+      KeyError,
       'The partial "whatever" could not be found'
     );
   end
