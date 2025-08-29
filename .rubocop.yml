@@ -90,6 +90,10 @@ Style/NegatedIf:
 Style/NumericPredicate:
   Enabled: false
 
+Style/ParallelAssignment:
+  Exclude:
+    - 'test/compatibility/*'
+
 Style/QuotedSymbols:
   Exclude:
     - 'test/compatibility/*'

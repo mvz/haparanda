@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.rdoc_options = ["--main", "README.md"]
   spec.extra_rdoc_files = ["README.md", "CHANGELOG.md"]
 
+  spec.add_dependency "logger", "~> 1.6"
   spec.add_dependency "racc", "~> 1.8"
   spec.add_dependency "sexp_processor", "~> 4.17"
 end

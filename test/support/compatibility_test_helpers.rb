@@ -5,12 +5,12 @@ require_relative "template_tester"
 # Helper methods to make compatibility tests most similar to original
 # handlebars-parser and handlebars.js specs.
 module CompatibilityTestHelpers
-  def equals(act, exp)
+  def equals(act, exp, message = nil)
     exp = exp.gsub('\n', "\n") if exp.is_a? String
     if exp.nil?
-      _(act).must_be_nil
+      _(act).must_be_nil message
     else
-      _(act).must_equal exp
+      _(act).must_equal exp, message
     end
   end
 

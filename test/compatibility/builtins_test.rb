@@ -611,30 +611,20 @@ describe 'builtin helpers' do
   end
 
   describe '#log' do
-    # /* eslint-disable no-console */
-    # if (typeof console === 'undefined')
-    #   return;
-    # end
-
-    # var $log, $info, $error;
     before do
-      # $log = console.log;
-      # $info = console.info;
-      # $error = console.error;
+      @stderr = $stderr
     end
+
     after do
-      # console.log = $log;
-      # console.info = $info;
-      # console.error = $error;
+      $stderr = @stderr
     end
 
     it 'should call logger at default level' do
-      skip
-      # var levelArg, logArg;
-      # handlebarsEnv.log = lambda { |level, arg|
-      #   levelArg = level;
-      #   logArg = arg;
-      # };
+      levelArg, logArg = nil, nil
+      handlebarsEnv.log = lambda { |level, arg|
+        levelArg = level;
+        logArg = arg;
+      };
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
@@ -645,12 +635,11 @@ describe 'builtin helpers' do
     end
 
     it 'should call logger at data level' do
-      skip
-      # var levelArg, logArg;
-      # handlebarsEnv.log = lambda { |level, arg|
-      #   levelArg = level;
-      #   logArg = arg;
-      # };
+      levelArg, logArg = nil, nil
+      handlebarsEnv.log = lambda { |level, arg|
+        levelArg = level;
+        logArg = arg;
+      };
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
@@ -662,49 +651,38 @@ describe 'builtin helpers' do
     end
 
     it 'should output to info' do
-      skip
-      var called;
-
-      # console.info = lambda { |info|
-      #   equals('whee', info);
-      #   called = true;
-      #   console.info = $info;
-      #   console.log = $log;
-      # };
-      # console.log = lambda { |log|
-      #   equals('whee', log);
-      #   called = true;
-      #   console.info = $info;
-      #   console.log = $log;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/INFO -- : whee/)
     end
 
     it 'should log at data level' do
-      skip
-      var called;
-
-      # console.error = lambda { |log|
-      #   equals('whee', log);
-      #   called = true;
-      #   console.error = $error;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: '03' } })
         .withCompileOptions({ data: true })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/ERROR -- : whee/)
     end
 
     it 'should handle missing logger' do
-      skip
-      var called = false;
+      skip "no ruby equivalent of this case exists really"
+      called = false;
 
       console.error = undefined;
       # console.log = lambda { |log|
@@ -722,97 +700,88 @@ describe 'builtin helpers' do
     end
 
     it 'should handle string log levels' do
-      skip
-      var called;
-
-      # console.error = lambda { |log|
-      #   equals('whee', log);
-      #   called = true;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: 'error' } })
         .withCompileOptions({ data: true })
         .toCompileTo('');
-      equals(true, called);
 
-      called = false;
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/ERROR -- : whee/)
+
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: 'ERROR' } })
         .withCompileOptions({ data: true })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/ERROR -- : whee/)
     end
 
     it 'should handle hash log levels' do
-      skip
-      var called;
-
-      # console.error = lambda { |log|
-      #   equals('whee', log);
-      #   called = true;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah level="error"}}')
         .withInput({ blah: 'whee' })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/ERROR -- : whee/)
     end
 
     it 'should handle hash log levels' do
-      skip
-      var called = false;
-
-      # console.info =
-      #   console.log =
-      #   console.error =
-      #   console.debug =
-      #     lambda {
-      #       called = true;
-      #       console.info = console.log = console.error = console.debug = $log;
-      #     };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah level="debug"}}')
         .withInput({ blah: 'whee' })
         .toCompileTo('');
-      equals(false, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/DEBUG -- : whee/)
     end
 
     it 'should pass multiple log arguments' do
-      skip
-      var called;
-
-      # console.info = console.log = lambda { |log1, log2, log3|
-      #   equals('whee', log1);
-      #   equals('foo', log2);
-      #   equals(1, log3);
-      #   called = true;
-      #   console.log = $log;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log blah "foo" 1}}')
         .withInput({ blah: 'whee' })
         .toCompileTo('');
-      equals(true, called);
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/INFO -- : whee foo 1/)
     end
 
     it 'should pass zero log arguments' do
-      skip
-      var called;
-
-      # console.info = console.log = lambda {
-      #   expect(arguments.length).to.equal(0);
-      #   called = true;
-      #   console.log = $log;
-      # };
+      io = StringIO.new(String.new, "w+")
+      $stderr = io
 
       expectTemplate('{{log}}').withInput({ blah: 'whee' }).toCompileTo('');
-      expect(called).to.be.true;
+
+      $stderr = @stderr
+      io.rewind
+      message = io.read
+      _(message).must_match(/INFO -- : $/)
     end
-    # /* eslint-enable no-console */
   end
 
   describe '#lookup' do

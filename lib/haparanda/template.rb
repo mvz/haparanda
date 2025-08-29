@@ -3,10 +3,11 @@
 module Haparanda
   # Callable representation of a handlebars template
   class Template
-    def initialize(expr, helpers, partials, **compile_options)
+    def initialize(expr, helpers, partials, log, **compile_options)
       @expr = expr
       @helpers = helpers
       @partials = partials
+      @log = log
       @compile_options = compile_options
     end
 
@@ -21,6 +22,7 @@ module Haparanda
       processor = HandlebarsProcessor.new(input,
                                           helpers: all_helpers,
                                           partials: @partials,
+                                          log: @log,
                                           **runtime_options)
       processor.apply(@expr)
     end
