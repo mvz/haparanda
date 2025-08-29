@@ -786,14 +786,12 @@ describe 'builtin helpers' do
 
   describe '#lookup' do
     it 'should lookup arbitrary content' do
-      skip
       expectTemplate('{{#each goodbyes}}{{lookup ../data .}}{{/each}}')
         .withInput({ goodbyes: [0, 1], data: ['foo', 'bar'] })
         .toCompileTo('foobar');
     end
 
     it 'should not fail on undefined value' do
-      skip
       expectTemplate('{{#each goodbyes}}{{lookup ../bar .}}{{/each}}')
         .withInput({ goodbyes: [0, 1], data: ['foo', 'bar'] })
         .toCompileTo('');

@@ -1054,12 +1054,11 @@ describe 'helpers' do
     end
   end
 
-  describe 'the lookupProperty-option' do
+  describe 'the lookup_property-option' do
     it 'should be passed to custom helpers' do
-      skip
       expectTemplate('{{testHelper}}')
         .withHelper('testHelper', lambda { |options|
-          return options.lookupProperty(this, 'testProperty');
+          return options.lookup_property(this, 'testProperty');
         })
         .withInput({ testProperty: 'abc' })
         .toCompileTo('abc');
