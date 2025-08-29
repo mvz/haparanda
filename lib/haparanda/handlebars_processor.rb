@@ -212,7 +212,7 @@ module Haparanda
         log: method(:handle_log)
       }.merge(helpers)
       @partials = partials
-      @log = log
+      @log = log || method(:default_log)
     end
 
     def apply(expr)
@@ -551,17 +551,17 @@ module Haparanda
 
     def handle_log(_context, value, options)
       level = options.hash[:level] || @data.data(:level) || 1
-      if @log
-        @log.call(level, value)
-      else
-        case level
-        when String
-          level = Integer(level, exception: false) || LOG_LEVELS.index(level.downcase)
-        end
-        level ||= Logger::UNKNOWN
-        logger.add(level, value)
-      end
+      @log.call(level, value)
       nil
+    end
+
+    def default_log(level, value)
+      case level
+      when String
+        level = Integer(level, exception: false) || LOG_LEVELS.index(level.downcase)
+      end
+      level ||= Logger::UNKNOWN
+      logger.add(level, value)
     end
 
     def logger
