@@ -143,6 +143,19 @@ module Haparanda
       def inverse(arg = nil)
         @inverse&.call(arg)
       end
+
+      def lookup_property(item, index)
+        case item
+        when Input
+          item.send index
+        when Array, Hash
+          item[index]
+        when nil
+          nil
+        else
+          raise NotImplementedError
+        end
+      end
     end
 
     class HelperContext
@@ -209,7 +222,8 @@ module Haparanda
         unless: method(:handle_unless),
         with: method(:handle_with),
         each: method(:handle_each),
-        log: method(:handle_log)
+        log: method(:handle_log),
+        lookup: method(:handle_lookup)
       }.merge(helpers)
       @partials = partials
       @log = log || method(:default_log)
@@ -553,6 +567,10 @@ module Haparanda
       level = options.hash[:level] || @data.data(:level) || 1
       @log.call(level, *values)
       nil
+    end
+
+    def handle_lookup(_context, item, index, options)
+      options.lookup_property(item, index)
     end
 
     def default_log(level, *values)
