@@ -34,12 +34,15 @@ module Haparanda
     class Input
       include ValueDigger
 
-      def initialize(value)
+      def initialize(value, parent = nil)
         @value = value
+        @parent = parent
       end
 
       def dig(*keys)
-        dig_value(@value, keys)
+        result = dig_value(@value, keys)
+        result = @parent&.dig(*keys) if result.nil?
+        result
       end
 
       def [](key)
@@ -86,10 +89,10 @@ module Haparanda
 
       def with_new_context(value, &block)
         # TODO: See if this can be removed
-        if self == value || value == @stack.last
+        if self == value || value == top
           block.call
         else
-          @stack.push Input.new(value)
+          @stack.push Input.new(value, top)
           result = block.call
           @stack.pop
           result
