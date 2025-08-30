@@ -95,9 +95,8 @@ describe 'partials' do
   end
 
   it 'partials with no context' do
-    skip
-    var partial = '{{name}} ({{url}}) ';
-    var hash = {
+    partial = '{{name}} ({{url}}) ';
+    hash = {
       dudes: [
         { name: 'Yehuda', url: 'http://yehuda' },
         { name: 'Alan', url: 'http://alan' },
@@ -109,6 +108,8 @@ describe 'partials' do
       .withPartial('dude', partial)
       .withCompileOptions({ explicitPartialContext: true })
       .toCompileTo('Dudes:  ()  () ');
+
+    skip
 
     expectTemplate('Dudes: {{#dudes}}{{>dude name="foo"}}{{/dudes}}')
       .withInput(hash)

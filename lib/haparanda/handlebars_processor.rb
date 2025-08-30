@@ -207,7 +207,8 @@ module Haparanda
       end
     end
 
-    def initialize(input, helpers: {}, partials: {}, data: {}, log: nil)
+    def initialize(input, helpers: {}, partials: {}, data: {}, log: nil,
+                   explicit_partial_context: false)
       super()
 
       self.require_empty = false
@@ -227,6 +228,7 @@ module Haparanda
       }.merge(helpers)
       @partials = partials
       @log = log || method(:default_log)
+      @explicit_partial_context = explicit_partial_context
     end
 
     def apply(expr)
@@ -284,7 +286,7 @@ module Haparanda
       values = process(context)
       value = values[1].first
 
-      if value
+      if value || @explicit_partial_context
         program = make_contextual_lambda partial
 
         result = case value
