@@ -34,12 +34,15 @@ module Haparanda
     class Input
       include ValueDigger
 
-      def initialize(value)
+      def initialize(value, parent = nil)
         @value = value
+        @parent = parent
       end
 
       def dig(*keys)
-        dig_value(@value, keys)
+        result = dig_value(@value, keys)
+        result = @parent&.dig(*keys) if result.nil?
+        result
       end
 
       def [](key)
@@ -86,14 +89,21 @@ module Haparanda
 
       def with_new_context(value, &block)
         # TODO: See if this can be removed
-        if self == value || value == @stack.last
+        if self == value || value == top
           block.call
         else
-          @stack.push Input.new(value)
+          @stack.push Input.new(value, top)
           result = block.call
           @stack.pop
           result
         end
+      end
+
+      def with_isolated_context(value, &block)
+        @stack.push Input.new(value)
+        result = block.call
+        @stack.pop
+        result
       end
 
       def top
@@ -301,7 +311,7 @@ module Haparanda
       value = values[1].first
 
       if value || @explicit_partial_context
-        program = make_contextual_lambda partial
+        program = ->(item) { @input_stack.with_isolated_context(item) { apply(partial) } }
 
         result = case value
                  when Array
