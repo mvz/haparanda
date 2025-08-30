@@ -276,7 +276,10 @@ module Haparanda
       path = process(name)
       _data, _name, elements = path_segments(path)
 
-      partial = @partials.fetch elements.first.to_s
+      key = elements.first.to_s
+      partial = @partials.fetch(key) do
+        raise KeyError, "The partial \"#{key}\" could not be found"
+      end
 
       values = process(context)
       value = values[1].first
