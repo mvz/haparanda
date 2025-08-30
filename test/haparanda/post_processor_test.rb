@@ -2,13 +2,13 @@
 
 require "test_helper"
 
-describe Haparanda::HandlebarsCompiler do
+describe Haparanda::PostProcessor do
   let(:parser) { Haparanda::HandlebarsParser.new }
-  let(:compiler) { Haparanda::HandlebarsCompiler.new }
+  let(:post_processor) { Haparanda::PostProcessor.new }
 
   it "strips whitespace around simple mustaches" do
     raw = parser.parse "  {{~foo~}} "
-    result = compiler.process raw
+    result = post_processor.process raw
     _(result).must_equal s(:root,
                            s(:statements,
                              s(:content, ""),
@@ -21,7 +21,7 @@ describe Haparanda::HandlebarsCompiler do
 
   it "strips whitespace inside blocks" do
     raw = parser.parse " {{# foo~}} \nbar\n {{~/foo}} "
-    result = compiler.process raw
+    result = post_processor.process raw
     _(result).must_equal s(:root,
                            s(:statements,
                              s(:content, " "),
@@ -35,7 +35,7 @@ describe Haparanda::HandlebarsCompiler do
 
   it "strips whitespace outside blocks" do
     raw = parser.parse " {{~# foo}} bar {{/foo~}} "
-    result = compiler.process raw
+    result = post_processor.process raw
     _(result).must_equal s(:root,
                            s(:statements,
                              s(:content, ""),
@@ -49,7 +49,7 @@ describe Haparanda::HandlebarsCompiler do
 
   it "does not strip whitespace around standalone mustaches" do
     raw = parser.parse "foo \n {{bar}}  \n baz"
-    result = compiler.process raw
+    result = post_processor.process raw
     _(result).must_equal s(:root,
                            s(:statements,
                              s(:content, "foo \n "),
@@ -62,7 +62,7 @@ describe Haparanda::HandlebarsCompiler do
 
   it "strips whitespace around standalone starting block delimiters" do
     raw = parser.parse "foo \n {{# foo}} \nbar{{/foo}} \n baz \n "
-    result = compiler.process raw
+    result = post_processor.process raw
     _(result).must_equal s(:root,
                            s(:statements,
                              s(:content, "foo \n"),
@@ -76,7 +76,7 @@ describe Haparanda::HandlebarsCompiler do
 
   it "strips whitespace around standalone ending block delimiters" do
     raw = parser.parse "foo \n {{# foo}}bar \n {{/foo}} \n baz \n "
-    result = compiler.process raw
+    result = post_processor.process raw
     _(result).must_equal s(:root,
                            s(:statements,
                              s(:content, "foo \n "),
@@ -90,7 +90,7 @@ describe Haparanda::HandlebarsCompiler do
 
   it "strips whitespace around standalone block end delimiter with inverse delimiter" do
     raw = parser.parse "foo \n {{# foo}}bar {{else}}qux\n {{/foo}} \n baz \n "
-    result = compiler.process raw
+    result = post_processor.process raw
     _(result).must_equal s(:root,
                            s(:statements,
                              s(:content, "foo \n "),
@@ -107,7 +107,7 @@ describe Haparanda::HandlebarsCompiler do
 
   it "strips whitespace around standalone inverse delimiter" do
     raw = parser.parse "foo \n {{# foo}}bar\n {{else}}\n  qux\n {{/foo}} baz \n "
-    result = compiler.process raw
+    result = post_processor.process raw
     _(result).must_equal s(:root,
                            s(:statements,
                              s(:content, "foo \n "),
@@ -124,7 +124,7 @@ describe Haparanda::HandlebarsCompiler do
 
   it "strips whitespace after standalone template-initial starting block delimiter" do
     raw = parser.parse "{{# foo}} \nbar{{/foo}} \n baz \n "
-    result = compiler.process raw
+    result = post_processor.process raw
     _(result).must_equal s(:root,
                            s(:statements,
                              s(:block,
