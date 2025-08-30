@@ -5,7 +5,7 @@ require_relative "whitespace_handler"
 
 module Haparanda
   # Process the handlebars AST just to combine subsequent :content items
-  class HandlebarsCompiler
+  class PostProcessor
     def initialize(ignore_standalone: false, **)
       @ignore_standalone = ignore_standalone
     end

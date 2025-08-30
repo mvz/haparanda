@@ -2,6 +2,7 @@
 
 require "logger"
 require_relative "template"
+require_relative "post_processor"
 
 module Haparanda
   # Compile handlebars template to a callable Haparanda::Template object
@@ -41,7 +42,7 @@ module Haparanda
     def template_to_ast(text, **compile_options)
       template = parser.parse(text)
       # TODO: Rename to PostProcessor
-      post_processor = HandlebarsCompiler.new(**compile_options)
+      post_processor = PostProcessor.new(**compile_options)
       post_processor.process(template)
     end
 
