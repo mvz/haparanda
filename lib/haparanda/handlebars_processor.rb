@@ -40,8 +40,11 @@ module Haparanda
       end
 
       def dig(*keys)
+        return @parent&.dig(*keys[1..]) if keys.first == :".."
+
         result = dig_value(@value, keys)
-        result = @parent&.dig(*keys) if result.nil?
+        return @parent&.dig(*keys) if result.nil?
+
         result
       end
 
@@ -73,14 +76,7 @@ module Haparanda
       end
 
       def dig(*keys)
-        index = -1
-        while keys.first == :".."
-          keys.shift
-          index -= 1
-        end
-
-        value = @stack[index]
-        value&.dig(*keys)
+        top&.dig(*keys)
       end
 
       def [](key)
