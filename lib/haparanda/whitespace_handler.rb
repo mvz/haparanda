@@ -13,6 +13,11 @@ module Haparanda
       self.require_empty = false
     end
 
+    def process(expr)
+      line = expr&.line
+      super.tap { _1.line(line) if line }
+    end
+
     def process_root(expr)
       _, statements = expr
 

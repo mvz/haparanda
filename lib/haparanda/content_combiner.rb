@@ -20,6 +20,11 @@ module Haparanda
       s(:statements, *statements)
     end
 
+    def process(expr)
+      line = expr.line
+      super.tap { _1.line(line) if line }
+    end
+
     private
 
     def combine_contents(statements)

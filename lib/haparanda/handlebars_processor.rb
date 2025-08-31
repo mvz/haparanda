@@ -295,10 +295,14 @@ module Haparanda
     def process_partial(expr)
       _, name, context, hash, = expr
 
-      partial = lookup_partial(name)
+      values = process(context)[1]
+      if values.length > 1
+        raise "Unsupported number of partial arguments: #{values.length} - #{expr.line}"
+      end
 
-      values = process(context)
-      value = values[1].first
+      value = values.first
+
+      partial = lookup_partial(name)
 
       hash = extract_hash hash
       with_block_params(hash.keys, hash.values) do
