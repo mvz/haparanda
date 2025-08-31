@@ -221,7 +221,6 @@ describe 'partials' do
   end
 
   it 'Partials with slash paths' do
-    skip
     expectTemplate('Dudes: {{> shared/dude}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('shared/dude', '{{name}}')
@@ -230,7 +229,6 @@ describe 'partials' do
   end
 
   it 'Partials with slash and point paths' do
-    skip
     expectTemplate('Dudes: {{> shared/dude.thing}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('shared/dude.thing', '{{name}}')
@@ -275,7 +273,6 @@ describe 'partials' do
   end
 
   it 'Partials with complex path' do
-    skip
     expectTemplate('Dudes: {{> 404/asdf?.bar}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('404/asdf?.bar', '{{name}}')

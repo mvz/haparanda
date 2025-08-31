@@ -513,11 +513,10 @@ module Haparanda
 
     def lookup_partial(expr)
       path = process(expr)
-      _data, _name, elements = path_segments(path)
+      _data, name, _elements = path_segments(path)
 
-      key = elements.first.to_s
-      @partials.fetch(key) do
-        raise KeyError, "The partial \"#{key}\" could not be found"
+      @partials.fetch(name) do
+        raise KeyError, "The partial \"#{name}\" could not be found"
       end
     end
 
