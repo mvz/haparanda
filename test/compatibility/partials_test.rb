@@ -109,8 +109,6 @@ describe 'partials' do
       .withCompileOptions({ explicitPartialContext: true })
       .toCompileTo('Dudes:  ()  () ');
 
-    skip
-
     expectTemplate('Dudes: {{#dudes}}{{>dude name="foo"}}{{/dudes}}')
       .withInput(hash)
       .withPartial('dude', partial)
