@@ -307,14 +307,7 @@ module Haparanda
       hash = extract_hash hash
       with_block_params(hash.keys, hash.values) do
         if value || @explicit_partial_context
-          program = ->(item) { @input_stack.with_isolated_context(item) { apply(partial) } }
-
-          result = case value
-                   when Array
-                     value.map { |item| program.call item }.join
-                   else
-                     program.call value
-                   end
+          result = @input_stack.with_isolated_context(value) { apply(partial) }
           s(:result, result)
         else
           process(partial)
