@@ -300,7 +300,6 @@ describe 'partials' do
   end
 
   it 'should handle empty partial' do
-    skip
     expectTemplate('Dudes: {{#dudes}}{{> dude}}{{/dudes}}')
       .withInput({
         dudes: [

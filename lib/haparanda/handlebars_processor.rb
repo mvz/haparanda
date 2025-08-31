@@ -258,7 +258,11 @@ module Haparanda
 
     def process_root(expr)
       _, statements = expr
-      process(statements)
+      if statements
+        process(statements)
+      else
+        s(:result, nil)
+      end
     end
 
     def process_mustache(expr)
