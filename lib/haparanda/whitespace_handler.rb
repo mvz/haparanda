@@ -22,8 +22,8 @@ module Haparanda
       _, statements = expr
 
       statements = process(statements)
-      item = statements.sexp_body[0]
-      if item.sexp_type == :block
+      item = statements.sexp_body[0] if statements
+      if item&.sexp_type == :block
         content = item.dig(4, 2, 1)
         clear_following_whitespace(content) if following_whitespace?(content)
       end

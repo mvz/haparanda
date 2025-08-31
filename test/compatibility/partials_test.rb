@@ -186,6 +186,8 @@ describe 'partials' do
   end
 
   it 'rendering template partial in vm mode throws an exception' do
+    skip "VM or runtime-only mode is not supported"
+
     expectTemplate('{{> whatever}}').toThrow(
       KeyError,
       'The partial "whatever" could not be found'
@@ -193,7 +195,8 @@ describe 'partials' do
   end
 
   it 'rendering function partial in vm mode' do
-    skip
+    skip "VM or runtime-only mode is not supported"
+
     function partial(context) {
       return context.name + ' (' + context.url + ') ';
     }
@@ -297,7 +300,6 @@ describe 'partials' do
   end
 
   it 'should handle empty partial' do
-    skip
     expectTemplate('Dudes: {{#dudes}}{{> dude}}{{/dudes}}')
       .withInput({
         dudes: [
@@ -310,7 +312,7 @@ describe 'partials' do
   end
 
   it 'throw on missing partial' do
-    skip
+    skip "The compiler will always be avaliable"
     var compile = handlebarsEnv.compile;
     var compileWithPartial = CompilerContext.compileWithPartial;
     handlebarsEnv.compile = undefined;
