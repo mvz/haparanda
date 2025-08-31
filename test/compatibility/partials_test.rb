@@ -353,14 +353,12 @@ describe 'partials' do
     end
 
     it 'should be able to render the partial-block twice' do
-      skip
       expectTemplate('{{#> dude}}success{{/dude}}')
         .withPartials({ dude: '{{> @partial-block }} {{> @partial-block }}' })
         .toCompileTo('success success');
     end
 
     it 'should render block from partial with context' do
-      skip
       expectTemplate('{{#> dude}}{{value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .withPartials({
@@ -370,7 +368,6 @@ describe 'partials' do
     end
 
     it 'should be able to access the @data frame from a partial-block' do
-      skip
       expectTemplate('{{#> dude}}in-block: {{@root/value}}{{/dude}}')
         .withInput({ value: 'success' })
         .withPartials({
@@ -380,7 +377,6 @@ describe 'partials' do
     end
 
     it 'should allow the #each-helper to be used along with partial-blocks' do
-      skip
       expectTemplate(
         '<template>{{#> list value}}value = {{.}}{{/list}}</template>'
       )
@@ -396,7 +392,6 @@ describe 'partials' do
     end
 
     it 'should render block from partial with context (twice)' do
-      skip
       expectTemplate('{{#> dude}}{{value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .withPartials({
@@ -406,7 +401,6 @@ describe 'partials' do
     end
 
     it 'should render block from partial with context' do
-      skip
       expectTemplate('{{#> dude}}{{../context/value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .withPartials({
@@ -416,7 +410,6 @@ describe 'partials' do
     end
 
     it 'should render block from partial with block params' do
-      skip
       expectTemplate(
         '{{#with context as |me|}}{{#> dude}}{{me.value}}{{/dude}}{{/with}}'
       )
