@@ -32,6 +32,10 @@ module Haparanda
     end
 
     def register_partial(name, content)
+      unless content
+        raise "Attempting to register a partial called \"#{name}\" as #{content.inspect}"
+      end
+
       @partials[name.to_s] = template_to_ast(content)
     end
 
