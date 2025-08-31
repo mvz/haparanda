@@ -139,7 +139,6 @@ describe 'partials' do
   end
 
   it 'partials with parameters' do
-    skip
     expectTemplate('Dudes: {{#dudes}}{{> dude others=..}}{{/dudes}}')
       .withInput({
         foo: 'bar',

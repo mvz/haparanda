@@ -293,31 +293,28 @@ module Haparanda
     end
 
     def process_partial(expr)
-      _, name, context, = expr
+      _, name, context, hash, = expr
 
-      path = process(name)
-      _data, _name, elements = path_segments(path)
-
-      key = elements.first.to_s
-      partial = @partials.fetch(key) do
-        raise KeyError, "The partial \"#{key}\" could not be found"
-      end
+      partial = lookup_partial(name)
 
       values = process(context)
       value = values[1].first
 
-      if value || @explicit_partial_context
-        program = ->(item) { @input_stack.with_isolated_context(item) { apply(partial) } }
+      hash = hash ? process(hash)[1] : {}
+      with_block_params(hash.keys, hash.values) do
+        if value || @explicit_partial_context
+          program = ->(item) { @input_stack.with_isolated_context(item) { apply(partial) } }
 
-        result = case value
-                 when Array
-                   value.map { |item| program.call item }.join
-                 else
-                   program.call value
-                 end
-        s(:result, result)
-      else
-        process(partial)
+          result = case value
+                   when Array
+                     value.map { |item| program.call item }.join
+                   else
+                     program.call value
+                   end
+          s(:result, result)
+        else
+          process(partial)
+        end
       end
     end
 
@@ -483,8 +480,26 @@ module Haparanda
     def lookup_value(expr)
       path = process(expr)
       data, name, elements = path_segments(path)
-      value = lookup_path(data, elements)
+      value = if data
+                @data.data(*elements)
+              elsif @block_parameter_list.key?(elements.first)
+                @block_parameter_list.value(*elements)
+              elsif elements.one? && @helpers.key?(elements.first)
+                @helpers[elements.first]
+              else
+                @input_stack.dig(*elements)
+              end
       return value, name
+    end
+
+    def lookup_partial(expr)
+      path = process(expr)
+      _data, _name, elements = path_segments(path)
+
+      key = elements.first.to_s
+      @partials.fetch(key) do
+        raise KeyError, "The partial \"#{key}\" could not be found"
+      end
     end
 
     def path_segments(path)
@@ -499,18 +514,6 @@ module Haparanda
         name = elements.join
       end
       return data, name, elements
-    end
-
-    def lookup_path(data, elements)
-      if data
-        @data.data(*elements)
-      elsif @block_parameter_list.key?(elements.first)
-        @block_parameter_list.value(*elements)
-      elsif elements.one? && @helpers.key?(elements.first)
-        @helpers[elements.first]
-      else
-        @input_stack.dig(*elements)
-      end
     end
 
     def execute_in_context(callable, params = [], name:,

@@ -4,7 +4,9 @@ require_relative "content_combiner"
 require_relative "whitespace_handler"
 
 module Haparanda
-  # Process the handlebars AST just to combine subsequent :content items
+  # Process the handlebars AST into its final form needed to apply input to it:
+  # - combine subsequent :content items
+  # - strip whitespace according to Handlebars' rules
   class PostProcessor
     def initialize(ignore_standalone: false, **)
       @ignore_standalone = ignore_standalone
