@@ -313,7 +313,7 @@ describe 'partials' do
   end
 
   it 'throw on missing partial' do
-    skip
+    skip "The compiler will always be avaliable"
     var compile = handlebarsEnv.compile;
     var compileWithPartial = CompilerContext.compileWithPartial;
     handlebarsEnv.compile = undefined;
