@@ -109,8 +109,6 @@ describe 'partials' do
       .withCompileOptions({ explicitPartialContext: true })
       .toCompileTo('Dudes:  ()  () ');
 
-    skip
-
     expectTemplate('Dudes: {{#dudes}}{{>dude name="foo"}}{{/dudes}}')
       .withInput(hash)
       .withPartial('dude', partial)
@@ -131,10 +129,9 @@ describe 'partials' do
   end
 
   it 'partials with duplicate parameters' do
-    skip
     expectTemplate('Dudes: {{>dude dudes foo bar=baz}}').toThrow(
-      Error,
-      'Unsupported number of partial arguments: 2 - 1:7'
+      StandardError,
+      'Unsupported number of partial arguments: 2 - 1'
     );
   end
 
