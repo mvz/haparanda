@@ -333,7 +333,6 @@ describe 'partials' do
     end
 
     it 'should propagate block parameters to default block' do
-      skip
       expectTemplate(
         '{{#with context as |me|}}{{#> dude}}{{me.value}}{{/dude}}{{/with}}'
       )
