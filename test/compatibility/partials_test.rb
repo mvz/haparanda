@@ -323,12 +323,10 @@ describe 'partials' do
 
   describe 'partial blocks' do
     it 'should render partial block as default' do
-      skip
       expectTemplate('{{#> dude}}success{{/dude}}').toCompileTo('success');
     end
 
     it 'should execute default block with proper context' do
-      skip
       expectTemplate('{{#> dude context}}{{value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .toCompileTo('success');

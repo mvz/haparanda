@@ -329,6 +329,15 @@ module Haparanda
       end
     end
 
+    def process_partial_block(expr)
+      _, _name, context, _hash, partial = expr
+
+      values = process(context)[1]
+      value = values.first
+      result = @input_stack.with_new_context(value) { apply(partial) }
+      s(:result, result)
+    end
+
     def process_statements(expr)
       results = expr.sexp_body.map { process(_1)[1] }
       s(:result, results.join)
