@@ -254,7 +254,6 @@ describe 'data' do
 
   describe '@root' do
     it 'the root context can be looked up via @root' do
-      skip
       expectTemplate('{{@root.foo}}')
         .withInput({ foo: 'hello' })
         .withRuntimeOptions({ data: {} })
@@ -266,7 +265,6 @@ describe 'data' do
     end
 
     it 'passed root values take priority' do
-      skip
       expectTemplate('{{@root.foo}}')
         .withInput({ foo: 'should not be used' })
         .withRuntimeOptions({ data: { root: { foo: 'hello' } } })

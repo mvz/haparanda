@@ -116,6 +116,10 @@ module Haparanda
         @data.dig(*keys)
       end
 
+      def key?(key)
+        @data.key? key
+      end
+
       def set_data(key, value)
         @data[key] = value
       end
@@ -138,6 +142,10 @@ module Haparanda
 
     class NoData
       def set_data(key, value); end
+
+      def key?(_key)
+        false
+      end
 
       def with_new_data(&block)
         block.call
@@ -237,6 +245,8 @@ module Haparanda
       @data = data ? Data.new(data) : NoData.new
       @helper_context = HelperContext.new(@input_stack)
       @block_parameter_list = BlockParameterList.new
+
+      @data.set_data(:root, @input_stack.top) unless @data.key?(:root)
 
       @helpers = {
         if: method(:handle_if),
