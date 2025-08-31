@@ -149,7 +149,7 @@ module Haparanda
         @fn = fn
         @inverse = inverse
         @name = name
-        @hash = hash || {}
+        @hash = hash
         @data = data
         @block_params = block_params
       end
@@ -264,7 +264,7 @@ module Haparanda
     def process_mustache(expr)
       _, path, params, hash, escaped, _strip = expr
       params = process(params)[1]
-      hash = process(hash)[1] if hash
+      hash = extract_hash(hash)
       value, name = lookup_value(path)
 
       if value.nil?
@@ -283,7 +283,7 @@ module Haparanda
 
     def process_block(expr)
       _, path, params, hash, program, inverse_chain, = expr
-      hash = process(hash)[1] if hash
+      hash = extract_hash hash
       else_program = inverse_chain.sexp_body[1] if inverse_chain
       arguments = process(params)[1]
 
@@ -300,7 +300,7 @@ module Haparanda
       values = process(context)
       value = values[1].first
 
-      hash = hash ? process(hash)[1] : {}
+      hash = extract_hash hash
       with_block_params(hash.keys, hash.values) do
         if value || @explicit_partial_context
           program = ->(item) { @input_stack.with_isolated_context(item) { apply(partial) } }
@@ -362,7 +362,7 @@ module Haparanda
       value, name = lookup_value(path)
 
       arguments = process(params)[1]
-      hash = process(hash)[1] if hash
+      hash = extract_hash hash
 
       result = execute_in_context(value, arguments, hash: hash, name: name)
       s(:result, result)
@@ -382,7 +382,7 @@ module Haparanda
       fn = make_contextual_lambda(program, block_params)
       inverse = make_contextual_lambda(else_program)
 
-      if value.nil? && (hash || arguments.any?)
+      if value.nil? && (hash.any? || arguments.any?)
         value = @helpers[:helperMissing] or raise "Missing helper: \"#{name}\""
       end
 
@@ -426,6 +426,14 @@ module Haparanda
         params_definition.sexp_body.map { _1[1].to_sym }
       else
         []
+      end
+    end
+
+    def extract_hash(expr)
+      if expr
+        process(expr)[1]
+      else
+        {}
       end
     end
 
