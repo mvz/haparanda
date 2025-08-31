@@ -175,14 +175,13 @@ describe 'partials' do
   end
 
   it 'registering undefined partial throws an exception' do
-    skip
     shouldThrow(
       lambda {
-        var undef_;
-        handlebarsEnv.registerPartial('undefined_test', undef_);
+        undef_ = nil;
+        handlebarsEnv.register_partial('undefined_test', undef_);
       },
-      Handlebars.Exception,
-      'Attempting to register a partial called "undefined_test" as undefined'
+      StandardError,
+      'Attempting to register a partial called "undefined_test" as nil'
     );
   end
 
