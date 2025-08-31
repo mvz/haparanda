@@ -293,7 +293,7 @@ module Haparanda
     end
 
     def process_partial(expr)
-      _, name, context, = expr
+      _, name, context, hash, = expr
 
       path = process(name)
       _data, _name, elements = path_segments(path)
@@ -306,18 +306,21 @@ module Haparanda
       values = process(context)
       value = values[1].first
 
-      if value || @explicit_partial_context
-        program = ->(item) { @input_stack.with_isolated_context(item) { apply(partial) } }
+      hash = hash ? process(hash)[1] : {}
+      with_block_params(hash.keys, hash.values) do
+        if value || @explicit_partial_context
+          program = ->(item) { @input_stack.with_isolated_context(item) { apply(partial) } }
 
-        result = case value
-                 when Array
-                   value.map { |item| program.call item }.join
-                 else
-                   program.call value
-                 end
-        s(:result, result)
-      else
-        process(partial)
+          result = case value
+                   when Array
+                     value.map { |item| program.call item }.join
+                   else
+                     program.call value
+                   end
+          s(:result, result)
+        else
+          process(partial)
+        end
       end
     end
 
