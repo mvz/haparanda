@@ -330,14 +330,17 @@ module Haparanda
     end
 
     def process_partial_block(expr)
-      _, name, context, _hash, partial = expr
+      _, name, context, _hash, partial_block = expr
 
       values = process(context)[1]
       value = values.first
-      partial = lookup_partial(name, partial)
+      partial = lookup_partial(name, partial_block)
 
-      result = @input_stack.with_new_context(value) { apply(partial) }
-      s(:result, result)
+      @data.with_new_data do
+        @data.set_data(:"partial-block", partial_block)
+        result = @input_stack.with_new_context(value) { apply(partial) }
+        s(:result, result)
+      end
     end
 
     def process_statements(expr)
@@ -524,11 +527,15 @@ module Haparanda
 
     def lookup_partial(expr, fallback = nil)
       path = process(expr)
-      _data, name, _elements = path_segments(path)
+      data, name, elements = path_segments(path)
 
-      @partials.fetch(name) do
-        fallback or raise KeyError, "The partial \"#{name}\" could not be found"
-      end
+      result = if data
+                 @data.data(*elements)
+               else
+                 @partials[name]
+               end
+
+      result || fallback or raise KeyError, "The partial \"#{name}\" could not be found"
     end
 
     def path_segments(path)

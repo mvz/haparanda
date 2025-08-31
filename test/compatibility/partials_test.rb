@@ -347,7 +347,6 @@ describe 'partials' do
     end
 
     it 'should render block from partial' do
-      skip
       expectTemplate('{{#> dude}}success{{/dude}}')
         .withPartials({ dude: '{{> @partial-block }}' })
         .toCompileTo('success');
