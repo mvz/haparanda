@@ -341,7 +341,6 @@ describe 'partials' do
     end
 
     it 'should not use partial block if partial exists' do
-      skip
       expectTemplate('{{#> dude}}fail{{/dude}}')
         .withPartials({ dude: 'success' })
         .toCompileTo('success');

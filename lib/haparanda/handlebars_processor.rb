@@ -330,10 +330,12 @@ module Haparanda
     end
 
     def process_partial_block(expr)
-      _, _name, context, _hash, partial = expr
+      _, name, context, _hash, partial = expr
 
       values = process(context)[1]
       value = values.first
+      partial = lookup_partial(name, partial)
+
       result = @input_stack.with_new_context(value) { apply(partial) }
       s(:result, result)
     end
@@ -520,12 +522,12 @@ module Haparanda
       return value, name
     end
 
-    def lookup_partial(expr)
+    def lookup_partial(expr, fallback = nil)
       path = process(expr)
       _data, name, _elements = path_segments(path)
 
       @partials.fetch(name) do
-        raise KeyError, "The partial \"#{name}\" could not be found"
+        fallback or raise KeyError, "The partial \"#{name}\" could not be found"
       end
     end
 
