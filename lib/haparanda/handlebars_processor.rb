@@ -321,8 +321,7 @@ module Haparanda
       hash = extract_hash hash
       with_block_params(hash.keys, hash.values) do
         if value || @explicit_partial_context
-          result = @input_stack.with_isolated_context(value) { apply(partial) }
-          s(:result, result)
+          @input_stack.with_isolated_context(value) { process(partial) }
         else
           process(partial)
         end
@@ -338,8 +337,7 @@ module Haparanda
 
       @data.with_new_data do
         @data.set_data(:"partial-block", partial_block)
-        result = @input_stack.with_new_context(value) { apply(partial) }
-        s(:result, result)
+        @input_stack.with_new_context(value) { process(partial) }
       end
     end
 
