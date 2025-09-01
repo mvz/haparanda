@@ -318,9 +318,13 @@ module Haparanda
       value = values.first
 
       partial = lookup_partial(name)
-      partial_f = lambda do |value|
-        @input_stack.with_isolated_context(value) { process(partial) }
-      end
+      partial_f = if partial.is_a?(Sexp)
+                    lambda do |value|
+                      @input_stack.with_isolated_context(value) { process(partial) }
+                    end
+                  else
+                    partial
+                  end
 
       hash = extract_hash hash
       with_block_params(hash.keys, hash.values) do
@@ -335,13 +339,28 @@ module Haparanda
       values = process(context)[1]
       value = values.first
 
-      partial = lookup_partial(name, partial_block)
-      partial_f = lambda do |value|
-        @input_stack.with_isolated_context(value) { process(partial) }
-      end
+      current_partial_block = @data.data(:"partial-block")
 
       @data.with_new_data do
-        @data.set_data(:"partial-block", partial_block)
+        partial_block_wrapper = lambda do |value|
+          @data.with_new_data do
+            @data.set_data(:"partial-block", current_partial_block)
+            @input_stack.with_isolated_context(value) { process(partial_block) }
+          end
+        end
+
+        @data.set_data(:"partial-block", partial_block_wrapper)
+
+        partial = lookup_partial(name, raise_error: false)
+        partial ||= partial_block_wrapper
+        partial_f = if partial.is_a?(Sexp)
+                      lambda do |value|
+                        @input_stack.with_isolated_context(value) { process(partial) }
+                      end
+                    else
+                      partial
+                    end
+
         value ||= @input_stack.top unless @explicit_partial_context
         partial_f.call(value)
       end
@@ -529,7 +548,8 @@ module Haparanda
       return value, name
     end
 
-    def lookup_partial(expr, fallback = nil)
+    # TODO: Remove boolean parameter code smell
+    def lookup_partial(expr, raise_error: true)
       path = process(expr)
       data, name, elements = path_segments(path)
 
@@ -539,7 +559,9 @@ module Haparanda
                  @partials[name]
                end
 
-      result || fallback or raise KeyError, "The partial \"#{name}\" could not be found"
+      raise KeyError, "The partial \"#{name}\" could not be found" if !result && raise_error
+
+      result
     end
 
     def path_segments(path)

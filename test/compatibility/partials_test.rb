@@ -419,7 +419,6 @@ describe 'partials' do
     end
 
     it 'should render nested partial blocks' do
-      skip
       expectTemplate('<template>{{#> outer}}{{value}}{{/outer}}</template>')
         .withInput({ value: 'success' })
         .withPartials({
@@ -433,7 +432,6 @@ describe 'partials' do
     end
 
     it 'should render nested partial blocks at different nesting levels' do
-      skip
       expectTemplate('<template>{{#> outer}}{{value}}{{/outer}}</template>')
         .withInput({ value: 'success' })
         .withPartials({
@@ -447,7 +445,6 @@ describe 'partials' do
     end
 
     it 'should render nested partial blocks at different nesting levels (twice)' do
-      skip
       expectTemplate('<template>{{#> outer}}{{value}}{{/outer}}</template>')
         .withInput({ value: 'success' })
         .withPartials({
@@ -461,7 +458,6 @@ describe 'partials' do
     end
 
     it 'should render nested partial blocks (twice at each level)' do
-      skip
       expectTemplate('<template>{{#> outer}}{{value}}{{/outer}}</template>')
         .withInput({ value: 'success' })
         .withPartials({
