@@ -96,7 +96,8 @@ module Haparanda
       end
 
       def with_isolated_context(value, &block)
-        @stack.push Input.new(value)
+        input = value.is_a?(Input) ? value : Input.new(value)
+        @stack.push input
         result = block.call
         @stack.pop
         result
@@ -317,14 +318,14 @@ module Haparanda
       value = values.first
 
       partial = lookup_partial(name)
+      partial_f = lambda do |value|
+        @input_stack.with_isolated_context(value) { process(partial) }
+      end
 
       hash = extract_hash hash
       with_block_params(hash.keys, hash.values) do
-        if value || @explicit_partial_context
-          @input_stack.with_isolated_context(value) { process(partial) }
-        else
-          process(partial)
-        end
+        value ||= @input_stack.top unless @explicit_partial_context
+        partial_f.call(value)
       end
     end
 
@@ -333,11 +334,16 @@ module Haparanda
 
       values = process(context)[1]
       value = values.first
+
       partial = lookup_partial(name, partial_block)
+      partial_f = lambda do |value|
+        @input_stack.with_isolated_context(value) { process(partial) }
+      end
 
       @data.with_new_data do
         @data.set_data(:"partial-block", partial_block)
-        @input_stack.with_new_context(value) { process(partial) }
+        value ||= @input_stack.top unless @explicit_partial_context
+        partial_f.call(value)
       end
     end
 
