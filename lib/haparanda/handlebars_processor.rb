@@ -370,6 +370,16 @@ module Haparanda
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
 
+    def process_directive_block(expr)
+      _, name, params, _hash, program, _inverse_chain, = expr
+      name = name.dig(2, 1)
+      raise "Only 'inline' is supported, got #{name}" unless name == "inline"
+
+      args = process(params)[1]
+      partial_name = args[0]
+      @partials[partial_name] = program
+    end
+
     def process_statements(expr)
       results = expr.sexp_body.map { process(_1)[1] }
       s(:result, results.join)

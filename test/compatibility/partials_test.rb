@@ -474,7 +474,6 @@ describe 'partials' do
 
   describe 'inline partials' do
     it 'should define inline partials for template' do
-      skip
       expectTemplate(
         '{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}'
       ).toCompileTo('success');
