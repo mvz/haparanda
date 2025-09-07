@@ -323,19 +323,16 @@ describe 'partials' do
 
   describe 'partial blocks' do
     it 'should render partial block as default' do
-      skip
       expectTemplate('{{#> dude}}success{{/dude}}').toCompileTo('success');
     end
 
     it 'should execute default block with proper context' do
-      skip
       expectTemplate('{{#> dude context}}{{value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .toCompileTo('success');
     end
 
     it 'should propagate block parameters to default block' do
-      skip
       expectTemplate(
         '{{#with context as |me|}}{{#> dude}}{{me.value}}{{/dude}}{{/with}}'
       )
@@ -344,28 +341,24 @@ describe 'partials' do
     end
 
     it 'should not use partial block if partial exists' do
-      skip
       expectTemplate('{{#> dude}}fail{{/dude}}')
         .withPartials({ dude: 'success' })
         .toCompileTo('success');
     end
 
     it 'should render block from partial' do
-      skip
       expectTemplate('{{#> dude}}success{{/dude}}')
         .withPartials({ dude: '{{> @partial-block }}' })
         .toCompileTo('success');
     end
 
     it 'should be able to render the partial-block twice' do
-      skip
       expectTemplate('{{#> dude}}success{{/dude}}')
         .withPartials({ dude: '{{> @partial-block }} {{> @partial-block }}' })
         .toCompileTo('success success');
     end
 
     it 'should render block from partial with context' do
-      skip
       expectTemplate('{{#> dude}}{{value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .withPartials({
@@ -375,7 +368,6 @@ describe 'partials' do
     end
 
     it 'should be able to access the @data frame from a partial-block' do
-      skip
       expectTemplate('{{#> dude}}in-block: {{@root/value}}{{/dude}}')
         .withInput({ value: 'success' })
         .withPartials({
@@ -385,7 +377,6 @@ describe 'partials' do
     end
 
     it 'should allow the #each-helper to be used along with partial-blocks' do
-      skip
       expectTemplate(
         '<template>{{#> list value}}value = {{.}}{{/list}}</template>'
       )
@@ -401,7 +392,6 @@ describe 'partials' do
     end
 
     it 'should render block from partial with context (twice)' do
-      skip
       expectTemplate('{{#> dude}}{{value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .withPartials({
@@ -411,7 +401,6 @@ describe 'partials' do
     end
 
     it 'should render block from partial with context' do
-      skip
       expectTemplate('{{#> dude}}{{../context/value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .withPartials({
@@ -421,7 +410,6 @@ describe 'partials' do
     end
 
     it 'should render block from partial with block params' do
-      skip
       expectTemplate(
         '{{#with context as |me|}}{{#> dude}}{{me.value}}{{/dude}}{{/with}}'
       )
@@ -431,7 +419,6 @@ describe 'partials' do
     end
 
     it 'should render nested partial blocks' do
-      skip
       expectTemplate('<template>{{#> outer}}{{value}}{{/outer}}</template>')
         .withInput({ value: 'success' })
         .withPartials({
@@ -445,7 +432,6 @@ describe 'partials' do
     end
 
     it 'should render nested partial blocks at different nesting levels' do
-      skip
       expectTemplate('<template>{{#> outer}}{{value}}{{/outer}}</template>')
         .withInput({ value: 'success' })
         .withPartials({
@@ -459,7 +445,6 @@ describe 'partials' do
     end
 
     it 'should render nested partial blocks at different nesting levels (twice)' do
-      skip
       expectTemplate('<template>{{#> outer}}{{value}}{{/outer}}</template>')
         .withInput({ value: 'success' })
         .withPartials({
@@ -473,7 +458,6 @@ describe 'partials' do
     end
 
     it 'should render nested partial blocks (twice at each level)' do
-      skip
       expectTemplate('<template>{{#> outer}}{{value}}{{/outer}}</template>')
         .withInput({ value: 'success' })
         .withPartials({

@@ -96,7 +96,8 @@ module Haparanda
       end
 
       def with_isolated_context(value, &block)
-        @stack.push Input.new(value)
+        input = value.is_a?(Input) ? value : Input.new(value)
+        @stack.push input
         result = block.call
         @stack.pop
         result
@@ -317,17 +318,57 @@ module Haparanda
       value = values.first
 
       partial = lookup_partial(name)
+      partial_f = if partial.is_a?(Sexp)
+                    lambda do |value|
+                      @input_stack.with_isolated_context(value) { process(partial) }
+                    end
+                  else
+                    partial
+                  end
 
       hash = extract_hash hash
       with_block_params(hash.keys, hash.values) do
-        if value || @explicit_partial_context
-          result = @input_stack.with_isolated_context(value) { apply(partial) }
-          s(:result, result)
-        else
-          process(partial)
-        end
+        value ||= @input_stack.top unless @explicit_partial_context
+        partial_f.call(value)
       end
     end
+
+    # rubocop:todo Metrics/MethodLength
+    # rubocop:todo Metrics/AbcSize
+    def process_partial_block(expr)
+      _, name, context, _hash, partial_block = expr
+
+      values = process(context)[1]
+      value = values.first
+
+      current_partial_block = @data.data(:"partial-block")
+
+      @data.with_new_data do
+        partial_block_wrapper = lambda do |value|
+          @data.with_new_data do
+            @data.set_data(:"partial-block", current_partial_block)
+            @input_stack.with_isolated_context(value) { process(partial_block) }
+          end
+        end
+
+        @data.set_data(:"partial-block", partial_block_wrapper)
+
+        partial = lookup_partial(name, raise_error: false)
+        partial ||= partial_block_wrapper
+        partial_f = if partial.is_a?(Sexp)
+                      lambda do |value|
+                        @input_stack.with_isolated_context(value) { process(partial) }
+                      end
+                    else
+                      partial
+                    end
+
+        value ||= @input_stack.top unless @explicit_partial_context
+        partial_f.call(value)
+      end
+    end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     def process_statements(expr)
       results = expr.sexp_body.map { process(_1)[1] }
@@ -511,13 +552,20 @@ module Haparanda
       return value, name
     end
 
-    def lookup_partial(expr)
+    # TODO: Remove boolean parameter code smell
+    def lookup_partial(expr, raise_error: true)
       path = process(expr)
-      _data, name, _elements = path_segments(path)
+      data, name, elements = path_segments(path)
 
-      @partials.fetch(name) do
-        raise KeyError, "The partial \"#{name}\" could not be found"
-      end
+      result = if data
+                 @data.data(*elements)
+               else
+                 @partials[name]
+               end
+
+      raise KeyError, "The partial \"#{name}\" could not be found" if !result && raise_error
+
+      result
     end
 
     def path_segments(path)
