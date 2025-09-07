@@ -22,6 +22,12 @@ module Haparanda
       @helpers[name.to_sym] = definition
     end
 
+    def register_helpers(**helpers)
+      helpers.each do |name, definition|
+        register_helper(name, &definition)
+      end
+    end
+
     def unregister_helper(name)
       @helpers.delete(name.to_sym)
     end

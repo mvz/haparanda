@@ -408,19 +408,14 @@ describe 'helpers' do
     end
 
     it 'allows multiple globals' do
-      skip "we only allow calling this method with a name and block"
-      var helpers = handlebarsEnv.helpers;
-      handlebarsEnv.helpers = {};
-
-      handlebarsEnv.registerHelper({
-        if: helpers['if'],
+      handlebarsEnv.register_helpers(
         world: lambda {
           return 'world!';
         },
         testHelper: lambda {
           return 'found it!';
-        },
-      });
+        }
+      );
 
       expectTemplate(
         '{{testHelper}} {{#if cruel}}Goodbye {{cruel}} {{world}}!{{/if}}'
