@@ -496,7 +496,6 @@ describe 'partials' do
     end
 
     it 'should override global partials' do
-      skip
       expectTemplate(
         '{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}'
       )
