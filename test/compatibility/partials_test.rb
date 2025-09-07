@@ -237,8 +237,7 @@ describe 'partials' do
   end
 
   it 'Global Partials' do
-    skip
-    handlebarsEnv.registerPartial('globalTest', '{{anotherDude}}');
+    handlebarsEnv.register_partial('globalTest', '{{anotherDude}}');
 
     expectTemplate('Dudes: {{> shared/dude}} {{> globalTest}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
@@ -246,8 +245,8 @@ describe 'partials' do
       .withMessage('Partials can use globals or passed')
       .toCompileTo('Dudes: Jeepers Creepers');
 
-    handlebarsEnv.unregisterPartial('globalTest');
-    equals(handlebarsEnv.partials.globalTest, undefined);
+    handlebarsEnv.unregister_partial('globalTest');
+    equals(handlebarsEnv.get_partial('globalTest'), nil);
   end
 
   it 'Multiple partial registration' do

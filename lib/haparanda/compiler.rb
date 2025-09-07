@@ -2,13 +2,12 @@
 
 require "logger"
 require_relative "template"
-require_relative "post_processor"
+require_relative "parser"
 
 module Haparanda
   # Compile handlebars template to a callable Haparanda::Template object
   class Compiler
     def initialize
-      @parser = HandlebarsParser.new
       @helpers = {}
       @partials = {}
       @log = nil
@@ -39,16 +38,20 @@ module Haparanda
       @partials[name.to_s] = template_to_ast(content)
     end
 
+    def unregister_partial(name)
+      @partials.delete(name.to_s)
+    end
+
+    def get_partial(name)
+      @partials[name.to_s]
+    end
+
     attr_accessor :log
 
     private
 
     def template_to_ast(text, **compile_options)
-      template = parser.parse(text)
-      post_processor = PostProcessor.new(**compile_options)
-      post_processor.process(template)
+      Parser.new(**compile_options).parse(text)
     end
-
-    attr_reader :parser, :post_processor
   end
 end

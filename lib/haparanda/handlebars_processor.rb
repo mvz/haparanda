@@ -257,7 +257,7 @@ module Haparanda
         log: method(:handle_log),
         lookup: method(:handle_lookup)
       }.merge(helpers)
-      @partials = partials
+      @partials = partials.transform_keys(&:to_s)
       @log = log || method(:default_log)
       @explicit_partial_context = explicit_partial_context
     end
