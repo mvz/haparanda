@@ -257,7 +257,7 @@ module Haparanda
         log: method(:handle_log),
         lookup: method(:handle_lookup)
       }.merge(helpers)
-      @partials = partials.transform_keys(&:to_s)
+      @partials = Data.new(partials.transform_keys(&:to_s))
       @log = log || method(:default_log)
       @explicit_partial_context = explicit_partial_context
     end
@@ -377,7 +377,7 @@ module Haparanda
 
       args = process(params)[1]
       partial_name = args[0]
-      @partials[partial_name] = program
+      @partials.set_data(partial_name, program)
     end
 
     def process_statements(expr)
@@ -503,7 +503,7 @@ module Haparanda
       if program
         if block_param_names.any?
           lambda { |item, options = {}|
-            with_new_input_context(item) do
+            with_new_context(item) do
               with_block_params(block_param_names, options[:block_params]) do
                 apply(program)
               end
@@ -511,7 +511,7 @@ module Haparanda
           }
         else
           lambda { |item, _options = {}|
-            with_new_input_context(item) { apply(program) }
+            with_new_context(item) { apply(program) }
           }
         end
       else
@@ -519,8 +519,10 @@ module Haparanda
       end
     end
 
-    def with_new_input_context(item, &)
-      @input_stack.with_new_context(item, &)
+    def with_new_context(item, &)
+      @partials.with_new_data do
+        @input_stack.with_new_context(item, &)
+      end
     end
 
     def with_block_params(block_param_names, block_param_values, &block)
@@ -570,7 +572,7 @@ module Haparanda
       result = if data
                  @data.data(*elements)
                else
-                 @partials[name]
+                 @partials.data(name)
                end
 
       raise KeyError, "The partial \"#{name}\" could not be found" if !result && raise_error

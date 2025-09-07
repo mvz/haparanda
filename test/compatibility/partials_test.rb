@@ -480,21 +480,19 @@ describe 'partials' do
     end
 
     it 'should overwrite multiple partials in the same template' do
-      skip
       expectTemplate(
         '{{#*inline "myPartial"}}fail{{/inline}}{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}'
       ).toCompileTo('success');
     end
 
     it 'should define inline partials for block' do
-      skip
       expectTemplate(
         '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}{{/with}}'
       ).toCompileTo('success');
 
       expectTemplate(
         '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{/with}}{{> myPartial}}'
-      ).toThrow(Error, /"myPartial" could not/);
+      ).toThrow(StandardError, /"myPartial" could not/);
     end
 
     it 'should override global partials' do
