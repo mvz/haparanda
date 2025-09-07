@@ -4,15 +4,17 @@ require_relative "content_combiner"
 require_relative "whitespace_handler"
 
 module Haparanda
-  # Process the handlebars AST into its final form needed to apply input to it:
+  # Parse a handlebars string to an AST in the form needed to apply input to it:
+  # - parse the string into the raw AST
   # - combine subsequent :content items
   # - strip whitespace according to Handlebars' rules
-  class PostProcessor
+  class Parser
     def initialize(ignore_standalone: false, **)
       @ignore_standalone = ignore_standalone
     end
 
-    def process(expr)
+    def parse(text)
+      expr = HandlebarsParser.new.parse(text)
       expr = ContentCombiner.new.process(expr)
       WhitespaceHandler.new(ignore_standalone: @ignore_standalone).process(expr)
     end

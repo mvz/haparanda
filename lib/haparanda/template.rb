@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "parser"
+
 module Haparanda
   # Callable representation of a handlebars template
   class Template
@@ -11,8 +13,10 @@ module Haparanda
       @compile_options = compile_options
     end
 
-    def call(input, helpers: {}, data: {})
+    def call(input, helpers: {}, partials: {}, data: {})
       all_helpers = @helpers.merge(helpers)
+      partials.transform_values! { Parser.new(**@compile_options).parse(_1) }
+      all_partials = @partials.merge(partials)
       if @compile_options[:known_helpers_only]
         keys = @compile_options[:known_helpers]&.keys || []
         all_helpers = all_helpers.slice(*keys)
@@ -23,7 +27,7 @@ module Haparanda
       processor =
         HandlebarsProcessor.new(input,
                                 helpers: all_helpers,
-                                partials: @partials,
+                                partials: all_partials,
                                 log: @log,
                                 data: data,
                                 explicit_partial_context: explicit_partial_context)

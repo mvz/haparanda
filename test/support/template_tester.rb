@@ -11,6 +11,7 @@ class TemplateTester
     @spec = spec
     @input = {}
     @helpers = {}
+    @partials = {}
     @runtime_options = {}
     @compile_options = {}
   end
@@ -46,14 +47,12 @@ class TemplateTester
   end
 
   def withPartials(partials) # rubocop:disable Naming/MethodName
-    partials.each do |name, content|
-      @compiler.register_partial(name, content)
-    end
+    @partials = partials
     self
   end
 
   def withPartial(name, content) # rubocop:disable Naming/MethodName
-    @compiler.register_partial(name, content)
+    @partials[name] = content
     self
   end
 
@@ -80,7 +79,8 @@ class TemplateTester
 
   def compile_and_process_template
     compiled_template = @compiler.compile(@text, **@compile_options)
-    compiled_template.call(@input, helpers: @helpers, **@runtime_options)
+    compiled_template.call(@input, helpers: @helpers, partials: @partials,
+                                   **@runtime_options)
   end
 
   def underscore_opts(opts)
