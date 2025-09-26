@@ -257,7 +257,7 @@ module Haparanda
         log: method(:handle_log),
         lookup: method(:handle_lookup)
       }.merge(helpers)
-      @partials = partials.transform_keys(&:to_s)
+      @partials = Data.new(partials.transform_keys(&:to_s))
       @log = log || method(:default_log)
       @explicit_partial_context = explicit_partial_context
     end
@@ -353,6 +353,10 @@ module Haparanda
 
         @data.set_data(:"partial-block", partial_block_wrapper)
 
+        partial_block.sexp_body.each do |sexp|
+          process(sexp) if sexp.sexp_type == :directive_block
+        end
+
         partial = lookup_partial(name, raise_error: false)
         partial ||= partial_block_wrapper
         partial_f = if partial.is_a?(Sexp)
@@ -369,6 +373,16 @@ module Haparanda
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
+
+    def process_directive_block(expr)
+      _, name, params, _hash, program, _inverse_chain, = expr
+      name = name.dig(2, 1)
+      raise "Only 'inline' is supported, got #{name}" unless name == "inline"
+
+      args = process(params)[1]
+      partial_name = args[0]
+      @partials.set_data(partial_name, program)
+    end
 
     def process_statements(expr)
       results = expr.sexp_body.map { process(_1)[1] }
@@ -493,7 +507,7 @@ module Haparanda
       if program
         if block_param_names.any?
           lambda { |item, options = {}|
-            with_new_input_context(item) do
+            with_new_context(item) do
               with_block_params(block_param_names, options[:block_params]) do
                 apply(program)
               end
@@ -501,7 +515,7 @@ module Haparanda
           }
         else
           lambda { |item, _options = {}|
-            with_new_input_context(item) { apply(program) }
+            with_new_context(item) { apply(program) }
           }
         end
       else
@@ -509,8 +523,10 @@ module Haparanda
       end
     end
 
-    def with_new_input_context(item, &)
-      @input_stack.with_new_context(item, &)
+    def with_new_context(item, &)
+      @partials.with_new_data do
+        @input_stack.with_new_context(item, &)
+      end
     end
 
     def with_block_params(block_param_names, block_param_values, &block)
@@ -560,7 +576,7 @@ module Haparanda
       result = if data
                  @data.data(*elements)
                else
-                 @partials[name]
+                 @partials.data(name)
                end
 
       raise KeyError, "The partial \"#{name}\" could not be found" if !result && raise_error

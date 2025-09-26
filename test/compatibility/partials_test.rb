@@ -474,32 +474,28 @@ describe 'partials' do
 
   describe 'inline partials' do
     it 'should define inline partials for template' do
-      skip
       expectTemplate(
         '{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}'
       ).toCompileTo('success');
     end
 
     it 'should overwrite multiple partials in the same template' do
-      skip
       expectTemplate(
         '{{#*inline "myPartial"}}fail{{/inline}}{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}'
       ).toCompileTo('success');
     end
 
     it 'should define inline partials for block' do
-      skip
       expectTemplate(
         '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}{{/with}}'
       ).toCompileTo('success');
 
       expectTemplate(
         '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{/with}}{{> myPartial}}'
-      ).toThrow(Error, /"myPartial" could not/);
+      ).toThrow(StandardError, /"myPartial" could not/);
     end
 
     it 'should override global partials' do
-      skip
       expectTemplate(
         '{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}'
       )
@@ -512,28 +508,24 @@ describe 'partials' do
     end
 
     it 'should override template partials' do
-      skip
       expectTemplate(
         '{{#*inline "myPartial"}}fail{{/inline}}{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}{{/with}}'
       ).toCompileTo('success');
     end
 
     it 'should override partials down the entire stack' do
-      skip
       expectTemplate(
         '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{#with .}}{{#with .}}{{> myPartial}}{{/with}}{{/with}}{{/with}}'
       ).toCompileTo('success');
     end
 
     it 'should define inline partials for partial call' do
-      skip
       expectTemplate('{{#*inline "myPartial"}}success{{/inline}}{{> dude}}')
         .withPartials({ dude: '{{> myPartial }}' })
         .toCompileTo('success');
     end
 
     it 'should define inline partials in partial block call' do
-      skip
       expectTemplate(
         '{{#> dude}}{{#*inline "myPartial"}}success{{/inline}}{{/dude}}'
       )
@@ -542,7 +534,6 @@ describe 'partials' do
     end
 
     it 'should render nested inline partials' do
-      skip
       expectTemplate(
         '{{#*inline "outer"}}{{#>inner}}<outer-block>{{>@partial-block}}</outer-block>{{/inner}}{{/inline}}' +
           '{{#*inline "inner"}}<inner>{{>@partial-block}}</inner>{{/inline}}' +
@@ -553,7 +544,6 @@ describe 'partials' do
     end
 
     it 'should render nested inline partials with partial-blocks on different nesting levels' do
-      skip
       expectTemplate(
         '{{#*inline "outer"}}{{#>inner}}<outer-block>{{>@partial-block}}</outer-block>{{/inner}}{{>@partial-block}}{{/inline}}' +
           '{{#*inline "inner"}}<inner>{{>@partial-block}}</inner>{{/inline}}' +
@@ -566,7 +556,6 @@ describe 'partials' do
     end
 
     it 'should render nested inline partials (twice at each level)' do
-      skip
       expectTemplate(
         '{{#*inline "outer"}}{{#>inner}}<outer-block>{{>@partial-block}} {{>@partial-block}}</outer-block>{{/inner}}{{/inline}}' +
           '{{#*inline "inner"}}<inner>{{>@partial-block}}{{>@partial-block}}</inner>{{/inline}}' +

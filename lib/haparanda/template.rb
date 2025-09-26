@@ -15,7 +15,7 @@ module Haparanda
 
     def call(input, helpers: {}, partials: {}, data: {})
       all_helpers = @helpers.merge(helpers)
-      partials.transform_values! { Parser.new(**@compile_options).parse(_1) }
+      partials.transform_values! { parse_partial(_1) }
       all_partials = @partials.merge(partials)
       if @compile_options[:known_helpers_only]
         keys = @compile_options[:known_helpers]&.keys || []
@@ -32,6 +32,14 @@ module Haparanda
                                 data: data,
                                 explicit_partial_context: explicit_partial_context)
       processor.apply(@expr)
+    end
+
+    private
+
+    def parse_partial(partial)
+      return partial if partial.respond_to? :call
+
+      Parser.new(**@compile_options).parse(partial)
     end
   end
 end
