@@ -310,7 +310,7 @@ describe 'blocks' do
 
   describe 'decorators' do
     it 'should apply mustache decorators' do
-      skip
+      skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       expectTemplate('{{#helper}}{{*decorator}}{{/helper}}')
         .withHelper('helper', lambda { |options|
           return options.fn.run;
@@ -323,7 +323,7 @@ describe 'blocks' do
     end
 
     it 'should apply allow undefined return' do
-      skip
+      skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       expectTemplate('{{#helper}}{{*decorator}}suc{{/helper}}')
         .withHelper('helper', lambda { |options|
           return options.fn + options.fn.run;
@@ -335,7 +335,7 @@ describe 'blocks' do
     end
 
     it 'should apply block decorators' do
-      skip
+      skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       expectTemplate(
         '{{#helper}}{{#*decorator}}success{{/decorator}}{{/helper}}'
       )
@@ -350,7 +350,7 @@ describe 'blocks' do
     end
 
     it 'should support nested decorators' do
-      skip
+      skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       expectTemplate(
         '{{#helper}}{{#*decorator}}{{#*nested}}suc{{/nested}}cess{{/decorator}}{{/helper}}'
       )
@@ -370,7 +370,7 @@ describe 'blocks' do
     end
 
     it 'should apply multiple decorators' do
-      skip
+      skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       expectTemplate(
         '{{#helper}}{{#*decorator}}suc{{/decorator}}{{#*decorator}}cess{{/decorator}}{{/helper}}'
       )
@@ -385,7 +385,7 @@ describe 'blocks' do
     end
 
     it 'should access parent variables' do
-      skip
+      skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       expectTemplate('{{#helper}}{{*decorator foo}}{{/helper}}')
         .withHelper('helper', lambda { |options|
           return options.fn.run;
@@ -399,7 +399,7 @@ describe 'blocks' do
     end
 
     it 'should work with root program' do
-      skip
+      skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       run = false;
       expectTemplate('{{*decorator "success"}}')
         .withDecorator('decorator', lambda { |fn, _props, _container, options|
@@ -413,7 +413,7 @@ describe 'blocks' do
     end
 
     it 'should fail when accessing variables from root' do
-      skip
+      skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       run = false;
       expectTemplate('{{*decorator foo}}')
         .withDecorator('decorator', lambda { |fn, _props, _container, options|
@@ -428,11 +428,10 @@ describe 'blocks' do
 
     describe 'registration' do
       it 'unregisters' do
-        skip
+        skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
         handlebarsEnv.decorators = {};
 
         handlebarsEnv.registerDecorator('foo', lambda do
-          skip
           return 'fail';
         end)
 
@@ -442,7 +441,7 @@ describe 'blocks' do
       end
 
       it 'allows multiple globals' do
-        skip
+        skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
         handlebarsEnv.decorators = {};
 
         handlebarsEnv.registerDecorator({
@@ -459,7 +458,7 @@ describe 'blocks' do
       end
 
       it 'fails with multiple and args' do
-        skip
+        skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
         shouldThrow(
           lambda {
             handlebarsEnv.registerDecorator(
