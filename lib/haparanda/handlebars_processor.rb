@@ -353,6 +353,10 @@ module Haparanda
 
         @data.set_data(:"partial-block", partial_block_wrapper)
 
+        partial_block.sexp_body.each do |sexp|
+          process(sexp) if sexp.sexp_type == :directive_block
+        end
+
         partial = lookup_partial(name, raise_error: false)
         partial ||= partial_block_wrapper
         partial_f = if partial.is_a?(Sexp)

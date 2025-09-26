@@ -526,7 +526,6 @@ describe 'partials' do
     end
 
     it 'should define inline partials in partial block call' do
-      skip
       expectTemplate(
         '{{#> dude}}{{#*inline "myPartial"}}success{{/inline}}{{/dude}}'
       )
