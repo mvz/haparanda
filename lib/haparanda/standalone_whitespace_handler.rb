@@ -66,9 +66,11 @@ module Haparanda
     end
 
     def strip_pairwise_sibling_whitespace(statements)
-      statements.each_cons(2) do |prev, item|
-        strip_standalone_whitespace(prev, first_item(item)) if item.sexp_type == :block
-        strip_standalone_whitespace(last_item(prev), item) if prev.sexp_type == :block
+      [nil, *statements, nil].each_cons(3) do |before, item, after|
+        if item.sexp_type == :block
+          strip_standalone_whitespace(before, first_item(item))
+          strip_standalone_whitespace(last_item(item), after)
+        end
       end
     end
 
