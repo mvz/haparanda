@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "haparanda/handlebars_parser"
-require "haparanda/whitespace_handler"
 require "haparanda/handlebars_processor"
 
 class TemplateTester

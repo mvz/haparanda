@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require_relative "content_combiner"
-require_relative "whitespace_handler"
+require_relative "standalone_whitespace_handler"
+require_relative "whitespace_stripper"
 
 module Haparanda
   # Parse a handlebars string to an AST in the form needed to apply input to it:
@@ -16,7 +17,8 @@ module Haparanda
     def parse(text)
       expr = HandlebarsParser.new.parse(text)
       expr = ContentCombiner.new.process(expr)
-      WhitespaceHandler.new(ignore_standalone: @ignore_standalone).process(expr)
+      expr = StandaloneWhitespaceHandler.new.process(expr) unless @ignore_standalone
+      WhitespaceStripper.new.process(expr)
     end
   end
 end
