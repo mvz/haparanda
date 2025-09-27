@@ -681,11 +681,11 @@ describe 'helpers' do
     end
   end
 
-  describe 'knownHelpers' do
+  describe 'known_helpers' do
     it 'Known helper should render helper' do
       expectTemplate('{{hello}}')
         .withCompileOptions({
-          knownHelpers: { hello: true },
+          known_helpers: { hello: true },
         })
         .withHelper('hello', lambda {
           return 'foo';
@@ -693,11 +693,11 @@ describe 'helpers' do
         .toCompileTo('foo');
     end
 
-    it 'Unknown helper in knownHelpers only mode should be passed as undefined' do
+    it 'Unknown helper in known_helpers only mode should be passed as undefined' do
       expectTemplate('{{typeof hello}}')
         .withCompileOptions({
-          knownHelpers: { typeof: true },
-          knownHelpersOnly: true,
+          known_helpers: { typeof: true },
+          known_helpers_only: true,
         })
         .withHelper('typeof', lambda { |arg|
           return arg.class;
@@ -708,45 +708,45 @@ describe 'helpers' do
         .toCompileTo('NilClass');
     end
 
-    it 'Builtin helpers available in knownHelpers only mode' do
+    it 'Builtin helpers available in known_helpers only mode' do
       expectTemplate('{{#unless foo}}bar{{/unless}}')
         .withCompileOptions({
-          knownHelpersOnly: true,
+          known_helpers_only: true,
         })
         .toCompileTo('bar');
     end
 
-    it 'Field lookup works in knownHelpers only mode' do
+    it 'Field lookup works in known_helpers only mode' do
       expectTemplate('{{foo}}')
         .withCompileOptions({
-          knownHelpersOnly: true,
+          known_helpers_only: true,
         })
         .withInput({ foo: 'bar' })
         .toCompileTo('bar');
     end
 
-    it 'Conditional blocks work in knownHelpers only mode' do
+    it 'Conditional blocks work in known_helpers only mode' do
       expectTemplate('{{#foo}}bar{{/foo}}')
         .withCompileOptions({
-          knownHelpersOnly: true,
+          known_helpers_only: true,
         })
         .withInput({ foo: 'baz' })
         .toCompileTo('bar');
     end
 
-    it 'Invert blocks work in knownHelpers only mode' do
+    it 'Invert blocks work in known_helpers only mode' do
       expectTemplate('{{^foo}}bar{{/foo}}')
         .withCompileOptions({
-          knownHelpersOnly: true,
+          known_helpers_only: true,
         })
         .withInput({ foo: false })
         .toCompileTo('bar');
     end
 
-    it 'Functions are bound to the context in knownHelpers only mode' do
+    it 'Functions are bound to the context in known_helpers only mode' do
       expectTemplate('{{foo}}')
         .withCompileOptions({
-          knownHelpersOnly: true,
+          known_helpers_only: true,
         })
         .withInput({
           foo: lambda {
@@ -757,9 +757,9 @@ describe 'helpers' do
         .toCompileTo('bar');
     end
 
-    it 'Unknown helper call in knownHelpers only mode should throw' do
+    it 'Unknown helper call in known_helpers only mode should throw' do
       expectTemplate('{{typeof hello}}')
-        .withCompileOptions({ knownHelpersOnly: true })
+        .withCompileOptions({ known_helpers_only: true })
         .toThrow(RuntimeError);
     end
   end
@@ -835,8 +835,8 @@ describe 'helpers' do
     it 'should include in known helper calls' do
       expectTemplate('{{helper}}')
         .withCompileOptions({
-          knownHelpers: { helper: true },
-          knownHelpersOnly: true,
+          known_helpers: { helper: true },
+          known_helpers_only: true,
         })
         .withHelpers(helpers)
         .toCompileTo('ran: helper');
