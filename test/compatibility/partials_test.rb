@@ -106,13 +106,13 @@ describe 'partials' do
     expectTemplate('Dudes: {{#dudes}}{{>dude}}{{/dudes}}')
       .withInput(hash)
       .withPartial('dude', partial)
-      .withCompileOptions({ explicitPartialContext: true })
+      .withCompileOptions({ explicit_partial_context: true })
       .toCompileTo('Dudes:  ()  () ');
 
     expectTemplate('Dudes: {{#dudes}}{{>dude name="foo"}}{{/dudes}}')
       .withInput(hash)
       .withPartial('dude', partial)
-      .withCompileOptions({ explicitPartialContext: true })
+      .withCompileOptions({ explicit_partial_context: true })
       .toCompileTo('Dudes: foo () foo () ');
   end
 
@@ -622,7 +622,7 @@ describe 'partials' do
           dude: '{{name}}\n {{> url}}',
           url: '{{url}}!\n',
         })
-        .withCompileOptions({ preventIndent: true })
+        .withCompileOptions({ prevent_indent: true })
         .toCompileTo(
           'Dudes:\n  Yehuda\n http://yehuda!\n  Alan\n http://alan!\n'
         );

@@ -32,7 +32,7 @@ class TemplateTester
   end
 
   def withCompileOptions(opts) # rubocop:disable Naming/MethodName
-    @compile_options = underscore_opts opts
+    @compile_options = opts
     self
   end
 
@@ -81,11 +81,5 @@ class TemplateTester
     compiled_template = @compiler.compile(@text, **@compile_options)
     compiled_template.call(@input, helpers: @helpers, partials: @partials,
                                    **@runtime_options)
-  end
-
-  def underscore_opts(opts)
-    opts.transform_keys do |k|
-      k.to_s.gsub(/[A-Z]/) { |a| "_#{a.downcase}" }.to_sym
-    end
   end
 end

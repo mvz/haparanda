@@ -238,12 +238,12 @@ describe 'blocks' do
     it 'block standalone else sections can be disabled' do
       expectTemplate('{{#people}}\n{{name}}\n{{^}}\n{{none}}\n{{/people}}\n')
         .withInput({ none: 'No people' })
-        .withCompileOptions({ ignoreStandalone: true })
+        .withCompileOptions({ ignore_standalone: true })
         .toCompileTo('\nNo people\n\n');
 
       expectTemplate('{{#none}}\n{{.}}\n{{^}}\nFail\n{{/none}}\n')
         .withInput({ none: 'No people' })
-        .withCompileOptions({ ignoreStandalone: true })
+        .withCompileOptions({ ignore_standalone: true })
         .toCompileTo('\nNo people\n\n');
     end
 
