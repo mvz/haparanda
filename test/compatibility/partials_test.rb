@@ -250,11 +250,10 @@ describe 'partials' do
   end
 
   it 'Multiple partial registration' do
-    skip
-    handlebarsEnv.registerPartial({
+    handlebarsEnv.register_partials(
       'shared/dude': '{{name}}',
-      globalTest: '{{anotherDude}}',
-    });
+      globalTest: '{{anotherDude}}'
+    );
 
     expectTemplate('Dudes: {{> shared/dude}} {{> globalTest}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })

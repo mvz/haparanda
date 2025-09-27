@@ -44,6 +44,12 @@ module Haparanda
       @partials[name.to_s] = template_to_ast(content)
     end
 
+    def register_partials(**partials)
+      partials.each do |name, content|
+        register_partial(name, content)
+      end
+    end
+
     def unregister_partial(name)
       @partials.delete(name.to_s)
     end
