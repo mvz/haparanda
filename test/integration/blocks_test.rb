@@ -7,7 +7,7 @@ describe "blocks" do
 
   describe "context nesting" do
     it "allows lookup in the parent context" do
-      result = compiler.compile("{{#foo}}{{bar}}{{baz}}{{/foo}}")
+      result = compiler.compile("{{#foo}}{{bar}}{{baz}}{{/foo}}", compat: true)
                        .call({ foo: { bar: "bar" }, baz: "baz" })
 
       _(result).must_equal "barbaz"

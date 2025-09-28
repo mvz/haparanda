@@ -628,7 +628,6 @@ describe 'partials' do
 
   describe 'compat mode' do
     it 'partials can access parents' do
-      skip
       expectTemplate('Dudes: {{#dudes}}{{> dude}}{{/dudes}}')
         .withInput({
           root: 'yes',
@@ -645,7 +644,6 @@ describe 'partials' do
     end
 
     it 'partials can access parents with custom context' do
-      skip
       expectTemplate('Dudes: {{#dudes}}{{> dude "test"}}{{/dudes}}')
         .withInput({
           root: 'yes',
@@ -662,7 +660,6 @@ describe 'partials' do
     end
 
     it 'partials can access parents without data' do
-      skip
       expectTemplate('Dudes: {{#dudes}}{{> dude}}{{/dudes}}')
         .withInput({
           root: 'yes',
@@ -680,7 +677,6 @@ describe 'partials' do
     end
 
     it 'partials inherit compat' do
-      skip
       expectTemplate('Dudes: {{> dude}}')
         .withInput({
           root: 'yes',

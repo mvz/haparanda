@@ -22,6 +22,7 @@ module Haparanda
         all_helpers = all_helpers.slice(*keys)
       end
       explicit_partial_context = true if @compile_options[:explicit_partial_context]
+      compat = true if @compile_options[:compat]
       # TODO: Change interface of HandlebarsProcessor so it can be instantiated
       # in Template#initialize
       processor =
@@ -30,6 +31,7 @@ module Haparanda
                                 partials: all_partials,
                                 log: @log,
                                 data: data,
+                                compat: compat,
                                 explicit_partial_context: explicit_partial_context)
       processor.apply(@expr)
     end
