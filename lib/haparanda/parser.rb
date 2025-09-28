@@ -10,14 +10,18 @@ module Haparanda
   # - combine subsequent :content items
   # - strip whitespace according to Handlebars' rules
   class Parser
-    def initialize(ignore_standalone: false, **)
+    def initialize(ignore_standalone: false, prevent_indent: false, **)
       @ignore_standalone = ignore_standalone
+      @prevent_indent = prevent_indent
     end
 
     def parse(text)
       expr = HandlebarsParser.new.parse(text)
       expr = ContentCombiner.new.process(expr)
-      expr = StandaloneWhitespaceHandler.new.process(expr) unless @ignore_standalone
+      unless @ignore_standalone
+        expr = StandaloneWhitespaceHandler.new(prevent_indent: @prevent_indent)
+                                          .process(expr)
+      end
       WhitespaceStripper.new.process(expr)
     end
   end

@@ -46,11 +46,14 @@ class TemplateTester
   end
 
   def withPartials(partials) # rubocop:disable Naming/MethodName
-    @partials = partials
+    partials.each do |name, content|
+      withPartial(name, content)
+    end
     self
   end
 
   def withPartial(name, content) # rubocop:disable Naming/MethodName
+    content = content.gsub('\n', "\n") if content.is_a? String
     @partials[name] = content
     self
   end

@@ -579,7 +579,6 @@ describe 'partials' do
 
   describe 'standalone partials' do
     it 'indented partials' do
-      skip
       expectTemplate('Dudes:\n{{#dudes}}\n  {{>dude}}\n{{/dudes}}')
         .withInput({
           dudes: [
@@ -592,7 +591,6 @@ describe 'partials' do
     end
 
     it 'nested indented partials' do
-      skip
       expectTemplate('Dudes:\n{{#dudes}}\n  {{>dude}}\n{{/dudes}}')
         .withInput({
           dudes: [
@@ -610,7 +608,6 @@ describe 'partials' do
     end
 
     it 'prevent nested indented partials' do
-      skip
       expectTemplate('Dudes:\n{{#dudes}}\n  {{>dude}}\n{{/dudes}}')
         .withInput({
           dudes: [

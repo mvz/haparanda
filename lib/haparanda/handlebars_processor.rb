@@ -308,7 +308,7 @@ module Haparanda
     end
 
     def process_partial(expr)
-      _, name, context, hash, = expr
+      _, name, context, hash, _, indent = expr
 
       values = process(context)[1]
       if values.length > 1
@@ -327,10 +327,14 @@ module Haparanda
                   end
 
       hash = extract_hash hash
-      with_block_params(hash.keys, hash.values) do
+      result = with_block_params(hash.keys, hash.values) do
         value ||= @input_stack.top unless @explicit_partial_context
         partial_f.call(value)
       end
+
+      apply_indent result, indent
+
+      result
     end
 
     # rubocop:todo Metrics/MethodLength
@@ -681,6 +685,13 @@ module Haparanda
 
     def handle_lookup(_context, item, index, options)
       options.lookup_property(item, index)
+    end
+
+    def apply_indent(result, indent)
+      if indent && (indent_text = indent[1])
+        str = result[1].lines.map { |line| "#{indent_text}#{line}" }
+        result[1] = str
+      end
     end
 
     def default_log(level, *values)

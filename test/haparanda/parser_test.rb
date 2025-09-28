@@ -124,4 +124,44 @@ describe Haparanda::Parser do
                                nil, s(:strip, false, false), s(:strip, false, false)),
                              s(:content, " \n baz \n ")))
   end
+
+  it "strips whitespace around stand-alone partial" do
+    result = parser.parse "Dudes:\n{{#dudes}}\n  {{>dude}}\n{{/dudes}}"
+    _(result).must_equal s(:root,
+                           s(:statements,
+                             s(:content, "Dudes:\n"),
+                             s(:block,
+                               s(:path, false, s(:id, "dudes")),
+                               s(:exprs), nil,
+                               s(:program, nil,
+                                 s(:statements,
+                                   s(:content, ""),
+                                   s(:partial,
+                                     s(:path, false, s(:id, "dude")),
+                                     s(:exprs), nil,
+                                     s(:strip, false, false), s(:indent, "  ")),
+                                   s(:content, ""))),
+                               nil, s(:strip, false, false), s(:strip, false, false))))
+  end
+
+  it "does not strip whitespace around stand-alone partial with ignore_standalone" do
+    ignore_standalone_parser = Haparanda::Parser.new(ignore_standalone: true)
+
+    result = ignore_standalone_parser.parse "Dudes:\n{{#dudes}}\n  {{>dude}}\n{{/dudes}}"
+    _(result).must_equal s(:root,
+                           s(:statements,
+                             s(:content, "Dudes:\n"),
+                             s(:block,
+                               s(:path, false, s(:id, "dudes")),
+                               s(:exprs), nil,
+                               s(:program, nil,
+                                 s(:statements,
+                                   s(:content, "\n  "),
+                                   s(:partial,
+                                     s(:path, false, s(:id, "dude")),
+                                     s(:exprs), nil,
+                                     s(:strip, false, false)),
+                                   s(:content, "\n"))),
+                               nil, s(:strip, false, false), s(:strip, false, false))))
+  end
 end
