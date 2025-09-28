@@ -263,8 +263,7 @@ end
 
 def id(val)
   if (match = /\A\[(.*)\]\Z/.match val)
-    # TODO: Mark as having had square brackets
-    s(:id, match[1])
+    s(:id, match[1], true)
   else
     s(:id, val)
   end
@@ -278,19 +277,19 @@ def interpret_open_token(open)
 end
 
 def prepare_path(data, sexpr, parts, loc)
-  tail = []
+  prefix = []
   parts.each_slice(2) do |part, sep|
     if ["..", ".", "this"].include? part[1]
-      unless tail.empty?
-        path = tail.map { _1[1] }.join + part[1]
+      unless prefix.empty? || part[2]
+        path = prefix.map { _1[1] }.join + part[1]
         # TODO: keep track of the position in the line as well
         raise ParseError, "Invalid path: #{path} - #{loc}"
       end
       next
     end
 
-    tail << part
-    tail << sep if sep
+    prefix << part
+    prefix << sep if sep
   end
   # TODO: Handle sexpr
   s(:path, data, *parts).line loc
