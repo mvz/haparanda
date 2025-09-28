@@ -114,7 +114,7 @@ module Haparanda
           indent = clear_preceding_whitespace(before)
           set_indent(item, indent)
         end
-        clear_following_whitespace(after) if before_space
+        clear_following_whitespace(after) if before_space && after
       end
     end
 
