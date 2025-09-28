@@ -272,7 +272,6 @@ describe 'blocks' do
 
   describe 'compat mode' do
     it 'block with deep recursive lookup lookup' do
-      skip
       expectTemplate(
         '{{#outer}}Goodbye {{#inner}}cruel {{omg}}{{/inner}}{{/outer}}'
       )
@@ -282,7 +281,6 @@ describe 'blocks' do
     end
 
     it 'block with deep recursive pathed lookup' do
-      skip
       expectTemplate(
         '{{#outer}}Goodbye {{#inner}}cruel {{omg.yes}}{{/inner}}{{/outer}}'
       )
@@ -295,7 +293,6 @@ describe 'blocks' do
     end
 
     it 'block with missed recursive lookup' do
-      skip
       expectTemplate(
         '{{#outer}}Goodbye {{#inner}}cruel {{omg.yes}}{{/inner}}{{/outer}}'
       )

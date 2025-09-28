@@ -80,6 +80,7 @@ module Haparanda
               return result
             end
           end
+          nil
         else
           top&.dig(*keys)
         end
