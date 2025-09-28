@@ -46,30 +46,75 @@ module Haparanda
     def process_statements(expr)
       statements = expr.sexp_body
 
-      strip_whitespace_after_standalone_partials(statements)
-      strip_pairwise_sibling_whitespace(statements)
-
-      statements = statements.map { process(_1) }
+      statements = strip_whitespace_around_standalone_items(statements)
 
       s(:statements, *statements)
     end
 
     private
 
-    def strip_whitespace_after_standalone_partials(statements)
-      statements.each_cons(3) do |prev, partial, item|
-        next if partial.sexp_type != :partial
-        next unless preceding_whitespace? prev
+    # Strip whitespace around standalone items in a list of statements, while
+    # recursing the general processing into each item at the right moment.
+    #
+    # The goal is to correctly remove whitespace for each item that is
+    # 'standalone', i.e., appears on a line by itself with only whitespace
+    # around.
+    #
+    # The tricky bit is that removing whitespace for one item may remove the
+    # information needed for handling subsequent or nested items.
+    #
+    # To resolve this, this method splits the collection of what whitespace
+    # changes to make from actually making them. In between these two parts, it
+    # recurses into the nested items. This way, it ensures the nested process
+    # has the original information available.
+    def strip_whitespace_around_standalone_items(statements)
+      before = nil
 
-        strip_initial_whitespace(item)
+      [*statements, nil].each_cons(2).map do |item, after|
+        before_space, inner_start_space, inner_end_space, after_space =
+          collect_whitespace_information(before, item, after)
+
+        item = process(item)
+
+        apply_whitespace_clearing(before, item, after,
+                                  before_space, inner_start_space,
+                                  inner_end_space, after_space)
+
+        before = item
+
+        item
       end
     end
 
-    def strip_pairwise_sibling_whitespace(statements)
-      [nil, *statements, nil].each_cons(3) do |before, item, after|
-        if item.sexp_type == :block
-          strip_standalone_whitespace(before, first_item(item))
-          strip_standalone_whitespace(last_item(item), after)
+    def collect_whitespace_information(before, item, after)
+      before_space = preceding_whitespace? before
+      after_space = following_whitespace? after
+
+      if item.sexp_type == :block
+        inner_start_space = following_whitespace? first_item(item)
+        inner_end_space = preceding_whitespace? last_item(item)
+      end
+      return before_space, inner_start_space, inner_end_space, after_space
+    end
+
+    def apply_whitespace_clearing(before, item, after,
+                                  before_space, inner_start_space,
+                                  inner_end_space, after_space)
+      case item.sexp_type
+      when :block
+        if before_space && inner_start_space
+          clear_preceding_whitespace(before)
+          clear_following_whitespace(first_item(item))
+        end
+
+        if inner_end_space && after_space
+          clear_preceding_whitespace(last_item(item))
+          clear_following_whitespace(after)
+        end
+      when :partial
+        if before_space
+          clear_preceding_whitespace(before) if after_space
+          clear_following_whitespace(after)
         end
       end
     end
@@ -104,10 +149,6 @@ module Haparanda
       end
     end
 
-    def strip_initial_whitespace(item)
-      item[1] = item[1].sub(/^\s*/, "") if item.sexp_type == :content
-    end
-
     def strip_standalone_whitespace(before, after)
       return unless preceding_whitespace? before
       return unless following_whitespace? after
@@ -129,9 +170,9 @@ module Haparanda
       before[1] = before[1].sub(/\n[ \t]+$/, "\n")
     end
 
-    # Strip leading whitespace after including the \n
+    # Strip leading whitespace after including the \n if present
     def clear_following_whitespace(after)
-      after[1] = after[1].sub(/^[ \t]*\n/, "")
+      after[1] = after[1].sub(/^[ \t]*\n?/, "")
     end
   end
 end
