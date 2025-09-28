@@ -628,7 +628,6 @@ describe 'partials' do
 
   describe 'compat mode' do
     it 'partials can access parents' do
-      skip
       expectTemplate('Dudes: {{#dudes}}{{> dude}}{{/dudes}}')
         .withInput({
           root: 'yes',

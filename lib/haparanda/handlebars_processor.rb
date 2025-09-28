@@ -42,10 +42,7 @@ module Haparanda
       def dig(*keys)
         return @parent&.dig(*keys[1..]) if keys.first == :".."
 
-        result = dig_value(@value, keys)
-        return @parent&.dig(*keys) if result.nil?
-
-        result
+        dig_value(@value, keys)
       end
 
       def [](key)
@@ -70,13 +67,22 @@ module Haparanda
     end
 
     class InputStack
-      def initialize(value)
+      def initialize(value, compat: false)
         input = Input.new(value)
         @stack = [input]
+        @compat = compat
       end
 
       def dig(*keys)
-        top&.dig(*keys)
+        if @compat
+          @stack.reverse_each do |item|
+            if (result = item.dig(*keys))
+              return result
+            end
+          end
+        else
+          top&.dig(*keys)
+        end
       end
 
       def [](key)
@@ -237,12 +243,12 @@ module Haparanda
     end
 
     def initialize(input, helpers: {}, partials: {}, data: {}, log: nil,
-                   explicit_partial_context: false)
+                   compat: false, explicit_partial_context: false)
       super()
 
       self.require_empty = false
 
-      @input_stack = InputStack.new(input)
+      @input_stack = InputStack.new(input, compat: compat)
       @data = data ? Data.new(data) : NoData.new
       @helper_context = HelperContext.new(@input_stack)
       @block_parameter_list = BlockParameterList.new
