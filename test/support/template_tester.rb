@@ -51,7 +51,7 @@ class TemplateTester
   end
 
   def withPartial(name, content) # rubocop:disable Naming/MethodName
-    @partials[name] = content
+    @partials[name] = content.gsub('\n', "\n")
     self
   end
 

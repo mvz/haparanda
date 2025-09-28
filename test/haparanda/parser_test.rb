@@ -139,7 +139,7 @@ describe Haparanda::Parser do
                                    s(:partial,
                                      s(:path, false, s(:id, "dude")),
                                      s(:exprs), nil,
-                                     s(:strip, false, false)),
+                                     s(:strip, false, false), s(:indent, "  ")),
                                    s(:content, ""))),
                                nil, s(:strip, false, false), s(:strip, false, false))))
   end

@@ -110,10 +110,11 @@ module Haparanda
           clear_following_whitespace(after)
         end
       when :partial
-        if before_space
-          clear_preceding_whitespace(before) if after_space
-          clear_following_whitespace(after)
+        if before_space && after_space
+          indent = clear_preceding_whitespace(before)
+          set_indent(item, indent)
         end
+        clear_following_whitespace(after) if before_space
       end
     end
 
@@ -163,14 +164,21 @@ module Haparanda
       after&.sexp_type == :content && after[1] =~ /^\s*\n/
     end
 
-    # Strip trailing whitespace before but leave the \n
+    # Strip trailing whitespace before but leave the \n. Return the stripped space.
     def clear_preceding_whitespace(before)
-      before[1] = before[1].sub(/\n[ \t]+$/, "\n")
+      if (match = before[1].match(/(.*\n)([ \t]+)$/))
+        before[1] = match[1]
+        match[2]
+      end
     end
 
     # Strip leading whitespace after including the \n if present
     def clear_following_whitespace(after)
       after[1] = after[1].sub(/^[ \t]*\n?/, "")
+    end
+
+    def set_indent(item, indent)
+      item << s(:indent, indent)
     end
   end
 end
