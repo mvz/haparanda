@@ -30,18 +30,9 @@ describe 'data' do
   end
 
   it 'deep @foo triggers automatic top-level data' do
-    skip
-    var helpers = Handlebars.createFrame(handlebarsEnv.helpers);
-
-    helpers.let = lambda { |options|
-      var frame = Handlebars.createFrame(options.data);
-
-      options.hash.each_key do |prop|
-        if options.hash.key? prop
-          frame[prop] = options.hash[prop];
-        end
-      end
-      return options.fn(this, { data: frame });
+    helpers = {}
+    helpers[:let] = lambda { |options|
+      options.fn(this, { data: options.hash });
     };
 
     expectTemplate(
@@ -124,20 +115,13 @@ describe 'data' do
   end
 
   it 'data is inherited downstream' do
-    skip
     expectTemplate(
       '{{#let foo=1 bar=2}}{{#let foo=bar.baz}}{{@bar}}{{@foo}}{{/let}}{{@foo}}{{/let}}'
     )
       .withInput({ bar: { baz: 'hello world' } })
       .withCompileOptions({ data: true })
       .withHelper('let', lambda { |options|
-        var frame = Handlebars.createFrame(options.data);
-        options.hash.each_key do |prop|
-          if options.hash.key? prop
-            frame[prop] = options.hash[prop];
-          end
-        end
-        return options.fn(this, { data: frame });
+        options.fn(this, { data: options.hash });
       })
       .withRuntimeOptions({ data: {} })
       .withMessage('data variables are inherited downstream')
@@ -145,7 +129,6 @@ describe 'data' do
   end
 
   it 'passing in data to a compiled function that expects data - works with helpers in partials' do
-    skip
     expectTemplate('{{>myPartial}}')
       .withCompileOptions({ data: true })
       .withPartial('myPartial', '{{hello}}')
@@ -218,7 +201,6 @@ describe 'data' do
   end
 
   it 'you can override inherited data when invoking a helper' do
-    skip
     expectTemplate('{{#hello}}{{world zomg}}{{/hello}}')
       .withCompileOptions({ data: true })
       .withHelper('hello', lambda { |options|
@@ -237,7 +219,6 @@ describe 'data' do
   end
 
   it 'you can override inherited data when invoking a helper with depth' do
-    skip
     expectTemplate('{{#hello}}{{world ../zomg}}{{/hello}}')
       .withCompileOptions({ data: true })
       .withHelper('hello', lambda { |options|

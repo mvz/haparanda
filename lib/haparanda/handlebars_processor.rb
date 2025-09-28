@@ -132,8 +132,9 @@ module Haparanda
         @data[key] = value
       end
 
-      def with_new_data(&block)
+      def with_new_data(new_data = nil, &block)
         data = @data.clone
+        @data.merge! new_data if new_data
         result = block.call
         @data = data
         result
@@ -155,7 +156,7 @@ module Haparanda
         false
       end
 
-      def with_new_data(&block)
+      def with_new_data(_new_data = nil, &block)
         block.call
       end
     end
@@ -519,15 +520,15 @@ module Haparanda
       if program
         if block_param_names.any?
           lambda { |item, options = {}|
-            with_new_context(item) do
+            with_new_context(item, options[:data]) do
               with_block_params(block_param_names, options[:block_params]) do
                 apply(program)
               end
             end
           }
         else
-          lambda { |item, _options = {}|
-            with_new_context(item) { apply(program) }
+          lambda { |item, options = {}|
+            with_new_context(item, options[:data]) { apply(program) }
           }
         end
       else
@@ -535,9 +536,11 @@ module Haparanda
       end
     end
 
-    def with_new_context(item, &)
-      @partials.with_new_data do
-        @input_stack.with_new_context(item, &)
+    def with_new_context(item, data, &)
+      @data.with_new_data(data) do
+        @partials.with_new_data do
+          @input_stack.with_new_context(item, &)
+        end
       end
     end
 
