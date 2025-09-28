@@ -46,7 +46,7 @@ module Haparanda
     def process_statements(expr)
       statements = expr.sexp_body
 
-      statements = strip_whitespace_around_standalone_items(statements)
+      strip_whitespace_around_standalone_items(statements)
 
       s(:statements, *statements)
     end
@@ -70,19 +70,17 @@ module Haparanda
     def strip_whitespace_around_standalone_items(statements)
       before = nil
 
-      [*statements, nil].each_cons(2).map do |item, after|
+      [*statements, nil].each_cons(2).each do |item, after|
         before_space, inner_start_space, inner_end_space, after_space =
           collect_whitespace_information(before, item, after)
 
-        item = process(item)
+        process(item)
 
         apply_whitespace_clearing(before, item, after,
                                   before_space, inner_start_space,
                                   inner_end_space, after_space)
 
         before = item
-
-        item
       end
     end
 
