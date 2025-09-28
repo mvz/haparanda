@@ -516,10 +516,9 @@ describe 'basic context' do
   end
 
   it 'this keyword nested inside helpers param' do
-    skip
     expectTemplate('{{#hellos}}{{foo text/this/foo}}{{/hellos}}').toThrow(
-      Error,
-      'Invalid path: text/this - 1:17'
+      Racc::ParseError,
+      'Invalid path: text/this - 1'
     );
 
     expectTemplate('{{foo [this]}}')
@@ -580,7 +579,6 @@ describe 'basic context' do
   end
 
   it 'should handle literals in subexpression' do
-    skip
     expectTemplate('{{foo (false)}}')
       .withInput({
         false => lambda {
