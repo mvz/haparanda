@@ -26,6 +26,19 @@ describe "partials" do
                              })
       _(result).must_equal "Dudes: Yehuda (http://yehuda)  Alan (http://alan)  "
     end
+
+    it "cannot look up values outside custom context" do
+      compiler.register_partial(:dude, "{{name}} ({{url}}) {{root}} ")
+      template = compiler.compile("Dudes: {{#dudes}}{{> dude \"test\"}}{{/dudes}}")
+      result = template.call({
+                               root: "yes",
+                               dudes: [
+                                 { name: "Yehuda", url: "http://yehuda" },
+                                 { name: "Alan", url: "http://alan" }
+                               ]
+                             })
+      _(result).must_equal "Dudes:  ()   ()  "
+    end
   end
 
   describe "inline partial loopup" do

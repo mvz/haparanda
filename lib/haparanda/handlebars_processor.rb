@@ -23,7 +23,7 @@ module Haparanda
                   when nil
                     nil
                   else
-                    value.send key
+                    value.send key if value.respond_to? key
                   end
         end
 
