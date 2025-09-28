@@ -5,9 +5,10 @@ require "sexp_processor"
 module Haparanda
   # Process the handlebars AST just to do the whitespace stripping.
   class StandaloneWhitespaceHandler < SexpProcessor
-    def initialize
-      super
+    def initialize(prevent_indent: false)
+      super()
 
+      @prevent_indent = prevent_indent
       self.require_empty = false
     end
 
@@ -110,7 +111,7 @@ module Haparanda
           clear_following_whitespace(after)
         end
       when :partial
-        if before_space && after_space
+        if !@prevent_indent && before_space && after_space
           indent = clear_preceding_whitespace(before)
           set_indent(item, indent)
         end
