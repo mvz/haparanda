@@ -397,7 +397,7 @@ describe 'basic context' do
   end
 
   it 'nested paths with Map' do
-    skip
+    skip "Ruby has no Map class that is different from Hash"
     expectTemplate('Goodbye {{alan/expression}} world!')
       .withInput({ alan: Map.new([['expression', 'beautiful']]) })
       .withMessage('Nested paths access nested objects')
