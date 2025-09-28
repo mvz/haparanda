@@ -568,13 +568,10 @@ describe 'partials' do
   end
 
   it 'should pass compiler flags' do
-    skip
-    if Handlebars.compile
-      var env = Handlebars.create;
-      env.registerPartial('partial', '{{foo}}');
-      var template = env.compile('{{foo}} {{> partial}}', { noEscape: true });
-      equal(template.call({ foo: '<' }), '< <');
-    end
+    env = Haparanda::Compiler.new
+    env.register_partial('partial', '{{foo}}');
+    template = env.compile('{{foo}} {{> partial}}', no_escape: true);
+    equals(template.call({ foo: '<' }), '< <');
   end
 
   describe 'standalone partials' do

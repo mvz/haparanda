@@ -244,7 +244,7 @@ module Haparanda
     end
 
     def initialize(input, helpers: {}, partials: {}, data: {}, log: nil,
-                   compat: false, explicit_partial_context: false)
+                   compat: false, explicit_partial_context: false, no_escape: false)
       super()
 
       self.require_empty = false
@@ -267,6 +267,7 @@ module Haparanda
       @partials = Data.new(partials.transform_keys(&:to_s))
       @log = log || method(:default_log)
       @explicit_partial_context = explicit_partial_context
+      @escape_values = !no_escape
     end
 
     def apply(expr)
@@ -299,7 +300,7 @@ module Haparanda
       end
 
       value = value.to_s
-      value = Utils.escape(value) if escaped
+      value = Utils.escape(value) if @escape_values && escaped
       s(:result, value)
     end
 
