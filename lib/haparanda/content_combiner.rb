@@ -37,6 +37,8 @@ module Haparanda
         if prev
           if item.sexp_type == :content
             prev[1] += item[1]
+            # TODO: Enable this and make line_max propagate up
+            # prev.line_max = item.line
           else
             result << item
             prev = nil

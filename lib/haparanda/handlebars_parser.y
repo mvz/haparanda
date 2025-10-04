@@ -20,8 +20,10 @@ start root
 # for details.
 
 root
-  : program { result = s(:root, val[0]) }
-  ;
+  : program {
+    result = s(:root, val[0])
+    result.line(val[0].line) if val[0]
+  };
 
 program
   : none
@@ -30,7 +32,7 @@ program
 
 # Extra rule needed for racc to parse list of one or more statements
 statements
-  : statement { result = s(:statements, val[0]) }
+  : statement { result = s(:statements, val[0]).line(val[0].line) }
   | statements statement { result << val[1] }
   ;
 
@@ -108,14 +110,16 @@ optInverseAndProgram
   ;
 
 inverseAndProgram
-  : INVERSE program { result = s(:inverse, nil, val[1], strip_flags(val[0], val[0]), nil) }
-  ;
+  : INVERSE program {
+    result = s(:inverse, nil, val[1], strip_flags(val[0], val[0]), nil)
+    result.line(val[1].line) if val[1]
+  };
 
 inverseChain
   : none
   | openInverseChain program inverseChain {
     block = prepare_block(val[0], val[1], val[2], nil, false)
-    result = s(:inverse, nil, block, nil, nil)
+    result = s(:inverse, nil, block, nil, nil).line(block.line)
   }
   | inverseAndProgram
   ;
@@ -332,12 +336,15 @@ def prepare_block(open, program, inverse_chain, close, inverted)
 
   # TODO: Get close_strip from inverse_chain if close is nil
 
+  program_line = program&.line
   if inverted
     raise NotImplementedError if inverse_chain
     inverse_chain = s(:inverse, block_params, program, open_strip, close_strip)
+    inverse_chain.line program_line if program_line
     program = nil
   else
     program = s(:program, block_params, program)
+    program.line program_line if program_line
   end
 
   type = directive ? :directive_block : :block
