@@ -486,7 +486,6 @@ describe 'basic context' do
       'Invalid path: text/this - 1'
     );
 
-    skip
     expectTemplate('{{[this]}}').withInput({ this: 'bar' }).toCompileTo('bar');
 
     expectTemplate('{{text/[this]}}')

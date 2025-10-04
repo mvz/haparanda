@@ -3,6 +3,12 @@
 require "sexp_processor"
 
 class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
+  def initialize
+    super
+
+    self.require_empty = false
+  end
+
   def print(expr)
     result = process(expr)
     raise "Unexpected result #{result}" unless result.sexp_type == :print
@@ -11,23 +17,22 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_root(expr)
-    _, statements = expr.shift(2)
+    _, statements = expr
     process(statements)
   end
 
   def process_statements(expr)
-    expr.shift
-    printed = print_all(expr)
+    printed = print_all(expr.sexp_body)
     s(:print, printed.join)
   end
 
   def process_content(expr)
-    _, contents = expr.shift(2)
+    _, contents = expr
     s(:print, "CONTENT[ '#{contents}' ]\n")
   end
 
   def process_partial(expr)
-    _, name, params, hash, = expr.shift(5)
+    _, name, params, hash, = expr
     args = [params, hash].compact.map { print _1 }.join(" ").strip
     name = partial_name(name)
     if args.empty?
@@ -38,7 +43,7 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_partial_block(expr)
-    _, name, params, hash, program, = expr.shift(7)
+    _, name, params, hash, program, = expr
     args = [params, hash].compact.map { print _1 }.join(" ").strip
     name = partial_name(name)
     program = print program
@@ -50,7 +55,7 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_block(expr)
-    _, name, params, hash, program, inverse_chain, = expr.shift(8)
+    _, name, params, hash, program, inverse_chain, = expr
     args = [params, hash].compact.map { print _1 }.join(" ").strip
     name = print(name)
     program = print(program).gsub(/^/, "  ") if program
@@ -59,7 +64,7 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_directive_block(expr)
-    _, name, params, hash, program, inverse_chain, = expr.shift(8)
+    _, name, params, hash, program, inverse_chain, = expr
     args = [params, hash].compact.map { print _1 }.join(" ").strip
     name = print(name)
     program = print(program).gsub(/^/, "  ") if program
@@ -68,21 +73,21 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_program(expr)
-    _, params, program, = expr.shift(3)
+    _, params, program, = expr
     params = print(params).gsub(/^/, "  ") if params
     program = print(program).gsub(/^/, "  ") if program
     s(:print, "PROGRAM:\n#{params}#{program}")
   end
 
   def process_inverse(expr)
-    _, block_params, program, = expr.shift(5)
+    _, block_params, program, = expr
     block_params = print(block_params).gsub(/^/, "  ") if block_params
     program = print(program).gsub(/^/, "  ") if program
     s(:print, "{{^}}\n#{block_params}#{program}")
   end
 
   def process_mustache(expr)
-    sexp_type, val, params, hash, _escaped, _strip = expr.shift(6)
+    sexp_type, val, params, hash, _escaped, _strip = expr
     params = "[#{print params}]"
     hash = print hash if hash
     args = [params, hash].compact.join(" ")
@@ -94,43 +99,43 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   alias process_directive process_mustache
 
   def process_comment(expr)
-    _, comment, = expr.shift(3)
+    _, comment, = expr
     s(:print, "{{! '#{comment}' }}\n")
   end
 
   def process_number(expr)
-    _, val = expr.shift(2)
+    _, val = expr
     s(:print, "NUMBER{#{val}}")
   end
 
   def process_boolean(expr)
-    _, val = expr.shift(2)
+    _, val = expr
     s(:print, "BOOLEAN{#{val}}")
   end
 
   def process_string(expr)
-    _, val = expr.shift(2)
+    _, val = expr
     s(:print, val.inspect)
   end
 
   def process_id(expr)
-    _, id = expr.shift(2)
+    _, id = expr
     s(:print, id)
   end
 
   def process_sep(expr)
-    _, sep = expr.shift(2)
+    _, sep = expr
     s(:print, sep)
   end
 
   def process_path(expr)
-    _, data = expr.shift(2)
-    segments = path_segments(expr)
+    _, data, *segments = expr
+    segments = path_segments(segments)
     s(:print, "#{'@' if data}PATH:#{segments.join}")
   end
 
   def process_sub_expression(expr)
-    _, path, params, hash, = expr.shift(5)
+    _, path, params, hash, = expr
     params = "[#{print params}]"
     hash = print hash if hash
     args = [params, hash].compact.join(" ")
@@ -138,35 +143,30 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
   end
 
   def process_exprs(expr)
-    expr.shift
-    printed_vals = print_all(expr)
+    printed_vals = print_all(expr.sexp_body)
     s(:print, printed_vals.join(", "))
   end
 
   def process_block_params(expr)
-    expr.shift
-    params = print_all(expr)
+    params = print_all(expr.sexp_body)
     s(:print, "BLOCK PARAMS: [ #{params.join(' ')} ]\n")
   end
 
-  def process_undefined(expr)
-    expr.shift
+  def process_undefined(_expr)
     s(:print, "UNDEFINED")
   end
 
-  def process_null(expr)
-    expr.shift
+  def process_null(_expr)
     s(:print, "NULL")
   end
 
   def process_hash(expr)
-    expr.shift
-    printed_pairs = print_all(expr)
+    printed_pairs = print_all(expr.sexp_body)
     s(:print, "HASH{#{printed_pairs.join(', ')}}")
   end
 
   def process_hash_pair(expr)
-    _, key, val = expr.shift(3)
+    _, key, val = expr
     val = print val
     s(:print, "#{key}=#{val}")
   end
@@ -183,8 +183,7 @@ class PrintingProcessor < SexpProcessor # rubocop:disable Metrics/ClassLength
     result
   end
 
-  def path_segments(expr)
-    segments = shift_all(expr)
+  def path_segments(segments)
     segments.shift(2) while ["..", ".", "this"].include? segments.dig(0, 1)
     segments.map do |seg|
       case seg.sexp_type

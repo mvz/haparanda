@@ -15,7 +15,7 @@ module Haparanda
 
       def dig_value(value, keys)
         keys.each do |key|
-          next if %i[. this].include? key
+          next if [DOT, THIS].include? key
 
           value = case value
                   when Hash
@@ -40,7 +40,7 @@ module Haparanda
       end
 
       def dig(*keys)
-        return @parent&.dig(*keys[1..]) if keys.first == :".."
+        return @parent&.dig(*keys[1..]) if keys.first == UP
 
         dig_value(@value, keys)
       end
@@ -244,6 +244,26 @@ module Haparanda
       end
     end
 
+    class Segment
+      def initialize(name)
+        @name = name
+      end
+
+      def to_s
+        @name
+      end
+    end
+
+    UP = Segment.new("..")
+    DOT = Segment.new(".")
+    THIS = Segment.new("THIS")
+
+    SEGMENT_MAP = {
+      ".": DOT,
+      this: THIS,
+      "..": UP
+    }.freeze
+
     def initialize(input, helpers: {}, partials: {}, data: {}, log: nil,
                    compat: false, explicit_partial_context: false, no_escape: false)
       super()
@@ -415,10 +435,16 @@ module Haparanda
 
     def process_path(expr)
       _, data, *segments = expr
-      name_parts = segments.map { |seg| seg[1] }
-      segments = name_parts.each_slice(2).map { |elem, _sep| elem.to_sym }
+      path_segments = []
+      name_parts = segments.each_slice(2).flat_map do |elem, sep|
+        sep = sep&.at(1)
+        part = elem[1].to_sym
+        part = SEGMENT_MAP.fetch(part, part) unless elem[2]
+        path_segments << part
+        [part, sep]
+      end
       name = name_parts.join
-      s(:segments, data, name, segments)
+      s(:segments, data, name, path_segments)
     end
 
     def process_exprs(expr)
