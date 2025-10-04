@@ -121,7 +121,16 @@ module Haparanda
       end
 
       def data(*keys)
-        top.dig(*keys)
+        @stack.reverse_each do |item|
+          case keys.first
+          when UP
+            keys.shift
+            next
+          when DOT
+            keys.shift
+          end
+          return item.dig(*keys)
+        end
       end
 
       def key?(key)
