@@ -255,15 +255,13 @@ describe 'data' do
 
   describe 'nesting' do
     it 'the root context can be looked up via @root' do
-      skip
       expectTemplate(
         '{{#helper}}{{#helper}}{{@./depth}} {{@../depth}} {{@../../depth}}{{/helper}}{{/helper}}'
       )
         .withInput({ foo: 'hello' })
         .withHelper('helper', lambda { |options|
-          var frame = Handlebars.createFrame(options.data);
-          frame.depth = options.data.depth + 1;
-          return options.fn(this, { data: frame });
+          depth = options.data.depth + 1;
+          return options.fn(this, { data: { depth: depth } });
         })
         .withRuntimeOptions({
           data: {
