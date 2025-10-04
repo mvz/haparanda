@@ -117,35 +117,42 @@ module Haparanda
 
     class Data
       def initialize(data = {})
-        @data = data
+        @stack = [data]
       end
 
       def data(*keys)
-        @data.dig(*keys)
+        top.dig(*keys)
       end
 
       def key?(key)
-        @data.key? key
+        top.key? key
       end
 
       def set_data(key, value)
-        @data[key] = value
+        top[key] = value
       end
 
       def with_new_data(new_data = nil, &block)
-        data = @data.clone
-        @data.merge! new_data if new_data
+        data = top.clone
+        data.merge! new_data if new_data
+        @stack.push data
         result = block.call
-        @data = data
+        @stack.pop
         result
       end
 
       def respond_to_missing?(method_name)
-        @data.key? method_name
+        top.key? method_name
       end
 
       def method_missing(method_name, *_args)
-        @data[method_name] if @data.key? method_name
+        top[method_name] if top.key? method_name
+      end
+
+      private
+
+      def top
+        @stack.last
       end
     end
 
