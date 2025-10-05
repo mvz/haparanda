@@ -13,6 +13,7 @@ AllCops:
   Exclude:
     - 'lib/haparanda/handlebars_lexer.rb'
     - 'lib/haparanda/handlebars_parser.rb'
+    - 'ext/**/*'
   NewCops: enable
   TargetRubyVersion: 3.2
 
