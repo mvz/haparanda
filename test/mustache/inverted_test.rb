@@ -135,7 +135,6 @@ describe "inverted" do
   end
   describe "Standalone Lines" do
     specify "Standalone lines should be removed from the template." do
-      skip "TODO"
       template = "| This Is\n{{^boolean}}\n|\n{{/boolean}}\n| A Line\n"
       input = {"boolean" => false}
       result = compiler.compile(template, compat: true).call(input)
@@ -144,7 +143,6 @@ describe "inverted" do
   end
   describe "Standalone Indented Lines" do
     specify "Standalone indented lines should be removed from the template." do
-      skip "TODO"
       template = "| This Is\n  {{^boolean}}\n|\n  {{/boolean}}\n| A Line\n"
       input = {"boolean" => false}
       result = compiler.compile(template, compat: true).call(input)
@@ -153,7 +151,6 @@ describe "inverted" do
   end
   describe "Standalone Line Endings" do
     specify "\"\\r\\n\" should be considered a newline for standalone tags." do
-      skip "TODO"
       template = "|\r\n{{^boolean}}\r\n{{/boolean}}\r\n|"
       input = {"boolean" => false}
       result = compiler.compile(template, compat: true).call(input)

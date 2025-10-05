@@ -125,13 +125,17 @@ module Haparanda
     end
 
     def first_item(container)
+      return if container.nil?
+
       case container.sexp_type
       when :statements
         container.sexp_body.first
       when :block
-        container.dig(4, 2, 1)
-      when :inverse
+        first_item(container[4] || container[5])
+      when :inverse, :program
         first_item container[2]
+      when :content
+        container
       else
         raise NotImplementedError
       end
@@ -141,10 +145,10 @@ module Haparanda
       return if container.nil?
 
       case container.sexp_type
-      when :block
-        last_item(container[5] || container[4])
       when :statements
         container.sexp_body.last
+      when :block
+        last_item(container[5] || container[4])
       when :inverse, :program
         last_item container[2]
       when :content
