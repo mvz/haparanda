@@ -34,9 +34,10 @@ Layout/LineLength:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
-# Test describe blocks can be any size
+# Test describe blocks and rake task definitions can be any size
 Metrics/BlockLength:
   Exclude:
+    - 'tasks/**/*.rb'
     - 'test/**/*'
 
 # Allow lots of keyword arguments
