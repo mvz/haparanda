@@ -70,7 +70,6 @@ describe "partials" do
   end
   describe "Standalone Line Endings" do
     specify "\"\\r\\n\" should be considered a newline for standalone tags." do
-      skip "TODO"
       compiler.register_partial("partial", ">")
       template = "|\r\n{{>partial}}\r\n|"
       input = {}

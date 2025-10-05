@@ -246,7 +246,6 @@ describe "sections" do
   end
   describe "Standalone Line Endings" do
     specify "\"\\r\\n\" should be considered a newline for standalone tags." do
-      skip "TODO"
       template = "|\r\n{{#boolean}}\r\n{{/boolean}}\r\n|"
       input = {"boolean" => true}
       result = compiler.compile(template, compat: true).call(input)

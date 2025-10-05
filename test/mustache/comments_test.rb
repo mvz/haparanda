@@ -38,7 +38,6 @@ describe "comments" do
   end
   describe "Standalone Line Endings" do
     specify "\"\\r\\n\" should be considered a newline for standalone tags." do
-      skip "TODO"
       template = "|\r\n{{! Standalone Comment }}\r\n|"
       input = {}
       result = compiler.compile(template, compat: true).call(input)

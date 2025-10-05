@@ -178,9 +178,9 @@ module Haparanda
       end
     end
 
-    # Strip leading whitespace after including the \n if present
+    # Strip leading whitespace after, including the \n if present
     def clear_following_whitespace(after)
-      after[1] = after[1].sub(/^[ \t]*\n?/, "")
+      after[1] = after[1].sub(/^[ \t]*(\n|\r\n)?/, "")
     end
 
     def set_indent(item, indent)
