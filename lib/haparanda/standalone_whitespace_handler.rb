@@ -116,6 +116,11 @@ module Haparanda
           set_indent(item, indent)
         end
         clear_following_whitespace(after) if before_space && after
+      when :comment
+        if before_space && after_space
+          clear_preceding_whitespace(before)
+          clear_following_whitespace(after)
+        end
       end
     end
 

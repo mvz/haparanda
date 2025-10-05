@@ -22,7 +22,6 @@ describe "comments" do
   end
   describe "Standalone" do
     specify "All standalone comment lines should be removed." do
-      skip "TODO"
       template = "Begin.\n{{! Comment Block! }}\nEnd.\n"
       input = {}
       result = compiler.compile(template, compat: true).call(input)
@@ -31,7 +30,6 @@ describe "comments" do
   end
   describe "Indented Standalone" do
     specify "All standalone comment lines should be removed." do
-      skip "TODO"
       template = "Begin.\n  {{! Indented Comment Block! }}\nEnd.\n"
       input = {}
       result = compiler.compile(template, compat: true).call(input)
@@ -67,7 +65,6 @@ describe "comments" do
   end
   describe "Multiline Standalone" do
     specify "All standalone comment lines should be removed." do
-      skip "TODO"
       template = "Begin.\n{{!\nSomething's going on here...\n}}\nEnd.\n"
       input = {}
       result = compiler.compile(template, compat: true).call(input)
@@ -76,7 +73,6 @@ describe "comments" do
   end
   describe "Indented Multiline Standalone" do
     specify "All standalone comment lines should be removed." do
-      skip "TODO"
       template = "Begin.\n  {{!\n    Something's going on here...\n  }}\nEnd.\n"
       input = {}
       result = compiler.compile(template, compat: true).call(input)
