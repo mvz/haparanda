@@ -29,6 +29,11 @@ Layout/LineLength:
   Max: 92
   Exclude:
     - 'test/compatibility/*'
+    - 'test/mustache/*'
+
+Layout/SpaceInsideHashLiteralBraces:
+  Exclude:
+    - 'test/mustache/*'
 
 # Assume the programmer knows how bracketed block syntax works
 Lint/AmbiguousBlockAssociation:
@@ -142,3 +147,4 @@ Style/TrailingCommaInHashLiteral:
 Style/WordArray:
   Exclude:
     - 'test/compatibility/*'
+    - 'test/mustache/*'
