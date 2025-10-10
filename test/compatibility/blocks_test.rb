@@ -139,7 +139,6 @@ describe 'blocks' do
   end
 
   it 'works with cached blocks' do
-    skip
     expectTemplate(
       '{{#each person}}{{#with .}}{{first}} {{last}}{{/with}}{{/each}}'
     )

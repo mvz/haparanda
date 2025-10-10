@@ -473,7 +473,7 @@ describe 'parser' do
 
   describe 'externally compiled AST' do
     it 'can pass through an already-compiled AST' do
-      skip
+      skip "Passing an AST to the parser is not supported"
       equals(
         astFor({
           type: 'Program',
