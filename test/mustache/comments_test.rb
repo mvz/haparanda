@@ -46,7 +46,6 @@ describe "comments" do
   end
   describe "Standalone Without Previous Line" do
     specify "Standalone tags should not require a newline to precede them." do
-      skip "TODO"
       template = "  {{! I'm Still Standalone }}\n!"
       input = {}
       result = compiler.compile(template, compat: true).call(input)
@@ -55,7 +54,6 @@ describe "comments" do
   end
   describe "Standalone Without Newline" do
     specify "Standalone tags should not require a newline to follow them." do
-      skip "TODO"
       template = "!\n  {{! I'm Still Standalone }}"
       input = {}
       result = compiler.compile(template, compat: true).call(input)

@@ -122,6 +122,10 @@ Style/Semicolon:
   Exclude:
     - 'test/compatibility/*'
 
+# Prefer symbols to look like symbols
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
 Style/ZeroLengthPredicate:
   Exclude:
     - 'test/compatibility/*'

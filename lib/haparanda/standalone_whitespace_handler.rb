@@ -72,7 +72,7 @@ module Haparanda
       [*statements, nil].each_cons(2).each do |item, after|
         before_space, inner_start_space, inner_end_space, after_space =
           collect_whitespace_information(before, item, after)
-        if root && item.sexp_type == :block
+        if root && [:block, :comment].include?(item.sexp_type)
           before_space = true if item == statements.first
           if before == statements.first && before.sexp_type == :content &&
              (before[1] =~ /^\s*$/)
