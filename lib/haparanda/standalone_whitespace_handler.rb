@@ -20,12 +20,8 @@ module Haparanda
     def process_root(expr)
       _, statements = expr
 
+      @root = true
       statements = process(statements)
-      item = statements.sexp_body[0] if statements
-      if item&.sexp_type == :block
-        content = item.dig(4, 2, 1)
-        clear_following_whitespace(content) if following_whitespace?(content)
-      end
       s(:root, statements)
     end
 
@@ -71,9 +67,19 @@ module Haparanda
     def strip_whitespace_around_standalone_items(statements)
       before = nil
 
+      root = @root
+      @root = false
       [*statements, nil].each_cons(2).each do |item, after|
         before_space, inner_start_space, inner_end_space, after_space =
           collect_whitespace_information(before, item, after)
+        if root && item.sexp_type == :block
+          before_space = true if item == statements.first
+          if before == statements.first && before.sexp_type == :content &&
+             (before[1] =~ /^\s*$/)
+
+            before_space = true
+          end
+        end
 
         process(item)
 
@@ -167,7 +173,7 @@ module Haparanda
     end
 
     def preceding_whitespace?(before)
-      before&.sexp_type == :content && before[1] =~ /\n\s*$/
+      before&.sexp_type == :content && before[1] =~ /\n\s*\z/
     end
 
     def following_whitespace?(after)
@@ -176,7 +182,9 @@ module Haparanda
 
     # Strip trailing whitespace before but leave the \n. Return the stripped space.
     def clear_preceding_whitespace(before)
-      if (match = before[1].match(/(.*\n)([ \t]+)$/))
+      return unless before
+
+      if (match = before[1].match(/\A(.*\n|)([ \t]+)\Z/))
         before[1] = match[1]
         match[2]
       end

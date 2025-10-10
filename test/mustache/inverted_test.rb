@@ -54,7 +54,6 @@ describe "inverted" do
   end
   describe "Doubled" do
     specify "Multiple inverted sections per template should be permitted." do
-      skip "TODO"
       template = "{{^bool}}\n* first\n{{/bool}}\n* {{two}}\n{{^bool}}\n* third\n{{/bool}}\n"
       input = {"bool" => false, "two" => "second"}
       result = compiler.compile(template, compat: true).call(input)
@@ -159,7 +158,6 @@ describe "inverted" do
   end
   describe "Standalone Without Previous Line" do
     specify "Standalone tags should not require a newline to precede them." do
-      skip "TODO"
       template = "  {{^boolean}}\n^{{/boolean}}\n/"
       input = {"boolean" => false}
       result = compiler.compile(template, compat: true).call(input)

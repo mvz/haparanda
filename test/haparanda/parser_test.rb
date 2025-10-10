@@ -21,7 +21,7 @@ describe Haparanda::Parser do
     result = parser.parse " {{# foo~}} \nbar\n {{~/foo}} "
     _(result).must_equal s(:root,
                            s(:statements,
-                             s(:content, " "),
+                             s(:content, ""),
                              s(:block,
                                s(:path, false, s(:id, "foo")),
                                s(:exprs), nil,

@@ -254,7 +254,6 @@ describe "sections" do
   end
   describe "Standalone Without Previous Line" do
     specify "Standalone tags should not require a newline to precede them." do
-      skip "TODO"
       template = "  {{#boolean}}\n\#{{/boolean}}\n/"
       input = {"boolean" => true}
       result = compiler.compile(template, compat: true).call(input)
