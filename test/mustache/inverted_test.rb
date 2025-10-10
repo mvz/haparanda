@@ -166,7 +166,6 @@ describe "inverted" do
   end
   describe "Standalone Without Newline" do
     specify "Standalone tags should not require a newline to follow them." do
-      skip "TODO"
       template = "^{{^boolean}}\n/\n  {{/boolean}}"
       input = {"boolean" => false}
       result = compiler.compile(template, compat: true).call(input)

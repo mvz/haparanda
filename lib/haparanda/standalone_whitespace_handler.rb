@@ -79,6 +79,8 @@ module Haparanda
 
             before_space = true
           end
+
+          after_space = true if item == statements.last
         end
 
         process(item)
@@ -184,7 +186,7 @@ module Haparanda
     def clear_preceding_whitespace(before)
       return unless before
 
-      if (match = before[1].match(/\A(.*\n|)([ \t]+)\Z/))
+      if (match = before[1].match(/\A(.*\n|)([ \t]+)\Z/m))
         before[1] = match[1]
         match[2]
       end
@@ -192,6 +194,8 @@ module Haparanda
 
     # Strip leading whitespace after, including the \n if present
     def clear_following_whitespace(after)
+      return unless after
+
       after[1] = after[1].sub(/^[ \t]*(\n|\r\n)?/, "")
     end
 
