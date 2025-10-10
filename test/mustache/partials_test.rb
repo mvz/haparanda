@@ -79,7 +79,6 @@ describe "partials" do
   end
   describe "Standalone Without Previous Line" do
     specify "Standalone tags should not require a newline to precede them." do
-      skip "TODO"
       compiler.register_partial("partial", ">\n>")
       template = "  {{>partial}}\n>"
       input = {}

@@ -69,18 +69,21 @@ module Haparanda
 
       root = @root
       @root = false
-      [*statements, nil].each_cons(2).each do |item, after|
+      last_idx = statements.length - 1
+
+      [*statements, nil].each_cons(2).with_index do |(item, after), idx|
         before_space, inner_start_space, inner_end_space, after_space =
           collect_whitespace_information(before, item, after)
-        if root && [:block, :comment].include?(item.sexp_type)
-          before_space = true if item == statements.first
-          if before == statements.first && before.sexp_type == :content &&
-             (before[1] =~ /^\s*$/)
 
+        if root
+          if [:block, :comment].include?(item.sexp_type)
+            before_space = true if idx == 0
+            after_space = true if idx == last_idx
+          end
+          if [:block, :comment, :partial].include?(item.sexp_type) &&
+             idx == 1 && before.sexp_type == :content && (before[1] =~ /^\s*$/)
             before_space = true
           end
-
-          after_space = true if item == statements.last
         end
 
         process(item)
