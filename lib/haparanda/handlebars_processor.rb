@@ -78,9 +78,7 @@ module Haparanda
       def dig(*keys)
         if @compat
           @stack.reverse_each do |item|
-            if (result = item.dig(*keys))
-              return result
-            end
+            return item.dig(*keys) if item[keys.first]
           end
           nil
         else

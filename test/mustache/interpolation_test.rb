@@ -206,7 +206,6 @@ describe "interpolation" do
   end
   describe "Dotted Names - Context Precedence" do
     specify "Dotted names should be resolved against former resolutions." do
-      skip "TODO"
       template = "{{#a}}{{b.c}}{{/a}}"
       input = {"a" => {"b" => {}}, "b" => {"c" => "ERROR"}}
       result = compiler.compile(template, compat: true).call(input)
