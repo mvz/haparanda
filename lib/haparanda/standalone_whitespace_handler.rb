@@ -84,6 +84,8 @@ module Haparanda
              idx == 1 && before.sexp_type == :content && (before[1] =~ /^\s*$/)
             before_space = true
           end
+
+          after_space = true if [:partial].include?(item.sexp_type) && idx == last_idx
         end
 
         process(item)
@@ -203,7 +205,11 @@ module Haparanda
     end
 
     def set_indent(item, indent)
-      item << s(:indent, indent)
+      unless item.sexp_type == :partial
+        raise "Indenting not supported for #{item.sexp_type}"
+      end
+
+      item[-2] = s(:indent, indent)
     end
   end
 end

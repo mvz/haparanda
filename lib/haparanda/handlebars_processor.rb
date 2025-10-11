@@ -355,7 +355,7 @@ module Haparanda
     end
 
     def process_partial(expr)
-      _, name, context, hash, _, indent = expr
+      _, name, context, hash, indent, = expr
 
       values = process(context)[1]
       if values.length > 1

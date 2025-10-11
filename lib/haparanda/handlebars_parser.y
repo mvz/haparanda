@@ -135,7 +135,7 @@ mustache
 
 partial
   : OPEN_PARTIAL expr exprs hash CLOSE {
-    result = s(:partial, val[1], val[2], val[3], strip_flags(val[0], val[4]))
+    result = s(:partial, val[1], val[2], val[3], nil, strip_flags(val[0], val[4]))
       .line(self.lexer.lineno)
   }
   ;
