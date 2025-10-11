@@ -4,7 +4,7 @@ require "sexp_processor"
 
 module Haparanda
   # Process the handlebars AST just to do the whitespace stripping.
-  class StandaloneWhitespaceHandler < SexpProcessor
+  class StandaloneWhitespaceHandler < SexpProcessor # rubocop:todo Metrics/ClassLength
     def initialize(prevent_indent: false)
       super()
 
@@ -64,7 +64,9 @@ module Haparanda
     # changes to make from actually making them. In between these two parts, it
     # recurses into the nested items. This way, it ensures the nested process
     # has the original information available.
-    def strip_whitespace_around_standalone_items(statements)
+    # rubocop:todo Metrics/PerceivedComplexity
+    # rubocop:todo Metrics/MethodLength
+    def strip_whitespace_around_standalone_items(statements) # rubocop:todo Metrics/AbcSize
       before = nil
 
       root = @root
@@ -97,6 +99,8 @@ module Haparanda
         before = item
       end
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def collect_whitespace_information(before, item, after)
       before_space = preceding_whitespace? before
@@ -109,7 +113,9 @@ module Haparanda
       return before_space, inner_start_space, inner_end_space, after_space
     end
 
-    def apply_whitespace_clearing(before, item, after,
+    # rubocop:todo Metrics/PerceivedComplexity
+    # rubocop:todo Metrics/CyclomaticComplexity
+    def apply_whitespace_clearing(before, item, after, # rubocop:todo Metrics/MethodLength
                                   before_space, inner_start_space,
                                   inner_end_space, after_space)
       case item.sexp_type
@@ -136,6 +142,8 @@ module Haparanda
         end
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def first_item(container)
       return if container.nil?
