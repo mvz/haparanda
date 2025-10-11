@@ -4,7 +4,7 @@ require "sexp_processor"
 
 module Haparanda
   # Process the handlebars AST just to do the whitespace stripping.
-  class StandaloneWhitespaceHandler < SexpProcessor
+  class StandaloneWhitespaceHandler < SexpProcessor # rubocop:todo Metrics/ClassLength
     def initialize(prevent_indent: false)
       super()
 
@@ -20,12 +20,8 @@ module Haparanda
     def process_root(expr)
       _, statements = expr
 
+      @root = true
       statements = process(statements)
-      item = statements.sexp_body[0] if statements
-      if item&.sexp_type == :block
-        content = item.dig(4, 2, 1)
-        clear_following_whitespace(content) if following_whitespace?(content)
-      end
       s(:root, statements)
     end
 
@@ -68,12 +64,31 @@ module Haparanda
     # changes to make from actually making them. In between these two parts, it
     # recurses into the nested items. This way, it ensures the nested process
     # has the original information available.
-    def strip_whitespace_around_standalone_items(statements)
+    # rubocop:todo Metrics/PerceivedComplexity
+    # rubocop:todo Metrics/MethodLength
+    def strip_whitespace_around_standalone_items(statements) # rubocop:todo Metrics/AbcSize
       before = nil
 
-      [*statements, nil].each_cons(2).each do |item, after|
+      root = @root
+      @root = false
+      last_idx = statements.length - 1
+
+      [*statements, nil].each_cons(2).with_index do |(item, after), idx|
         before_space, inner_start_space, inner_end_space, after_space =
           collect_whitespace_information(before, item, after)
+
+        if root
+          if [:block, :comment].include?(item.sexp_type)
+            before_space = true if idx == 0
+            after_space = true if idx == last_idx
+          end
+          if [:block, :comment, :partial].include?(item.sexp_type) &&
+             idx == 1 && before.sexp_type == :content && (before[1] =~ /^\s*$/)
+            before_space = true
+          end
+
+          after_space = true if [:partial].include?(item.sexp_type) && idx == last_idx
+        end
 
         process(item)
 
@@ -84,6 +99,8 @@ module Haparanda
         before = item
       end
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def collect_whitespace_information(before, item, after)
       before_space = preceding_whitespace? before
@@ -96,7 +113,9 @@ module Haparanda
       return before_space, inner_start_space, inner_end_space, after_space
     end
 
-    def apply_whitespace_clearing(before, item, after,
+    # rubocop:todo Metrics/PerceivedComplexity
+    # rubocop:todo Metrics/CyclomaticComplexity
+    def apply_whitespace_clearing(before, item, after, # rubocop:todo Metrics/MethodLength
                                   before_space, inner_start_space,
                                   inner_end_space, after_space)
       case item.sexp_type
@@ -116,17 +135,28 @@ module Haparanda
           set_indent(item, indent)
         end
         clear_following_whitespace(after) if before_space && after
+      when :comment
+        if before_space && after_space
+          clear_preceding_whitespace(before)
+          clear_following_whitespace(after)
+        end
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def first_item(container)
+      return if container.nil?
+
       case container.sexp_type
       when :statements
         container.sexp_body.first
       when :block
-        container.dig(4, 2, 1)
-      when :inverse
+        first_item(container[4] || container[5])
+      when :inverse, :program
         first_item container[2]
+      when :content
+        container
       else
         raise NotImplementedError
       end
@@ -136,10 +166,10 @@ module Haparanda
       return if container.nil?
 
       case container.sexp_type
-      when :block
-        last_item(container[5] || container[4])
       when :statements
         container.sexp_body.last
+      when :block
+        last_item(container[5] || container[4])
       when :inverse, :program
         last_item container[2]
       when :content
@@ -158,7 +188,7 @@ module Haparanda
     end
 
     def preceding_whitespace?(before)
-      before&.sexp_type == :content && before[1] =~ /\n\s*$/
+      before&.sexp_type == :content && before[1] =~ /\n\s*\z/
     end
 
     def following_whitespace?(after)
@@ -167,19 +197,27 @@ module Haparanda
 
     # Strip trailing whitespace before but leave the \n. Return the stripped space.
     def clear_preceding_whitespace(before)
-      if (match = before[1].match(/(.*\n)([ \t]+)$/))
+      return unless before
+
+      if (match = before[1].match(/\A(.*\n|)([ \t]+)\Z/m))
         before[1] = match[1]
         match[2]
       end
     end
 
-    # Strip leading whitespace after including the \n if present
+    # Strip leading whitespace after, including the \n if present
     def clear_following_whitespace(after)
-      after[1] = after[1].sub(/^[ \t]*\n?/, "")
+      return unless after
+
+      after[1] = after[1].sub(/^[ \t]*(\n|\r\n)?/, "")
     end
 
     def set_indent(item, indent)
-      item << s(:indent, indent)
+      unless item.sexp_type == :partial
+        raise "Indenting not supported for #{item.sexp_type}"
+      end
+
+      item[-2] = s(:indent, indent)
     end
   end
 end

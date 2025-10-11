@@ -27,7 +27,6 @@ template.call input  # or template.call({ foo: "Bar", baz: "Qux" })
 
 ## Compatibility Notes
 
-- When using a hash as input, symbols keys and string keys are considered different
 - Currently targets handlebars.js master
 
 ## Install

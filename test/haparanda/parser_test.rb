@@ -21,7 +21,7 @@ describe Haparanda::Parser do
     result = parser.parse " {{# foo~}} \nbar\n {{~/foo}} "
     _(result).must_equal s(:root,
                            s(:statements,
-                             s(:content, " "),
+                             s(:content, ""),
                              s(:block,
                                s(:path, false, s(:id, "foo")),
                                s(:exprs), nil,
@@ -137,9 +137,8 @@ describe Haparanda::Parser do
                                  s(:statements,
                                    s(:content, ""),
                                    s(:partial,
-                                     s(:path, false, s(:id, "dude")),
-                                     s(:exprs), nil,
-                                     s(:strip, false, false), s(:indent, "  ")),
+                                     s(:path, false, s(:id, "dude")), s(:exprs), nil,
+                                     s(:indent, "  "), s(:strip, false, false)),
                                    s(:content, ""))),
                                nil, s(:strip, false, false), s(:strip, false, false))))
   end
@@ -160,7 +159,7 @@ describe Haparanda::Parser do
                                    s(:partial,
                                      s(:path, false, s(:id, "dude")),
                                      s(:exprs), nil,
-                                     s(:strip, false, false)),
+                                     nil, s(:strip, false, false)),
                                    s(:content, "\n"))),
                                nil, s(:strip, false, false), s(:strip, false, false))))
   end
