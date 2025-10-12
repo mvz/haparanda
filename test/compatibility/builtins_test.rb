@@ -258,27 +258,27 @@ describe 'builtin helpers' do
 
     it 'each with an object and @key' do
       skip "we don't support using #each with an arbitrary object"
-      var string =
-            '{{#each goodbyes}}{{@key}}. {{text}}! {{/each}}cruel {{world}}!';
+      string =
+        '{{#each goodbyes}}{{@key}}. {{text}}! {{/each}}cruel {{world}}!';
 
       function Clazz() {
         this['<b>#1</b>'] = { text: 'goodbye' };
         this[2] = { text: 'GOODBYE' };
       }
       Clazz.prototype.foo = 'fail';
-      var hash = { goodbyes: Clazz.new, world: 'world' };
+      hash = { goodbyes: Clazz.new, world: 'world' };
 
       # Object property iteration order is undefined according to ECMA spec,
       # so we need to check both possible orders
       # @see http://stackoverflow.com/questions/280713/elements-order-in-a-for-in-loop
-      var actual = compileWithPartials(string, hash);
-      var expected1 =
-            '&lt;b&gt;#1&lt;/b&gt;. goodbye! 2. GOODBYE! cruel world!';
-      var expected2 =
-            '2. GOODBYE! &lt;b&gt;#1&lt;/b&gt;. goodbye! cruel world!';
+      actual = compileWithPartials(string, hash);
+      expected1 =
+        '&lt;b&gt;#1&lt;/b&gt;. goodbye! 2. GOODBYE! cruel world!';
+      expected2 =
+        '2. GOODBYE! &lt;b&gt;#1&lt;/b&gt;. goodbye! cruel world!';
 
       equals(
-        actual === expected1 || actual === expected2,
+        actual == expected1 || actual == expected2,
         true,
         'each with object argument iterates over the contents when not empty'
       );

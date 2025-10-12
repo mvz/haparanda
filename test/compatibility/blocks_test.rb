@@ -427,9 +427,9 @@ describe 'blocks' do
         skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
         handlebarsEnv.decorators = {};
 
-        handlebarsEnv.registerDecorator('foo', lambda do
+        handlebarsEnv.registerDecorator('foo') do
           return 'fail';
-        end)
+        end
 
         equals(!!handlebarsEnv.decorators.foo, true);
         handlebarsEnv.unregisterDecorator('foo');
