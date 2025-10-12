@@ -43,6 +43,30 @@ module Haparanda
       s(:block, name, params, hash, program, inverse_chain, open_strip, close_strip)
     end
 
+    def process_partial_block(expr)
+      _, name, params, hash, statements, open_strip, close_strip = expr
+
+      statements = process(statements)
+      items = statements.sexp_body
+      strip_initial_whitespace(items.first, open_strip)
+      strip_final_whitespace(items.last, close_strip)
+
+      s(:partial_block, name, params, hash, statements, open_strip, close_strip)
+    end
+
+    def process_directive_block(expr)
+      _, name, params, hash, program, _inverse_chain, open_strip, close_strip = expr
+      program = process(program)
+
+      statements = program&.at(2)&.sexp_body
+      if statements
+        strip_initial_whitespace(statements.first, open_strip)
+        strip_final_whitespace(statements.last, close_strip)
+      end
+
+      s(:directive_block, name, params, hash, program, nil, open_strip, close_strip)
+    end
+
     def process_inverse(expr)
       _, block_params, statements, open_strip, close_strip = expr
 
@@ -89,15 +113,22 @@ module Haparanda
 
     def open_strip_for(item)
       case item.sexp_type
-      when :block
+      when :block, :directive_block, :partial_block
         item.at(-2)
-      else
+      when :partial, :mustache, :comment
         item.last
+      else
+        raise NotImplementedError, item.sexp_type
       end
     end
 
     def close_strip_for(item)
-      item.last
+      case item.sexp_type
+      when :block, :directive_block, :partial_block, :partial, :mustache, :comment
+        item.last
+      else
+        raise NotImplementedError, item.sexp_type
+      end
     end
   end
 end
