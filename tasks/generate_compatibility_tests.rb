@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# Tool to copy and transform original JavaScript spec files to Ruby.
-
 require "pathname"
 
 # Transform one original javascript spec file to ruby-ish target
@@ -89,24 +87,27 @@ MAIN_SKIPS = ["ast.js", "compiler.js", "javascript-compiler.js", "precompiler.js
 
 PARSER_SKIPS = ["ast.js", "utils.js", "visitor.js"].freeze
 
-base = Pathname.new ARGV[0]
-main_js_repo = base.join "handlebars.js/"
-js_parser_repo = base.join "handlebars-parser/"
-target_base = Pathname.new "./tmp"
-target_base.mkpath
+desc "Generate handlebars.js compatibility tests in tmp"
+task :generate_compatibility_tests do
+  base = Pathname.new File.join __dir__, "../ext"
+  main_js_repo = base.join "handlebars.js/"
+  js_parser_repo = base.join "handlebars-parser/"
+  target_base = Pathname.new "./tmp"
+  target_base.mkpath
 
-specs = main_js_repo.glob "spec/*.js"
-specs.each do |spec_file|
-  base = spec_file.basename
-  next if MAIN_SKIPS.include? base.to_s
+  specs = main_js_repo.glob "spec/*.js"
+  specs.each do |spec_file|
+    base = spec_file.basename
+    next if MAIN_SKIPS.include? base.to_s
 
-  FileTransformer.new(spec_file, target_base, main_js_repo.basename, "MIT").process
-end
+    FileTransformer.new(spec_file, target_base, main_js_repo.basename, "MIT").process
+  end
 
-specs = js_parser_repo.glob "spec/*.js"
-specs.each do |spec_file|
-  base = spec_file.basename
-  next if PARSER_SKIPS.include? base.to_s
+  specs = js_parser_repo.glob "spec/*.js"
+  specs.each do |spec_file|
+    base = spec_file.basename
+    next if PARSER_SKIPS.include? base.to_s
 
-  FileTransformer.new(spec_file, target_base, js_parser_repo.basename, "ICS").process
+    FileTransformer.new(spec_file, target_base, js_parser_repo.basename, "ICS").process
+  end
 end
