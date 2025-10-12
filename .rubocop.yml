@@ -13,6 +13,7 @@ AllCops:
   Exclude:
     - 'lib/haparanda/handlebars_lexer.rb'
     - 'lib/haparanda/handlebars_parser.rb'
+    - 'ext/**/*'
   NewCops: enable
   TargetRubyVersion: 3.2
 
@@ -28,14 +29,20 @@ Layout/LineLength:
   Max: 92
   Exclude:
     - 'test/compatibility/*'
+    - 'test/mustache/*'
+
+Layout/SpaceInsideHashLiteralBraces:
+  Exclude:
+    - 'test/mustache/*'
 
 # Assume the programmer knows how bracketed block syntax works
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
-# Test describe blocks can be any size
+# Test describe blocks and rake task definitions can be any size
 Metrics/BlockLength:
   Exclude:
+    - 'tasks/**/*.rb'
     - 'test/**/*'
 
 # Allow lots of keyword arguments
@@ -115,6 +122,10 @@ Style/Semicolon:
   Exclude:
     - 'test/compatibility/*'
 
+# Prefer symbols to look like symbols
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
 Style/ZeroLengthPredicate:
   Exclude:
     - 'test/compatibility/*'
@@ -140,3 +151,4 @@ Style/TrailingCommaInHashLiteral:
 Style/WordArray:
   Exclude:
     - 'test/compatibility/*'
+    - 'test/mustache/*'

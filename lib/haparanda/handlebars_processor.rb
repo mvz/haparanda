@@ -19,7 +19,9 @@ module Haparanda
 
           value = case value
                   when Hash
-                    value[key]
+                    value.fetch(key) do |k|
+                      value.fetch(k.to_s, nil)
+                    end
                   when nil
                     nil
                   else
@@ -76,9 +78,7 @@ module Haparanda
       def dig(*keys)
         if @compat
           @stack.reverse_each do |item|
-            if (result = item.dig(*keys))
-              return result
-            end
+            return item.dig(*keys) if item[keys.first]
           end
           nil
         else
@@ -353,7 +353,7 @@ module Haparanda
     end
 
     def process_partial(expr)
-      _, name, context, hash, _, indent = expr
+      _, name, context, hash, indent, = expr
 
       values = process(context)[1]
       if values.length > 1
