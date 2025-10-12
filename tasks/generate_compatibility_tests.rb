@@ -47,7 +47,7 @@ class FileTransformer
 
   def process_lines(target_fd)
     spec_file.each_line do |line|
-      target_fd.puts process_line(line)
+      target_fd.puts post_process process_line(line)
     end
   end
 
@@ -55,10 +55,9 @@ class FileTransformer
     [/^( *)\}\);/,
      ->(md) { "#{md[1]}end" }],
     [/^( *)it\((['"].*['"]), function \(\) \{$/,
-     lambda { |md|
-       ["#{md[1]}it #{md[2]} do",
-        "#{md[1]}  skip"]
-     }],
+     ->(md) { "#{md[1]}it #{md[2]} do" }],
+    [/^( *)xit\((['"].*['"]), function \(\) \{$/,
+     ->(md) { "#{md[1]}it #{md[2]} do\n#{md[1]}  skip 'deactivated'" }],
     [/^( *)describe\((['"].*['"]), function \(\) \{$/,
      ->(md) { "#{md[1]}describe #{md[2]} do" }],
     [/^(.*:) function \(\) \{$/,
@@ -79,6 +78,26 @@ class FileTransformer
       end
     end
     line
+  end
+
+  def post_process(line)
+    line
+      .gsub("===", "==")
+      .gsub("new Handlebars.SafeString", "Haparanda::HandlebarsProcessor::SafeString.new")
+      .gsub("Handlebars.Utils.escapeExpression", "Haparanda::HandlebarsProcessor::Utils.escape")
+      .gsub("knownHelpersOnly", "known_helpers_only")
+      .gsub("knownHelpers", "known_helpers")
+      .gsub("lookupProperty", "lookup_property")
+      .gsub("registerPartial", "register_partial")
+      .gsub("registerHelper", "register_helper")
+      .gsub("preventIndent", "prevent_indent")
+      .gsub("explicitPartialContext", "explicit_partial_context")
+      .gsub("// ", "# ")
+      .gsub("options.fn.blockParams", "options.block_params")
+      .gsub("options.fn()", "options.fn")
+      .gsub("toUpperCase()", "upcase")
+      .gsub("presedence", "precedence")
+      .gsub("presednece", "precedence")
   end
 end
 
