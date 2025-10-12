@@ -308,8 +308,8 @@ describe 'partials' do
 
   it 'throw on missing partial' do
     skip "The compiler will always be avaliable"
-    var compile = handlebarsEnv.compile;
-    var compileWithPartial = CompilerContext.compileWithPartial;
+    compile = handlebarsEnv.compile;
+    compileWithPartial = CompilerContext.compileWithPartial;
     handlebarsEnv.compile = undefined;
     CompilerContext.compileWithPartial = CompilerContext.compile;
     expectTemplate('{{> dude}}')

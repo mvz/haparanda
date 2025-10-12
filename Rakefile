@@ -3,6 +3,7 @@
 require "bundler/gem_tasks"
 require "minitest/test_task"
 require "rake/manifest/task"
+require_relative "tasks/generate_compatibility_tests"
 require_relative "tasks/generate_mustache_tests"
 
 Minitest::TestTask.create(:test) do |t|

@@ -1,3 +1,9 @@
 [submodule "ext/mustache-spec"]
 	path = ext/mustache-spec
 	url = https://github.com/mustache/spec.git
+[submodule "ext/handlebars.js"]
+	path = ext/handlebars.js
+	url = git@github.com:handlebars-lang/handlebars.js.git
+[submodule "ext/handlebars-parser"]
+	path = ext/handlebars-parser
+	url = git@github.com:handlebars-lang/handlebars-parser.git
