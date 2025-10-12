@@ -54,17 +54,17 @@ class FileTransformer
   MATCHERS = [
     [/^( *)\}\);/,
      ->(md) { "#{md[1]}end" }],
-    [/^( *)it\((['"].*['"]), function \(\) \{$/,
+    [/^( *)it\((['"].*['"]), function ?\(\) \{$/,
      ->(md) { "#{md[1]}it #{md[2]} do" }],
     [/^( *)xit\((['"].*['"]), function \(\) \{$/,
      ->(md) { "#{md[1]}it #{md[2]} do\n#{md[1]}  skip 'deactivated'" }],
-    [/^( *)describe\((['"].*['"]), function \(\) \{$/,
+    [/^( *)describe\((['"].*['"]), function ?\(\) \{$/,
      ->(md) { "#{md[1]}describe #{md[2]} do" }],
-    [/^(.*:) function \(\) \{$/,
+    [/^(.*:) function ?\(\) \{$/,
      ->(md) { "#{md[1]} lambda {" }],
-    [/^(.*), function \(\) \{$/,
+    [/^(.*), function ?\(\) \{$/,
      ->(md) { "#{md[1]}) do" }],
-    [/^(.*) function \((.+)\) \{$/,
+    [/^(.*) function ?\((.+)\) \{$/,
      ->(md) { "#{md[1]} lambda { |#{md[2]}|" }],
     [/^( *)var (.*)$/,
      ->(md) { "#{md[1]}#{md[2]}" }]
@@ -85,6 +85,8 @@ class FileTransformer
       .gsub("===", "==")
       .gsub("new Handlebars.SafeString", "Haparanda::HandlebarsProcessor::SafeString.new")
       .gsub("Handlebars.Utils.escapeExpression", "Haparanda::HandlebarsProcessor::Utils.escape")
+      .gsub("blockParams", "block_params")
+      .gsub("ignoreStandalone", "ignore_standalone")
       .gsub("knownHelpersOnly", "known_helpers_only")
       .gsub("knownHelpers", "known_helpers")
       .gsub("lookupProperty", "lookup_property")
@@ -98,6 +100,8 @@ class FileTransformer
       .gsub("toUpperCase()", "upcase")
       .gsub("presedence", "precedence")
       .gsub("presednece", "precedence")
+      .gsub(/function ?\(\) {}/, "-> {}")
+      .gsub(/function ?\(\)/, "lambda")
   end
 end
 
