@@ -251,7 +251,7 @@ describe 'Regressions' do
   end
 
   it 'GH-1065: Sparse arrays' do
-    skip
+    skip "Ruby does not have real sparse arrays"
     array = [];
     array[1] = 'foo';
     array[3] = 'bar';
