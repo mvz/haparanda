@@ -22,6 +22,8 @@ module Haparanda
                     value.fetch(key) do |k|
                       value.fetch(k.to_s, nil)
                     end
+                  when Array
+                    value[key.to_s.to_i]
                   when nil
                     nil
                   else
