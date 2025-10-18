@@ -523,25 +523,26 @@ module Haparanda
         return s(:result, value.to_s)
       end
 
-      case value
-      when Array
-        return s(:result, inverse.call(@input_stack)) if value.empty?
+      result = case value
+               when Array
+                 if value.empty?
+                   inverse.call(@input_stack)
+                 else
+                   parts = value.each_with_index.map do |elem, index|
+                     @data.set_data(:index, index)
+                     fn.call(elem)
+                   end
+                   parts.join
+                 end
+               when true
+                 fn.call(@input_stack)
+               when false, nil
+                 inverse.call(@input_stack)
+               else
+                 fn.call(value)
+               end
 
-        parts = value.each_with_index.map do |elem, index|
-          @data.set_data(:index, index)
-          fn.call(elem)
-        end
-        s(:result, parts.join)
-      when true
-        result = fn.call(@input_stack)
-        s(:result, result)
-      when false, nil
-        result = inverse.call(@input_stack)
-        s(:result, result)
-      else
-        result = fn.call(value)
-        s(:result, result)
-      end
+      s(:result, result)
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
