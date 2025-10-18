@@ -58,7 +58,6 @@ describe 'Regressions' do
   end
 
   it 'GH-158: Using array index twice, breaks the template' do
-    skip
     expectTemplate('{{arr.[0]}}, {{arr.[1]}}')
       .withInput({ arr: [1, 2] })
       .withMessage('it works as expected')
