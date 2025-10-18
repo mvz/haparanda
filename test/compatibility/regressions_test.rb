@@ -147,7 +147,6 @@ describe 'Regressions' do
   end
 
   it 'GH-375: Unicode line terminators' do
-    skip
     expectTemplate('\u2028').toCompileTo('\u2028');
   end
 
