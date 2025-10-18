@@ -65,7 +65,6 @@ describe 'Regressions' do
   end
 
   it "bug reported by @fat where lambdas weren't being properly resolved" do
-    skip
     string =
       '<strong>This is a slightly more complicated {{thing}}.</strong>.\n' +
       '{{! Just ignore this business. }}\n' +
