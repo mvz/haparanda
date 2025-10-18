@@ -532,8 +532,14 @@ module Haparanda
           fn.call(elem)
         end
         s(:result, parts.join)
+      when true
+        result = fn.call(@input_stack)
+        s(:result, result)
+      when false, nil
+        result = inverse.call(@input_stack)
+        s(:result, result)
       else
-        result = value ? fn.call(value) : inverse.call(@input_stack)
+        result = fn.call(value)
         s(:result, result)
       end
     end
