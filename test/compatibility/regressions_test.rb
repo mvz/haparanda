@@ -204,14 +204,13 @@ describe 'Regressions' do
   end
 
   it 'GH-837: undefined values for helpers' do
-    skip
     expectTemplate('{{str bar.baz}}')
       .withHelpers({
         str: lambda { |value|
-          return value + '';
+          return value.inspect;
         },
       })
-      .toCompileTo('undefined');
+      .toCompileTo('nil');
   end
 
   it 'GH-926: Depths and de-dupe' do
