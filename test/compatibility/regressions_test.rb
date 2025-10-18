@@ -151,7 +151,7 @@ describe 'Regressions' do
   end
 
   it 'GH-534: Object prototype aliases' do
-    skip
+    skip "Ruby does not have object prototypes"
     Object.prototype[0xd834] = true;
 
     expectTemplate('{{foo}}').withInput({ foo: 'bar' }).toCompileTo('bar');
