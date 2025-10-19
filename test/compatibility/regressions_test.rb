@@ -341,11 +341,10 @@ describe 'Regressions' do
   end
 
   it 'should allow hash with protected array names' do
-    skip
     obj = { array: [1], name: 'John' };
     helpers = {
       helpa: lambda { |options|
-        return options.hash.length;
+        return options.hash[:length];
       },
     };
 
@@ -479,12 +478,11 @@ describe 'Regressions' do
   end
 
   it 'should allow hash with protected array names' do
-    skip
     expectTemplate('{{helpa length="foo"}}')
       .withInput({ array: [1], name: 'John' })
       .withHelpers({
         helpa: lambda { |options|
-          return options.hash.length;
+          return options.hash[:length];
         },
       })
       .toCompileTo('foo');

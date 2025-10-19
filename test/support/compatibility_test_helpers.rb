@@ -24,6 +24,14 @@ module CompatibilityTestHelpers
     TemplateTester.new(text: template, compiler: handlebarsEnv, spec: self)
   end
 
+  def shouldCompileTo(template, inputs, result) # rubocop:disable Naming/MethodName
+    input, helpers = *inputs
+    expectTemplate(template)
+      .withInput(input)
+      .withHelpers(helpers)
+      .toCompileTo(result)
+  end
+
   def handlebarsEnv # rubocop:disable Naming/MethodName
     @handlebarsEnv ||= Haparanda::Compiler.new # rubocop:disable Naming/VariableName
   end
