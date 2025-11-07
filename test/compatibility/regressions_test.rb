@@ -173,8 +173,11 @@ describe 'Regressions' do
       .toCompileTo(data[:arr].to_s);
   end
 
+  # NOTE: This test was changed from the original to have a decimal in the
+  # second amount, which matches the mustache man page. In Javascript, bot
+  # amounts will be floats so the use the same string rendering method. Not so
+  # in Ruby.
   it 'Mustache man page' do
-    skip
     expectTemplate(
       'Hello {{name}}. You have just won ${{value}}!{{#in_ca}} Well, ${{taxed_value}}, after taxes.{{/in_ca}}'
     )
@@ -186,7 +189,7 @@ describe 'Regressions' do
       })
       .withMessage('the hello world mustache example works')
       .toCompileTo(
-        'Hello Chris. You have just won $10000! Well, $6000, after taxes.'
+        'Hello Chris. You have just won $10000! Well, $6000.0, after taxes.'
       );
   end
 
