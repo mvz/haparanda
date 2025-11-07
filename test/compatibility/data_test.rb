@@ -14,7 +14,7 @@ describe 'data' do
     expectTemplate('{{hello}}')
       .withCompileOptions({ data: true })
       .withHelper('hello', lambda { |options|
-        return options.data.adjective + ' ' + this.noun;
+        return options.data.adjective + ' ' + this[:noun];
       })
       .withRuntimeOptions({ data: { adjective: 'happy' } })
       .withInput({ noun: 'cat' })
@@ -133,7 +133,7 @@ describe 'data' do
       .withCompileOptions({ data: true })
       .withPartial('myPartial', '{{hello}}')
       .withHelper('hello', lambda { |options|
-        return options.data.adjective + ' ' + this.noun;
+        return options.data.adjective + ' ' + this[:noun];
       })
       .withInput({ noun: 'cat' })
       .withRuntimeOptions({ data: { adjective: 'happy' } })
@@ -145,7 +145,7 @@ describe 'data' do
     expectTemplate('{{hello world}}')
       .withCompileOptions({ data: true })
       .withHelper('hello', lambda { |noun, options|
-        return options.data.adjective + ' ' + noun + (this.exclaim ? '!' : '');
+        return options.data.adjective + ' ' + noun + (this[:exclaim] ? '!' : '');
       })
       .withInput({ exclaim: true, world: 'world' })
       .withRuntimeOptions({ data: { adjective: 'happy' } })
@@ -162,7 +162,7 @@ describe 'data' do
         return options.fn(this);
       })
       .withHelper('world', lambda { |options|
-        return options.data.adjective + ' world' + (this.exclaim ? '!' : '');
+        return options.data.adjective + ' world' + (this[:exclaim] ? '!' : '');
       })
       .withInput({ exclaim: true })
       .withRuntimeOptions({ data: { adjective: 'happy' } })
@@ -177,7 +177,7 @@ describe 'data' do
         return options.fn({ exclaim: '?' });
       })
       .withHelper('world', lambda { |thing, options|
-        return options.data.adjective + ' ' + thing + (this.exclaim || '');
+        return options.data.adjective + ' ' + thing + (this[:exclaim] || '');
       })
       .withInput({ exclaim: true, zomg: 'world' })
       .withRuntimeOptions({ data: { adjective: 'happy' } })
@@ -192,7 +192,7 @@ describe 'data' do
         return options.data.accessData + ' ' + options.fn({ exclaim: '?' });
       })
       .withHelper('world', lambda { |thing, options|
-        return options.data.adjective + ' ' + thing + (this.exclaim || '');
+        return options.data.adjective + ' ' + thing + (this[:exclaim] || '');
       })
       .withInput({ exclaim: true, zomg: 'world' })
       .withRuntimeOptions({ data: { adjective: 'happy', accessData: '#win' } })
@@ -210,7 +210,7 @@ describe 'data' do
         );
       })
       .withHelper('world', lambda { |thing, options|
-        return options.data.adjective + ' ' + thing + (this.exclaim || '');
+        return options.data.adjective + ' ' + thing + (this[:exclaim] || '');
       })
       .withInput({ exclaim: true, zomg: 'planet' })
       .withRuntimeOptions({ data: { adjective: 'happy' } })
@@ -225,7 +225,7 @@ describe 'data' do
         return options.fn({ exclaim: '?' }, { data: { adjective: 'sad' } });
       })
       .withHelper('world', lambda { |thing, options|
-        return options.data.adjective + ' ' + thing + (this.exclaim || '');
+        return options.data.adjective + ' ' + thing + (this[:exclaim] || '');
       })
       .withInput({ exclaim: true, zomg: 'world' })
       .withRuntimeOptions({ data: { adjective: 'happy' } })

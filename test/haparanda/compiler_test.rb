@@ -21,7 +21,7 @@ describe Haparanda::Compiler do
     end
 
     it "allows explicit context parameter for helper" do
-      compiler.register_helper("foo") { |context, _options| context.foo }
+      compiler.register_helper("foo") { |context, _options| context[:foo] }
       template = compiler.compile "{{foo}}"
       result = template.call({ foo: "bar" })
       _(result).must_equal "bar"

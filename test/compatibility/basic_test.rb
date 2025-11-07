@@ -263,7 +263,7 @@ describe 'basic context' do
     expectTemplate('{{awesome}}')
       .withInput({
         awesome: lambda {
-          return this.more;
+          return this[:more];
         },
         more: 'More awesome',
       })

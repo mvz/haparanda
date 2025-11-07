@@ -18,7 +18,7 @@ describe 'helpers' do
       })
       .withHelper('link', lambda { |prefix|
         return (
-          '<a href="' + prefix + '/' + this.url + '">' + this.text + '</a>'
+          '<a href="' + prefix + '/' + this[:url] + '">' + this[:text] + '</a>'
         );
       })
       .toCompileTo('<a href="/root/goodbye">Goodbye</a>');
@@ -130,7 +130,7 @@ describe 'helpers' do
           '<a href="' +
           prefix +
           '/' +
-          this.url +
+          this[:url] +
           '">' +
           options.fn(this) +
           '</a>'
@@ -152,7 +152,7 @@ describe 'helpers' do
           '<a href="' +
           prefix +
           '/' +
-          this.url +
+          this[:url] +
           '">' +
           options.fn(this) +
           '</a>'
@@ -197,7 +197,7 @@ describe 'helpers' do
 
   it 'block helper should have context in this' do
     link = lambda { |options|
-      return '<a href="/people/' + this.id.to_s + '">' + options.fn(this) + '</a>';
+      return '<a href="/people/' + this[:id].to_s + '">' + options.fn(this) + '</a>';
     }
 
     expectTemplate(
@@ -247,7 +247,7 @@ describe 'helpers' do
         yehuda: { name: 'Yehuda' },
       })
       .withHelper('link', lambda { |options|
-        return '<a href="' + this.name + '">' + options.fn(this) + '</a>';
+        return '<a href="' + this[:name] + '">' + options.fn(this) + '</a>';
       })
       .withHelper('form', lambda { |context, options|
         return '<form>' + options.fn(context) + '</form>';
@@ -750,7 +750,7 @@ describe 'helpers' do
         })
         .withInput({
           foo: lambda {
-            return this.bar;
+            return this[:bar];
           },
           bar: 'bar',
         })
@@ -779,7 +779,7 @@ describe 'helpers' do
       expectTemplate('{{#truthy}}yep{{/truthy}}')
         .withInput({
           truthy: lambda {
-            return this.truthiness;
+            return this[:truthiness];
           },
           truthiness: lambda {
             return false;
@@ -861,7 +861,7 @@ describe 'helpers' do
     it 'helpers take precedence over same-named context properties' do
       expectTemplate('{{goodbye}} {{cruel world}}')
         .withHelper('goodbye', lambda {
-          return this.goodbye.upcase;
+          return this[:goodbye].upcase;
         })
         .withHelper('cruel', lambda { |world|
           return 'cruel ' + world.upcase;
@@ -877,7 +877,7 @@ describe 'helpers' do
     it 'helpers take precedence over same-named context properties$' do
       expectTemplate('{{#goodbye}} {{cruel world}}{{/goodbye}}')
         .withHelper('goodbye', lambda { |options|
-          return this.goodbye.upcase + options.fn(this);
+          return this[:goodbye].upcase + options.fn(this);
         })
         .withHelper('cruel', lambda { |world|
           return 'cruel ' + world.upcase;
@@ -893,7 +893,7 @@ describe 'helpers' do
     it 'Scoped names take precedence over helpers' do
       expectTemplate('{{this.goodbye}} {{cruel world}} {{cruel this.goodbye}}')
         .withHelper('goodbye', lambda {
-          return this.goodbye.upcase;
+          return this[:goodbye].upcase;
         })
         .withHelper('cruel', lambda { |world|
           return 'cruel ' + world.upcase;
@@ -911,7 +911,7 @@ describe 'helpers' do
         '{{#goodbye}} {{cruel world}}{{/goodbye}} {{this.goodbye}}'
       )
         .withHelper('goodbye', lambda { |options|
-          return this.goodbye.upcase + options.fn(this);
+          return this[:goodbye].upcase + options.fn(this);
         })
         .withHelper('cruel', lambda { |world|
           return 'cruel ' + world.upcase;
