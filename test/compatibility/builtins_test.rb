@@ -99,7 +99,7 @@ describe 'builtin helpers' do
       expectTemplate(string)
         .withInput({
           goodbye: lambda {
-            return this.world;
+            return this[:world];
           },
           world: 'world',
         })
@@ -123,7 +123,7 @@ describe 'builtin helpers' do
       expectTemplate(string)
         .withInput({
           goodbye: lambda {
-            return this.foo;
+            return this[:foo];
           },
           world: 'world',
         })

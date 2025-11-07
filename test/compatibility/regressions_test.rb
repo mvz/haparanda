@@ -263,20 +263,15 @@ describe 'Regressions' do
   end
 
   it 'GH-1093: Undefined helper context' do
-    skip
     expectTemplate('{{#each obj}}{{{helper}}}{{.}}{{/each}}')
       .withInput({ obj: { foo: undefined, bar: 'bat' } })
       .withHelpers({
         helper: lambda {
-          # It's valid to execute a block against an undefined context, but
-          # helpers can not do so, so we expect to have an empty object here;
-          this.each_key do |name|
-            if Object.prototype.hasOwnProperty.call(this, name)
-              return 'found';
-            end
+          if this.nil?
+            "not"
+          else
+            "found"
           end
-          # And to make IE happy, check for the known string as length is not enumerated.
-          return this == 'bat' ? 'found' : 'not';
         },
       })
       .toCompileTo('notfoundbat');

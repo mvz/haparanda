@@ -43,6 +43,8 @@ module Haparanda
         @parent = parent
       end
 
+      attr_reader :value
+
       def dig(*keys)
         return @parent&.dig(*keys[1..]) if keys.first == UP
 
@@ -93,8 +95,8 @@ module Haparanda
       end
 
       def with_new_context(value, &block)
-        # TODO: See if this can be removed
-        if self == value || value == top
+        # TODO: Remove the self == value case
+        if self == value || value == top.value
           block.call
         else
           @stack.push Input.new(value, top)
@@ -201,9 +203,9 @@ module Haparanda
 
       def lookup_property(item, index)
         case item
-        when Input
+        when Input, Hash
           item[index.to_sym]
-        when Array, Hash
+        when Array
           item[index]
         when nil
           nil
@@ -219,7 +221,7 @@ module Haparanda
       end
 
       def this
-        @input_stack.top
+        @input_stack.top.value
       end
     end
 
