@@ -36,4 +36,4 @@ task test: ["generate:all"]
 task "manifest:generate" => ["generate:all"]
 task "manifest:check" => ["generate:all"]
 
-task default: :test
+task default: ["test", "manifest:check"]
