@@ -18,20 +18,22 @@ Rake::Manifest::Task.new do |t|
   t.patterns = ["{lib}/**/*", "COPYING.LIB"]
 end
 
-file "lib/haparanda/handlebars_lexer.rb" => "lib/haparanda/handlebars_lexer.rex" do
-  sh "rex lib/haparanda/handlebars_lexer.rex --independent " \
-     "-o lib/haparanda/handlebars_lexer.rb"
+namespace :generate do
+  file "lib/haparanda/handlebars_lexer.rb" => "lib/haparanda/handlebars_lexer.rex" do
+    sh "rex lib/haparanda/handlebars_lexer.rex --independent " \
+       "-o lib/haparanda/handlebars_lexer.rb"
+  end
+
+  file "lib/haparanda/handlebars_parser.rb" => "lib/haparanda/handlebars_parser.y" do
+    sh "racc lib/haparanda/handlebars_parser.y -v -F -o lib/haparanda/handlebars_parser.rb"
+  end
+
+  task all: ["lib/haparanda/handlebars_lexer.rb", "lib/haparanda/handlebars_parser.rb"]
 end
 
-file "lib/haparanda/handlebars_parser.rb" => "lib/haparanda/handlebars_parser.y" do
-  sh "racc lib/haparanda/handlebars_parser.y -v -F -o lib/haparanda/handlebars_parser.rb"
-end
+task build: ["generate:all"]
+task test: ["generate:all"]
+task "manifest:generate" => ["generate:all"]
+task "manifest:check" => ["generate:all"]
 
-task generate: ["lib/haparanda/handlebars_lexer.rb", "lib/haparanda/handlebars_parser.rb"]
-
-task build: [:generate]
-task test: [:generate]
-task "manifest:generate" => [:generate]
-task "manifest:check" => [:generate]
-
-task default: :test
+task default: ["test", "manifest:check"]
