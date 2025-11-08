@@ -1,14 +1,15 @@
 lib/haparanda.rb
 lib/haparanda/compiler.rb
 lib/haparanda/content_combiner.rb
-lib/haparanda/handlebars_compiler.rb
 lib/haparanda/handlebars_lexer.rb
 lib/haparanda/handlebars_lexer.rex
 lib/haparanda/handlebars_parser.output
 lib/haparanda/handlebars_parser.rb
 lib/haparanda/handlebars_parser.y
 lib/haparanda/handlebars_processor.rb
+lib/haparanda/parser.rb
+lib/haparanda/standalone_whitespace_handler.rb
 lib/haparanda/template.rb
 lib/haparanda/version.rb
-lib/haparanda/whitespace_handler.rb
+lib/haparanda/whitespace_stripper.rb
 COPYING.LIB
