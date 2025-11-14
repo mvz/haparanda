@@ -515,7 +515,6 @@ describe 'Regressions' do
 
   describe "GH-1639: TypeError: Cannot read property 'apply' of undefined\" when handlebars version > 4.6.0 (undocumented, deprecated usage)" do
     it 'should treat undefined helpers like non-existing helpers' do
-      skip
       expectTemplate('{{foo}}')
         .withHelper('foo', undefined)
         .withInput({ foo: 'bar' })

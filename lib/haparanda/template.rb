@@ -14,7 +14,7 @@ module Haparanda
     end
 
     def call(input, helpers: {}, partials: {}, data: {})
-      all_helpers = @helpers.merge(helpers)
+      all_helpers = @helpers.merge(helpers).compact
       partials.transform_values! { parse_partial(_1) }
       all_partials = @partials.merge(partials)
       if @compile_options[:known_helpers_only]
