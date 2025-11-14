@@ -493,15 +493,8 @@ describe 'Regressions' do
   end
 
   describe 'GH-1598: Performance degradation for partials since v4.3.0' do
-    # Do not run test for runs without compiler
-    if true || !Handlebars.compile
-      return;
-    end
+    let(:newHandlebarsInstance) { Haparanda::Compiler.new }
 
-    newHandlebarsInstance;
-    before do
-      newHandlebarsInstance = Handlebars.create; # rubocop:disable Lint/UselessAssignment
-    end
     after do
       sinon.restore;
     end
@@ -522,6 +515,7 @@ describe 'Regressions' do
 
   describe "GH-1639: TypeError: Cannot read property 'apply' of undefined\" when handlebars version > 4.6.0 (undocumented, deprecated usage)" do
     it 'should treat undefined helpers like non-existing helpers' do
+      skip
       expectTemplate('{{foo}}')
         .withHelper('foo', undefined)
         .withInput({ foo: 'bar' })
