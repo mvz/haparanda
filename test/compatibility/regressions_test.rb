@@ -147,12 +147,11 @@ describe 'Regressions' do
   end
 
   it 'GH-375: Unicode line terminators' do
-    skip
     expectTemplate('\u2028').toCompileTo('\u2028');
   end
 
   it 'GH-534: Object prototype aliases' do
-    skip
+    skip "Ruby does not have object prototypes"
     Object.prototype[0xd834] = true;
 
     expectTemplate('{{foo}}').withInput({ foo: 'bar' }).toCompileTo('bar');
@@ -174,8 +173,11 @@ describe 'Regressions' do
       .toCompileTo(data[:arr].to_s);
   end
 
+  # NOTE: This test was changed from the original to have a decimal in the
+  # second amount, which matches the mustache man page. In Javascript, bot
+  # amounts will be floats so the use the same string rendering method. Not so
+  # in Ruby.
   it 'Mustache man page' do
-    skip
     expectTemplate(
       'Hello {{name}}. You have just won ${{value}}!{{#in_ca}} Well, ${{taxed_value}}, after taxes.{{/in_ca}}'
     )
@@ -187,7 +189,7 @@ describe 'Regressions' do
       })
       .withMessage('the hello world mustache example works')
       .toCompileTo(
-        'Hello Chris. You have just won $10000! Well, $6000, after taxes.'
+        'Hello Chris. You have just won $10000! Well, $6000.0, after taxes.'
       );
   end
 
@@ -205,14 +207,13 @@ describe 'Regressions' do
   end
 
   it 'GH-837: undefined values for helpers' do
-    skip
     expectTemplate('{{str bar.baz}}')
       .withHelpers({
         str: lambda { |value|
-          return value + '';
+          return value.inspect;
         },
       })
-      .toCompileTo('undefined');
+      .toCompileTo('nil');
   end
 
   it 'GH-926: Depths and de-dupe' do
@@ -253,7 +254,7 @@ describe 'Regressions' do
   end
 
   it 'GH-1065: Sparse arrays' do
-    skip
+    skip "Ruby does not have real sparse arrays"
     array = [];
     array[1] = 'foo';
     array[3] = 'bar';
@@ -343,11 +344,10 @@ describe 'Regressions' do
   end
 
   it 'should allow hash with protected array names' do
-    skip
     obj = { array: [1], name: 'John' };
     helpers = {
       helpa: lambda { |options|
-        return options.hash.length;
+        return options.hash[:length];
       },
     };
 
@@ -378,7 +378,7 @@ describe 'Regressions' do
 
   describe 'GH-1561: 4.3.x should still work with precompiled templates from 4.0.0 <= x < 4.3.0' do
     it 'should compile and execute templates' do
-      skip
+      skip "Haparanda has no old precompiled templates to take into account"
       newHandlebarsInstance = Handlebars.create;
 
       registerTemplate(newHandlebarsInstance, compiledTemplateVersion7);
@@ -392,7 +392,7 @@ describe 'Regressions' do
     end
 
     it 'should call "helperMissing" if a helper is missing' do
-      skip
+      skip "Haparanda has no old precompiled templates to take into account"
       newHandlebarsInstance = Handlebars.create;
 
       shouldThrow(
@@ -406,7 +406,7 @@ describe 'Regressions' do
     end
 
     it 'should pass "options.lookupProperty" to "lookup"-helper, even with old templates' do
-      skip
+      skip "Haparanda has no old precompiled templates to take into account"
       newHandlebarsInstance = Handlebars.create;
       registerTemplate(
         newHandlebarsInstance,
@@ -481,12 +481,11 @@ describe 'Regressions' do
   end
 
   it 'should allow hash with protected array names' do
-    skip
     expectTemplate('{{helpa length="foo"}}')
       .withInput({ array: [1], name: 'John' })
       .withHelpers({
         helpa: lambda { |options|
-          return options.hash.length;
+          return options.hash[:length];
         },
       })
       .toCompileTo('foo');
@@ -495,21 +494,19 @@ describe 'Regressions' do
   describe 'GH-1598: Performance degradation for partials since v4.3.0' do
     let(:newHandlebarsInstance) { Haparanda::Compiler.new }
 
-    after do
-      sinon.restore;
-    end
-
     it 'should only compile global partials once' do
-      skip
-      templateSpy = sinon.spy(newHandlebarsInstance, 'template');
-      newHandlebarsInstance.register_partial({
-        dude: 'I am a partial',
-      })
+      call_count = 0
+      newHandlebarsInstance.define_singleton_method(:template_to_ast) do |text, **compile_options|
+        call_count += 1
+        super(text, **compile_options)
+      end
+      newHandlebarsInstance.register_partials(
+        dude: 'I am a partial'
+      )
       string = 'Dudes: {{> dude}} {{> dude}}';
-      newHandlebarsInstance.compile(string).call; # This should compile template + partial once
-      newHandlebarsInstance.compile(string).call; # This should only compile template
-      equal(templateSpy.callCount, 3);
-      sinon.restore;
+      newHandlebarsInstance.compile(string).call({}); # This should compile template + partial once
+      newHandlebarsInstance.compile(string).call({}); # This should only compile template
+      equals(call_count, 3);
     end
   end
 
