@@ -378,7 +378,7 @@ describe 'Regressions' do
 
   describe 'GH-1561: 4.3.x should still work with precompiled templates from 4.0.0 <= x < 4.3.0' do
     it 'should compile and execute templates' do
-      skip
+      skip "Haparanda has no old precompiled templates to take into account"
       newHandlebarsInstance = Handlebars.create;
 
       registerTemplate(newHandlebarsInstance, compiledTemplateVersion7);
@@ -392,7 +392,7 @@ describe 'Regressions' do
     end
 
     it 'should call "helperMissing" if a helper is missing' do
-      skip
+      skip "Haparanda has no old precompiled templates to take into account"
       newHandlebarsInstance = Handlebars.create;
 
       shouldThrow(
@@ -406,7 +406,7 @@ describe 'Regressions' do
     end
 
     it 'should pass "options.lookupProperty" to "lookup"-helper, even with old templates' do
-      skip
+      skip "Haparanda has no old precompiled templates to take into account"
       newHandlebarsInstance = Handlebars.create;
       registerTemplate(
         newHandlebarsInstance,
