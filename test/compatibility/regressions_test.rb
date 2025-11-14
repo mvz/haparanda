@@ -493,15 +493,8 @@ describe 'Regressions' do
   end
 
   describe 'GH-1598: Performance degradation for partials since v4.3.0' do
-    # Do not run test for runs without compiler
-    if true || !Handlebars.compile
-      return;
-    end
+    let(:newHandlebarsInstance) { Haparanda::Compiler.new }
 
-    newHandlebarsInstance;
-    before do
-      newHandlebarsInstance = Handlebars.create; # rubocop:disable Lint/UselessAssignment
-    end
     after do
       sinon.restore;
     end
