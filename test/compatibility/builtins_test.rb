@@ -198,7 +198,7 @@ describe 'builtin helpers' do
   describe '#each' do
     before do
       handlebarsEnv.register_helper('detectDataInsideEach') do |options|
-        options.data && options.data.exclaim;
+        options.data && options.data[:exclaim];
       end;
     end
 
