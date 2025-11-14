@@ -137,6 +137,10 @@ module Haparanda
         end
       end
 
+      def [](key)
+        top[key]
+      end
+
       def key?(key)
         top.key? key
       end
@@ -152,14 +156,6 @@ module Haparanda
         result = block.call
         @stack.pop
         result
-      end
-
-      def respond_to_missing?(method_name)
-        top.key? method_name
-      end
-
-      def method_missing(method_name, *_args)
-        top[method_name] if top.key? method_name
       end
 
       private
