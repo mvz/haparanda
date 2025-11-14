@@ -54,22 +54,6 @@ module Haparanda
       def [](key)
         dig(key)
       end
-
-      def respond_to_missing?(method_name, *_args)
-        value = @value
-        case value
-        when Hash
-          value.key? method_name
-        when nil
-          false
-        else
-          value.respond_to? method_name
-        end
-      end
-
-      def method_missing(method_name, *_args)
-        dig(method_name)
-      end
     end
 
     class InputStack
