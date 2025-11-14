@@ -377,10 +377,12 @@ module Haparanda
       current_partial_block = @data.data(:"partial-block")
 
       @data.with_new_data do
+        data = @data
+        processor = self
         partial_block_wrapper = lambda do |value|
-          @data.with_new_data do
-            @data.set_data(:"partial-block", current_partial_block)
-            @input_stack.with_isolated_context(value) { process(partial_block) }
+          data.with_new_data do
+            data.set_data(:"partial-block", current_partial_block)
+            @input_stack.with_isolated_context(value) { processor.process(partial_block) }
           end
         end
 

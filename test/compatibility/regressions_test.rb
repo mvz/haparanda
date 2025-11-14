@@ -367,7 +367,6 @@ describe 'Regressions' do
   end
 
   it 'GH-1341: 4.0.7 release breaks {{#if @partial-block}} usage' do
-    skip
     expectTemplate('template {{>partial}} template')
       .withPartials({
         partialWithBlock:
