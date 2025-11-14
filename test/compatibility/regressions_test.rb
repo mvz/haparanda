@@ -290,7 +290,6 @@ describe 'Regressions' do
   end
 
   it 'GH-1089: should support failover content in multiple levels of inline partials' do
-    skip
     expectTemplate('{{#> layout}}{{/layout}}')
       .withPartials({
         doctype: 'doctype{{> content}}',

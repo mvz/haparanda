@@ -46,10 +46,11 @@ module Haparanda
     def process_partial_block(expr)
       _, name, params, hash, statements, open_strip, close_strip = expr
 
-      statements = process(statements)
-      items = statements.sexp_body
-      strip_initial_whitespace(items.first, open_strip)
-      strip_final_whitespace(items.last, close_strip)
+      if (statements = process(statements))
+        items = statements.sexp_body
+        strip_initial_whitespace(items.first, open_strip)
+        strip_final_whitespace(items.last, close_strip)
+      end
 
       s(:partial_block, name, params, hash, statements, open_strip, close_strip)
     end

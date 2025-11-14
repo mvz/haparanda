@@ -386,7 +386,7 @@ module Haparanda
 
         @data.set_data(:"partial-block", partial_block_wrapper)
 
-        partial_block.sexp_body.each do |sexp|
+        partial_block&.sexp_body&.each do |sexp|
           process(sexp) if sexp.sexp_type == :directive_block
         end
 
