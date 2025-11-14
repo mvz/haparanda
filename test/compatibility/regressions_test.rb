@@ -494,21 +494,19 @@ describe 'Regressions' do
   describe 'GH-1598: Performance degradation for partials since v4.3.0' do
     let(:newHandlebarsInstance) { Haparanda::Compiler.new }
 
-    after do
-      sinon.restore;
-    end
-
     it 'should only compile global partials once' do
-      skip
-      templateSpy = sinon.spy(newHandlebarsInstance, 'template');
-      newHandlebarsInstance.register_partial({
-        dude: 'I am a partial',
-      })
+      call_count = 0
+      newHandlebarsInstance.define_singleton_method(:template_to_ast) do |text, **compile_options|
+        call_count += 1
+        super(text, **compile_options)
+      end
+      newHandlebarsInstance.register_partials(
+        dude: 'I am a partial'
+      )
       string = 'Dudes: {{> dude}} {{> dude}}';
-      newHandlebarsInstance.compile(string).call; # This should compile template + partial once
-      newHandlebarsInstance.compile(string).call; # This should only compile template
-      equal(templateSpy.callCount, 3);
-      sinon.restore;
+      newHandlebarsInstance.compile(string).call({}); # This should compile template + partial once
+      newHandlebarsInstance.compile(string).call({}); # This should only compile template
+      equals(call_count, 3);
     end
   end
 
