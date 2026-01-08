@@ -5,7 +5,7 @@ source "https://rubygems.org"
 # The gem's dependencies are specified in haparanda.gemspec
 gemspec
 
-gem "minitest", "~> 5.25"
+gem "minitest", "~> 6.0"
 gem "minitest-focus", "~> 1.4"
 gem "rake", "~> 13.2"
 gem "rake-manifest", "~> 0.2.0"
