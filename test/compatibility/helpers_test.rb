@@ -792,13 +792,13 @@ describe 'helpers' do
   describe 'name field' do
     helpers = {
       blockHelperMissing: lambda { |*arguments|
-        return 'missing: ' + arguments[arguments.length - 1].name.to_s;
+        return 'missing: ' + arguments[-1].name.to_s;
       },
       helperMissing: lambda { |*arguments|
-        return 'helper missing: ' + arguments[arguments.length - 1].name.to_s;
+        return 'helper missing: ' + arguments[-1].name.to_s;
       },
       helper: lambda { |*arguments|
-        return 'ran: ' + arguments[arguments.length - 1].name.to_s;
+        return 'ran: ' + arguments[-1].name.to_s;
       },
     };
 
