@@ -15,7 +15,7 @@ AllCops:
     - 'lib/haparanda/handlebars_parser.rb'
     - 'ext/**/*'
   NewCops: enable
-  TargetRubyVersion: 3.2
+  TargetRubyVersion: 3.3
 
 Layout/FirstHashElementIndentation:
   Exclude:
