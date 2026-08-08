@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 SimpleCov.configure do
-  no_default_skips
+  # Remove the "test_frameworks" filter
+  clear_filters
+  load_profile "bundler_filter"
+  load_profile "hidden_filter"
+  load_profile "root_filter"
 
   group "Library" do |file|
     filename = file.project_filename
