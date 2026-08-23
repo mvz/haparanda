@@ -11,27 +11,27 @@ require "test_helper"
 
 describe 'blocks' do
   it 'array' do
-    string = '{{#goodbyes}}{{text}}! {{/goodbyes}}cruel {{world}}!';
+    string = '{{#goodbyes}}{{text}}! {{/goodbyes}}cruel {{world}}!'
 
     expectTemplate(string)
       .withInput({
         goodbyes: [
           { text: 'goodbye' },
           { text: 'Goodbye' },
-          { text: 'GOODBYE' },
+          { text: 'GOODBYE' }
         ],
-        world: 'world',
+        world: 'world'
       })
       .withMessage('Arrays iterate over the contents when not empty')
-      .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!');
+      .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!')
 
     expectTemplate(string)
       .withInput({
         goodbyes: [],
-        world: 'world',
+        world: 'world'
       })
       .withMessage('Arrays ignore the contents when empty')
-      .toCompileTo('cruel world!');
+      .toCompileTo('cruel world!')
   end
 
   it 'array without data' do
@@ -42,12 +42,12 @@ describe 'blocks' do
         goodbyes: [
           { text: 'goodbye' },
           { text: 'Goodbye' },
-          { text: 'GOODBYE' },
+          { text: 'GOODBYE' }
         ],
-        world: 'world',
+        world: 'world'
       })
       .withCompileOptions({ compat: false })
-      .toCompileTo('goodbyeGoodbyeGOODBYE goodbyeGoodbyeGOODBYE');
+      .toCompileTo('goodbyeGoodbyeGOODBYE goodbyeGoodbyeGOODBYE')
   end
 
   it 'array with @index' do
@@ -58,36 +58,36 @@ describe 'blocks' do
         goodbyes: [
           { text: 'goodbye' },
           { text: 'Goodbye' },
-          { text: 'GOODBYE' },
+          { text: 'GOODBYE' }
         ],
-        world: 'world',
+        world: 'world'
       })
       .withMessage('The @index variable is used')
-      .toCompileTo('0. goodbye! 1. Goodbye! 2. GOODBYE! cruel world!');
+      .toCompileTo('0. goodbye! 1. Goodbye! 2. GOODBYE! cruel world!')
   end
 
   it 'empty block' do
-    string = '{{#goodbyes}}{{/goodbyes}}cruel {{world}}!';
+    string = '{{#goodbyes}}{{/goodbyes}}cruel {{world}}!'
 
     expectTemplate(string)
       .withInput({
         goodbyes: [
           { text: 'goodbye' },
           { text: 'Goodbye' },
-          { text: 'GOODBYE' },
+          { text: 'GOODBYE' }
         ],
-        world: 'world',
+        world: 'world'
       })
       .withMessage('Arrays iterate over the contents when not empty')
-      .toCompileTo('cruel world!');
+      .toCompileTo('cruel world!')
 
     expectTemplate(string)
       .withInput({
         goodbyes: [],
-        world: 'world',
+        world: 'world'
       })
       .withMessage('Arrays ignore the contents when empty')
-      .toCompileTo('cruel world!');
+      .toCompileTo('cruel world!')
   end
 
   it 'block with complex lookup' do
@@ -97,15 +97,15 @@ describe 'blocks' do
         goodbyes: [
           { text: 'goodbye' },
           { text: 'Goodbye' },
-          { text: 'GOODBYE' },
-        ],
+          { text: 'GOODBYE' }
+        ]
       })
       .withMessage(
         'Templates can access variables in contexts up the stack with relative path syntax'
       )
       .toCompileTo(
         'goodbye cruel Alan! Goodbye cruel Alan! GOODBYE cruel Alan! '
-      );
+      )
   end
 
   it 'multiple blocks with complex lookup' do
@@ -115,16 +115,16 @@ describe 'blocks' do
         goodbyes: [
           { text: 'goodbye' },
           { text: 'Goodbye' },
-          { text: 'GOODBYE' },
-        ],
+          { text: 'GOODBYE' }
+        ]
       })
-      .toCompileTo('AlanAlanAlanAlanAlanAlan');
+      .toCompileTo('AlanAlanAlanAlanAlanAlan')
   end
 
   it 'block with complex lookup using nested context' do
     expectTemplate(
       '{{#goodbyes}}{{text}} cruel {{foo/../name}}! {{/goodbyes}}'
-    ).toThrow(Racc::ParseError);
+    ).toThrow(Racc::ParseError)
   end
 
   it 'block with deep nested complex lookup' do
@@ -133,9 +133,9 @@ describe 'blocks' do
     )
       .withInput({
         omg: 'OMG!',
-        outer: [{ sibling: 'sad', inner: [{ text: 'goodbye' }] }],
+        outer: [{ sibling: 'sad', inner: [{ text: 'goodbye' }] }]
       })
-      .toCompileTo('Goodbye cruel sad OMG!');
+      .toCompileTo('Goodbye cruel sad OMG!')
   end
 
   it 'works with cached blocks' do
@@ -146,10 +146,10 @@ describe 'blocks' do
       .withInput({
         person: [
           { first: 'Alan', last: 'Johnson' },
-          { first: 'Alan', last: 'Johnson' },
-        ],
+          { first: 'Alan', last: 'Johnson' }
+        ]
       })
-      .toCompileTo('Alan JohnsonAlan Johnson');
+      .toCompileTo('Alan JohnsonAlan Johnson')
   end
 
   describe 'inverted sections' do
@@ -158,7 +158,7 @@ describe 'blocks' do
         '{{#goodbyes}}{{this}}{{/goodbyes}}{{^goodbyes}}Right On!{{/goodbyes}}'
       )
         .withMessage("Inverted section rendered when value isn't set.")
-        .toCompileTo('Right On!');
+        .toCompileTo('Right On!')
     end
 
     it 'inverted section with false value' do
@@ -167,7 +167,7 @@ describe 'blocks' do
       )
         .withInput({ goodbyes: false })
         .withMessage('Inverted section rendered when value is false.')
-        .toCompileTo('Right On!');
+        .toCompileTo('Right On!')
     end
 
     it 'inverted section with empty set' do
@@ -176,46 +176,46 @@ describe 'blocks' do
       )
         .withInput({ goodbyes: [] })
         .withMessage('Inverted section rendered when value is empty set.')
-        .toCompileTo('Right On!');
+        .toCompileTo('Right On!')
     end
 
     it 'block inverted sections' do
       expectTemplate('{{#people}}{{name}}{{^}}{{none}}{{/people}}')
         .withInput({ none: 'No people' })
-        .toCompileTo('No people');
+        .toCompileTo('No people')
     end
 
     it 'chained inverted sections' do
       expectTemplate('{{#people}}{{name}}{{else if none}}{{none}}{{/people}}')
         .withInput({ none: 'No people' })
-        .toCompileTo('No people');
+        .toCompileTo('No people')
 
       expectTemplate(
         '{{#people}}{{name}}{{else if nothere}}fail{{else unless nothere}}{{none}}{{/people}}'
       )
         .withInput({ none: 'No people' })
-        .toCompileTo('No people');
+        .toCompileTo('No people')
 
       expectTemplate(
         '{{#people}}{{name}}{{else if none}}{{none}}{{else}}fail{{/people}}'
       )
         .withInput({ none: 'No people' })
-        .toCompileTo('No people');
+        .toCompileTo('No people')
     end
 
     it 'chained inverted sections with mismatch' do
       expectTemplate(
         '{{#people}}{{name}}{{else if none}}{{none}}{{/if}}'
-      ).toThrow(Racc::ParseError);
+      ).toThrow(Racc::ParseError)
     end
 
     it 'block inverted sections with empty arrays' do
       expectTemplate('{{#people}}{{name}}{{^}}{{none}}{{/people}}')
         .withInput({
           none: 'No people',
-          people: [],
+          people: []
         })
-        .toCompileTo('No people');
+        .toCompileTo('No people')
     end
   end
 
@@ -223,27 +223,27 @@ describe 'blocks' do
     it 'block standalone else sections' do
       expectTemplate('{{#people}}\n{{name}}\n{{^}}\n{{none}}\n{{/people}}\n')
         .withInput({ none: 'No people' })
-        .toCompileTo('No people\n');
+        .toCompileTo('No people\n')
 
       expectTemplate('{{#none}}\n{{.}}\n{{^}}\n{{none}}\n{{/none}}\n')
         .withInput({ none: 'No people' })
-        .toCompileTo('No people\n');
+        .toCompileTo('No people\n')
 
       expectTemplate('{{#people}}\n{{name}}\n{{^}}\n{{none}}\n{{/people}}\n')
         .withInput({ none: 'No people' })
-        .toCompileTo('No people\n');
+        .toCompileTo('No people\n')
     end
 
     it 'block standalone else sections can be disabled' do
       expectTemplate('{{#people}}\n{{name}}\n{{^}}\n{{none}}\n{{/people}}\n')
         .withInput({ none: 'No people' })
         .withCompileOptions({ ignore_standalone: true })
-        .toCompileTo('\nNo people\n\n');
+        .toCompileTo('\nNo people\n\n')
 
       expectTemplate('{{#none}}\n{{.}}\n{{^}}\nFail\n{{/none}}\n')
         .withInput({ none: 'No people' })
         .withCompileOptions({ ignore_standalone: true })
-        .toCompileTo('\nNo people\n\n');
+        .toCompileTo('\nNo people\n\n')
     end
 
     it 'block standalone chained else sections' do
@@ -251,21 +251,21 @@ describe 'blocks' do
         '{{#people}}\n{{name}}\n{{else if none}}\n{{none}}\n{{/people}}\n'
       )
         .withInput({ none: 'No people' })
-        .toCompileTo('No people\n');
+        .toCompileTo('No people\n')
 
       expectTemplate(
         '{{#people}}\n{{name}}\n{{else if none}}\n{{none}}\n{{^}}\n{{/people}}\n'
       )
         .withInput({ none: 'No people' })
-        .toCompileTo('No people\n');
+        .toCompileTo('No people\n')
     end
 
     it 'should handle nesting' do
       expectTemplate('{{#data}}\n{{#if true}}\n{{.}}\n{{/if}}\n{{/data}}\nOK.')
         .withInput({
-          data: [1, 3, 5],
+          data: [1, 3, 5]
         })
-        .toCompileTo('1\n3\n5\nOK.');
+        .toCompileTo('1\n3\n5\nOK.')
     end
   end
 
@@ -276,7 +276,7 @@ describe 'blocks' do
       )
         .withInput({ omg: 'OMG!', outer: [{ inner: [{ text: 'goodbye' }] }] })
         .withCompileOptions({ compat: true })
-        .toCompileTo('Goodbye cruel OMG!');
+        .toCompileTo('Goodbye cruel OMG!')
     end
 
     it 'block with deep recursive pathed lookup' do
@@ -285,10 +285,10 @@ describe 'blocks' do
       )
         .withInput({
           omg: { yes: 'OMG!' },
-          outer: [{ inner: [{ yes: 'no', text: 'goodbye' }] }],
+          outer: [{ inner: [{ yes: 'no', text: 'goodbye' }] }]
         })
         .withCompileOptions({ compat: true })
-        .toCompileTo('Goodbye cruel OMG!');
+        .toCompileTo('Goodbye cruel OMG!')
     end
 
     it 'block with missed recursive lookup' do
@@ -297,10 +297,10 @@ describe 'blocks' do
       )
         .withInput({
           omg: { no: 'OMG!' },
-          outer: [{ inner: [{ yes: 'no', text: 'goodbye' }] }],
+          outer: [{ inner: [{ yes: 'no', text: 'goodbye' }] }]
         })
         .withCompileOptions({ compat: true })
-        .toCompileTo('Goodbye cruel ');
+        .toCompileTo('Goodbye cruel ')
     end
   end
 
@@ -309,25 +309,25 @@ describe 'blocks' do
       skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       expectTemplate('{{#helper}}{{*decorator}}{{/helper}}')
         .withHelper('helper', lambda { |options|
-          return options.fn.run;
+          return options.fn.run
         })
         .withDecorator('decorator', lambda { |fn|
-          fn.run = 'success';
-          return fn;
+          fn.run = 'success'
+          return fn
         })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should apply allow undefined return' do
       skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       expectTemplate('{{#helper}}{{*decorator}}suc{{/helper}}')
         .withHelper('helper', lambda { |options|
-          return options.fn + options.fn.run;
+          return options.fn + options.fn.run
         })
         .withDecorator('decorator', lambda { |fn|
-          fn.run = 'cess';
+          fn.run = 'cess'
         })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should apply block decorators' do
@@ -336,13 +336,13 @@ describe 'blocks' do
         '{{#helper}}{{#*decorator}}success{{/decorator}}{{/helper}}'
       )
         .withHelper('helper', lambda { |options|
-          return options.fn.run;
+          return options.fn.run
         })
         .withDecorator('decorator', lambda { |fn, _props, _container, options|
-          fn.run = options.fn;
-          return fn;
+          fn.run = options.fn
+          return fn
         })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should support nested decorators' do
@@ -351,18 +351,18 @@ describe 'blocks' do
         '{{#helper}}{{#*decorator}}{{#*nested}}suc{{/nested}}cess{{/decorator}}{{/helper}}'
       )
         .withHelper('helper', lambda { |options|
-          return options.fn.run;
+          return options.fn.run
         })
         .withDecorators({
           decorator: lambda { |fn, _props, _container, options|
-            fn.run = options.fn.nested + options.fn;
-            return fn;
+            fn.run = options.fn.nested + options.fn
+            return fn
           },
           nested: lambda { |_fn, props, _container, options|
-            props.nested = options.fn;
-          },
+            props.nested = options.fn
+          }
         })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should apply multiple decorators' do
@@ -371,86 +371,86 @@ describe 'blocks' do
         '{{#helper}}{{#*decorator}}suc{{/decorator}}{{#*decorator}}cess{{/decorator}}{{/helper}}'
       )
         .withHelper('helper', lambda { |options|
-          return options.fn.run;
+          return options.fn.run
         })
         .withDecorator('decorator', lambda { |fn, _props, _container, options|
-          fn.run = (fn.run || '') + options.fn;
-          return fn;
+          fn.run = (fn.run || '') + options.fn
+          return fn
         })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should access parent variables' do
       skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
       expectTemplate('{{#helper}}{{*decorator foo}}{{/helper}}')
         .withHelper('helper', lambda { |options|
-          return options.fn.run;
+          return options.fn.run
         })
         .withDecorator('decorator', lambda { |fn, _props, _container, options|
-          fn.run = options.args;
-          return fn;
+          fn.run = options.args
+          return fn
         })
         .withInput({ foo: 'success' })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should work with root program' do
       skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
-      run = false;
+      run = false
       expectTemplate('{{*decorator "success"}}')
         .withDecorator('decorator', lambda { |fn, _props, _container, options|
-          equals(options.args[0], 'success');
-          run = true;
-          return fn;
+          equals(options.args[0], 'success')
+          run = true
+          return fn
         })
         .withInput({ foo: 'success' })
-        .toCompileTo('');
-      equals(run, true);
+        .toCompileTo('')
+      equals(run, true)
     end
 
     it 'should fail when accessing variables from root' do
       skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
-      run = false;
+      run = false
       expectTemplate('{{*decorator foo}}')
         .withDecorator('decorator', lambda { |fn, _props, _container, options|
-          equals(options.args[0], undefined);
-          run = true;
-          return fn;
+          equals(options.args[0], undefined)
+          run = true
+          return fn
         })
         .withInput({ foo: 'fail' })
-        .toCompileTo('');
-      equals(run, true);
+        .toCompileTo('')
+      equals(run, true)
     end
 
     describe 'registration' do
       it 'unregisters' do
         skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
-        handlebarsEnv.decorators = {};
+        handlebarsEnv.decorators = {}
 
         handlebarsEnv.registerDecorator('foo') do
-          return 'fail';
+          return 'fail'
         end
 
-        equals(!!handlebarsEnv.decorators.foo, true);
-        handlebarsEnv.unregisterDecorator('foo');
-        equals(handlebarsEnv.decorators.foo, undefined);
+        equals(!!handlebarsEnv.decorators.foo, true)
+        handlebarsEnv.unregisterDecorator('foo')
+        equals(handlebarsEnv.decorators.foo, undefined)
       end
 
       it 'allows multiple globals' do
         skip "Custom decorators are deprecated in Handlebars and not supported by Haparanda"
-        handlebarsEnv.decorators = {};
+        handlebarsEnv.decorators = {}
 
         handlebarsEnv.registerDecorator({
           foo: -> {},
-          bar: -> {},
+          bar: -> {}
         })
 
-        equals(!!handlebarsEnv.decorators.foo, true);
-        equals(!!handlebarsEnv.decorators.bar, true);
-        handlebarsEnv.unregisterDecorator('foo');
-        handlebarsEnv.unregisterDecorator('bar');
-        equals(handlebarsEnv.decorators.foo, undefined);
-        equals(handlebarsEnv.decorators.bar, undefined);
+        equals(!!handlebarsEnv.decorators.foo, true)
+        equals(!!handlebarsEnv.decorators.bar, true)
+        handlebarsEnv.unregisterDecorator('foo')
+        handlebarsEnv.unregisterDecorator('bar')
+        equals(handlebarsEnv.decorators.foo, undefined)
+        equals(handlebarsEnv.decorators.bar, undefined)
       end
 
       it 'fails with multiple and args' do
@@ -460,18 +460,18 @@ describe 'blocks' do
             handlebarsEnv.registerDecorator(
               {
                 world: lambda {
-                  return 'world!';
+                  return 'world!'
                 },
                 testHelper: lambda {
-                  return 'found it!';
-                },
+                  return 'found it!'
+                }
               },
               {}
-            );
+            )
           },
           Error,
           'Arg not supported with multiple decorators'
-        );
+        )
       end
     end
   end

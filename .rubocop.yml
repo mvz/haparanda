@@ -122,10 +122,6 @@ Style/SafeNavigation:
   Exclude:
     - 'test/compatibility/*'
 
-Style/Semicolon:
-  Exclude:
-    - 'test/compatibility/*'
-
 # Prefer symbols to look like symbols
 Style/SymbolArray:
   EnforcedStyle: brackets
@@ -141,14 +137,6 @@ Style/StringLiterals:
     - 'test/compatibility/*'
 
 Style/StringConcatenation:
-  Exclude:
-    - 'test/compatibility/*'
-
-Style/TrailingCommaInArrayLiteral:
-  Exclude:
-    - 'test/compatibility/*'
-
-Style/TrailingCommaInHashLiteral:
   Exclude:
     - 'test/compatibility/*'
 
