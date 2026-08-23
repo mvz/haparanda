@@ -12,125 +12,125 @@ require "test_helper"
 describe 'builtin helpers' do
   describe '#if' do
     it 'if' do
-      string = '{{#if goodbye}}GOODBYE {{/if}}cruel {{world}}!';
+      string = '{{#if goodbye}}GOODBYE {{/if}}cruel {{world}}!'
 
       expectTemplate(string)
         .withInput({
           goodbye: true,
-          world: 'world',
+          world: 'world'
         })
         .withMessage('if with boolean argument shows the contents when true')
-        .toCompileTo('GOODBYE cruel world!');
+        .toCompileTo('GOODBYE cruel world!')
 
       expectTemplate(string)
         .withInput({
           goodbye: 'dummy',
-          world: 'world',
+          world: 'world'
         })
         .withMessage('if with string argument shows the contents')
-        .toCompileTo('GOODBYE cruel world!');
+        .toCompileTo('GOODBYE cruel world!')
 
       expectTemplate(string)
         .withInput({
           goodbye: false,
-          world: 'world',
+          world: 'world'
         })
         .withMessage(
           'if with boolean argument does not show the contents when false'
         )
-        .toCompileTo('cruel world!');
+        .toCompileTo('cruel world!')
 
       expectTemplate(string)
         .withInput({ world: 'world' })
         .withMessage('if with undefined does not show the contents')
-        .toCompileTo('cruel world!');
+        .toCompileTo('cruel world!')
 
       expectTemplate(string)
         .withInput({
           goodbye: ['foo'],
-          world: 'world',
+          world: 'world'
         })
         .withMessage('if with non-empty array shows the contents')
-        .toCompileTo('GOODBYE cruel world!');
+        .toCompileTo('GOODBYE cruel world!')
 
       skip "we only consider falsy Ruby values as false"
       expectTemplate(string)
         .withInput({
           goodbye: [],
-          world: 'world',
+          world: 'world'
         })
         .withMessage('if with empty array does not show the contents')
-        .toCompileTo('cruel world!');
+        .toCompileTo('cruel world!')
 
       expectTemplate(string)
         .withInput({
           goodbye: 0,
-          world: 'world',
+          world: 'world'
         })
         .withMessage('if with zero does not show the contents')
-        .toCompileTo('cruel world!');
+        .toCompileTo('cruel world!')
 
       expectTemplate(
         '{{#if goodbye includeZero=true}}GOODBYE {{/if}}cruel {{world}}!'
       )
         .withInput({
           goodbye: 0,
-          world: 'world',
+          world: 'world'
         })
         .withMessage('if with zero does not show the contents')
-        .toCompileTo('GOODBYE cruel world!');
+        .toCompileTo('GOODBYE cruel world!')
     end
 
     it 'if with function argument' do
-      string = '{{#if goodbye}}GOODBYE {{/if}}cruel {{world}}!';
+      string = '{{#if goodbye}}GOODBYE {{/if}}cruel {{world}}!'
 
       expectTemplate(string)
         .withInput({
           goodbye: lambda {
-            return true;
+            return true
           },
-          world: 'world',
+          world: 'world'
         })
         .withMessage(
           'if with function shows the contents when function returns true'
         )
-        .toCompileTo('GOODBYE cruel world!');
+        .toCompileTo('GOODBYE cruel world!')
 
       expectTemplate(string)
         .withInput({
           goodbye: lambda {
-            return this[:world];
+            return this[:world]
           },
-          world: 'world',
+          world: 'world'
         })
         .withMessage(
           'if with function shows the contents when function returns string'
         )
-        .toCompileTo('GOODBYE cruel world!');
+        .toCompileTo('GOODBYE cruel world!')
 
       expectTemplate(string)
         .withInput({
           goodbye: lambda {
-            return false;
+            return false
           },
-          world: 'world',
+          world: 'world'
         })
         .withMessage(
           'if with function does not show the contents when returns false'
         )
-        .toCompileTo('cruel world!');
+        .toCompileTo('cruel world!')
 
       expectTemplate(string)
         .withInput({
           goodbye: lambda {
-            return this[:foo];
+            return this[:foo]
           },
-          world: 'world',
+          world: 'world'
         })
         .withMessage(
           'if with function does not show the contents when returns undefined'
         )
-        .toCompileTo('cruel world!');
+        .toCompileTo('cruel world!')
     end
 
     it 'should not change the depth list' do
@@ -139,9 +139,9 @@ describe 'builtin helpers' do
       )
         .withInput({
           foo: { goodbye: true },
-          world: 'world',
+          world: 'world'
         })
-        .toCompileTo('GOODBYE cruel world!');
+        .toCompileTo('GOODBYE cruel world!')
     end
   end
 
@@ -151,10 +151,10 @@ describe 'builtin helpers' do
         .withInput({
           person: {
             first: 'Alan',
-            last: 'Johnson',
-          },
+            last: 'Johnson'
+          }
         })
-        .toCompileTo('Alan Johnson');
+        .toCompileTo('Alan Johnson')
     end
 
     it 'with with function argument' do
@@ -163,17 +163,17 @@ describe 'builtin helpers' do
           person: lambda {
             return {
               first: 'Alan',
-              last: 'Johnson',
-            };
-          },
+              last: 'Johnson'
+            }
+          }
         })
-        .toCompileTo('Alan Johnson');
+        .toCompileTo('Alan Johnson')
     end
 
     it 'with with else' do
       expectTemplate(
         '{{#with person}}Person is present{{else}}Person is not present{{/with}}'
-      ).toCompileTo('Person is not present');
+      ).toCompileTo('Person is not present')
     end
 
     it 'with provides block parameter' do
@@ -181,51 +181,51 @@ describe 'builtin helpers' do
         .withInput({
           person: {
             first: 'Alan',
-            last: 'Johnson',
-          },
+            last: 'Johnson'
+          }
         })
-        .toCompileTo('Alan Johnson');
+        .toCompileTo('Alan Johnson')
     end
 
     it 'works when data is disabled' do
       expectTemplate('{{#with person as |foo|}}{{foo.first}} {{last}}{{/with}}')
         .withInput({ person: { first: 'Alan', last: 'Johnson' } })
         .withCompileOptions({ data: false })
-        .toCompileTo('Alan Johnson');
+        .toCompileTo('Alan Johnson')
     end
   end
 
   describe '#each' do
     before do
       handlebarsEnv.register_helper('detectDataInsideEach') do |options|
-        options.data && options.data[:exclaim];
-      end;
+        options.data && options.data[:exclaim]
+      end
     end
 
     it 'each' do
-      string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!';
+      string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!'
 
       expectTemplate(string)
         .withInput({
           goodbyes: [
             { text: 'goodbye' },
             { text: 'Goodbye' },
-            { text: 'GOODBYE' },
+            { text: 'GOODBYE' }
           ],
-          world: 'world',
+          world: 'world'
         })
         .withMessage(
           'each with array argument iterates over the contents when not empty'
         )
-        .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!');
+        .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!')
 
       expectTemplate(string)
         .withInput({
           goodbyes: [],
-          world: 'world',
+          world: 'world'
         })
         .withMessage('each with array argument ignores the contents when empty')
-        .toCompileTo('cruel world!');
+        .toCompileTo('cruel world!')
     end
 
     it 'each without data' do
@@ -234,61 +234,61 @@ describe 'builtin helpers' do
           goodbyes: [
             { text: 'goodbye' },
             { text: 'Goodbye' },
-            { text: 'GOODBYE' },
+            { text: 'GOODBYE' }
           ],
-          world: 'world',
+          world: 'world'
         })
         .withRuntimeOptions({ data: false })
         .withCompileOptions({ data: false })
-        .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!');
+        .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!')
 
       expectTemplate('{{#each .}}{{.}}{{/each}}')
         .withInput({ goodbyes: 'cruel', world: 'world' })
         .withRuntimeOptions({ data: false })
         .withCompileOptions({ data: false })
-        .toCompileTo('cruelworld');
+        .toCompileTo('cruelworld')
     end
 
     it 'each without context' do
       undefined = nil
       expectTemplate('{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!')
         .withInput(undefined)
-        .toCompileTo('cruel !');
+        .toCompileTo('cruel !')
     end
 
     it 'each with an object and @key' do
       skip "we don't support using #each with an arbitrary object"
       string =
-        '{{#each goodbyes}}{{@key}}. {{text}}! {{/each}}cruel {{world}}!';
+        '{{#each goodbyes}}{{@key}}. {{text}}! {{/each}}cruel {{world}}!'
 
       function Clazz() {
-        this['<b>#1</b>'] = { text: 'goodbye' };
-        this[2] = { text: 'GOODBYE' };
+        this['<b>#1</b>'] = { text: 'goodbye' }
+        this[2] = { text: 'GOODBYE' }
       }
-      Clazz.prototype.foo = 'fail';
-      hash = { goodbyes: Clazz.new, world: 'world' };
+      Clazz.prototype.foo = 'fail'
+      hash = { goodbyes: Clazz.new, world: 'world' }
 
       # Object property iteration order is undefined according to ECMA spec,
       # so we need to check both possible orders
       # @see http://stackoverflow.com/questions/280713/elements-order-in-a-for-in-loop
-      actual = compileWithPartials(string, hash);
+      actual = compileWithPartials(string, hash)
       expected1 =
-        '&lt;b&gt;#1&lt;/b&gt;. goodbye! 2. GOODBYE! cruel world!';
+        '&lt;b&gt;#1&lt;/b&gt;. goodbye! 2. GOODBYE! cruel world!'
       expected2 =
-        '2. GOODBYE! &lt;b&gt;#1&lt;/b&gt;. goodbye! cruel world!';
+        '2. GOODBYE! &lt;b&gt;#1&lt;/b&gt;. goodbye! cruel world!'
 
       equals(
         actual == expected1 || actual == expected2,
         true,
         'each with object argument iterates over the contents when not empty'
-      );
+      )
 
       expectTemplate(string)
         .withInput({
           goodbyes: {},
-          world: 'world',
+          world: 'world'
         })
-        .toCompileTo('cruel world!');
+        .toCompileTo('cruel world!')
     end
 
     it 'each with @index' do
@@ -299,12 +299,12 @@ describe 'builtin helpers' do
           goodbyes: [
             { text: 'goodbye' },
             { text: 'Goodbye' },
-            { text: 'GOODBYE' },
+            { text: 'GOODBYE' }
           ],
-          world: 'world',
+          world: 'world'
         })
         .withMessage('The @index variable is used')
-        .toCompileTo('0. goodbye! 1. Goodbye! 2. GOODBYE! cruel world!');
+        .toCompileTo('0. goodbye! 1. Goodbye! 2. GOODBYE! cruel world!')
     end
 
     it 'each with nested @index' do
@@ -315,14 +315,14 @@ describe 'builtin helpers' do
           goodbyes: [
             { text: 'goodbye' },
             { text: 'Goodbye' },
-            { text: 'GOODBYE' },
+            { text: 'GOODBYE' }
           ],
-          world: 'world',
+          world: 'world'
         })
         .withMessage('The @index variable is used')
         .toCompileTo(
           '0. goodbye! 0 1 2 After 0 1. Goodbye! 0 1 2 After 1 2. GOODBYE! 0 1 2 After 2 cruel world!'
-        );
+        )
     end
 
     it 'each with block params' do
@@ -331,11 +331,11 @@ describe 'builtin helpers' do
       )
         .withInput({
           goodbyes: [{ text: 'goodbye' }, { text: 'Goodbye' }],
-          world: 'world',
+          world: 'world'
         })
         .toCompileTo(
           '0. goodbye!  0 0 0 1 After 0 1. Goodbye!  1 0 1 1 After 1 cruel world!'
-        );
+        )
     end
 
     it 'each with block params and strict compilation' do
@@ -344,7 +344,7 @@ describe 'builtin helpers' do
       )
         .withCompileOptions({ strict: true })
         .withInput({ goodbyes: [{ text: 'goodbye' }, { text: 'Goodbye' }] })
-        .toCompileTo('0. goodbye!1. Goodbye!');
+        .toCompileTo('0. goodbye!1. Goodbye!')
     end
 
     it 'each object with @index' do
@@ -355,12 +355,12 @@ describe 'builtin helpers' do
           goodbyes: {
             a: { text: 'goodbye' },
             b: { text: 'Goodbye' },
-            c: { text: 'GOODBYE' },
+            c: { text: 'GOODBYE' }
           },
-          world: 'world',
+          world: 'world'
         })
         .withMessage('The @index variable is used')
-        .toCompileTo('0. goodbye! 1. Goodbye! 2. GOODBYE! cruel world!');
+        .toCompileTo('0. goodbye! 1. Goodbye! 2. GOODBYE! cruel world!')
     end
 
     it 'each with @first' do
@@ -371,12 +371,12 @@ describe 'builtin helpers' do
           goodbyes: [
             { text: 'goodbye' },
             { text: 'Goodbye' },
-            { text: 'GOODBYE' },
+            { text: 'GOODBYE' }
           ],
-          world: 'world',
+          world: 'world'
         })
         .withMessage('The @first variable is used')
-        .toCompileTo('goodbye! cruel world!');
+        .toCompileTo('goodbye! cruel world!')
     end
 
     it 'each with nested @first' do
@@ -387,14 +387,14 @@ describe 'builtin helpers' do
           goodbyes: [
             { text: 'goodbye' },
             { text: 'Goodbye' },
-            { text: 'GOODBYE' },
+            { text: 'GOODBYE' }
           ],
-          world: 'world',
+          world: 'world'
         })
         .withMessage('The @first variable is used')
         .toCompileTo(
           '(goodbye! goodbye! goodbye!) (goodbye!) (goodbye!) cruel world!'
-        );
+        )
     end
 
     it 'each object with @first' do
@@ -403,10 +403,10 @@ describe 'builtin helpers' do
       )
         .withInput({
           goodbyes: { foo: { text: 'goodbye' }, bar: { text: 'Goodbye' } },
-          world: 'world',
+          world: 'world'
         })
         .withMessage('The @first variable is used')
-        .toCompileTo('goodbye! cruel world!');
+        .toCompileTo('goodbye! cruel world!')
     end
 
     it 'each with @last' do
@@ -417,12 +417,12 @@ describe 'builtin helpers' do
           goodbyes: [
             { text: 'goodbye' },
             { text: 'Goodbye' },
-            { text: 'GOODBYE' },
+            { text: 'GOODBYE' }
           ],
-          world: 'world',
+          world: 'world'
         })
         .withMessage('The @last variable is used')
-        .toCompileTo('GOODBYE! cruel world!');
+        .toCompileTo('GOODBYE! cruel world!')
     end
 
     it 'each object with @last' do
@@ -431,10 +431,10 @@ describe 'builtin helpers' do
       )
         .withInput({
           goodbyes: { foo: { text: 'goodbye' }, bar: { text: 'Goodbye' } },
-          world: 'world',
+          world: 'world'
         })
         .withMessage('The @last variable is used')
-        .toCompileTo('Goodbye! cruel world!');
+        .toCompileTo('Goodbye! cruel world!')
     end
 
     it 'each with nested @last' do
@@ -445,18 +445,18 @@ describe 'builtin helpers' do
           goodbyes: [
             { text: 'goodbye' },
             { text: 'Goodbye' },
-            { text: 'GOODBYE' },
+            { text: 'GOODBYE' }
           ],
-          world: 'world',
+          world: 'world'
         })
         .withMessage('The @last variable is used')
         .toCompileTo(
           '(GOODBYE!) (GOODBYE!) (GOODBYE! GOODBYE! GOODBYE!) cruel world!'
-        );
+        )
     end
 
     it 'each with function argument' do
-      string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!';
+      string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!'
 
       expectTemplate(string)
         .withInput({
@@ -464,25 +464,25 @@ describe 'builtin helpers' do
             return [
               { text: 'goodbye' },
               { text: 'Goodbye' },
-              { text: 'GOODBYE' },
-            ];
+              { text: 'GOODBYE' }
+            ]
           },
-          world: 'world',
+          world: 'world'
         })
         .withMessage(
           'each with array function argument iterates over the contents when not empty'
         )
-        .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!');
+        .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!')
 
       expectTemplate(string)
         .withInput({
           goodbyes: [],
-          world: 'world',
+          world: 'world'
         })
         .withMessage(
           'each with array function argument ignores the contents when empty'
         )
-        .toCompileTo('cruel world!');
+        .toCompileTo('cruel world!')
     end
 
     it 'each object when last key is an empty string' do
@@ -493,12 +493,12 @@ describe 'builtin helpers' do
           goodbyes: {
             a: { text: 'goodbye' },
             b: { text: 'Goodbye' },
-            '': { text: 'GOODBYE' },
+            '': { text: 'GOODBYE' }
           },
-          world: 'world',
+          world: 'world'
         })
         .withMessage('Empty string key is not skipped')
-        .toCompileTo('0. goodbye! 1. Goodbye! 2. GOODBYE! cruel world!');
+        .toCompileTo('0. goodbye! 1. Goodbye! 2. GOODBYE! cruel world!')
     end
 
     it 'data passed to helpers' do
@@ -509,61 +509,61 @@ describe 'builtin helpers' do
         .withMessage('should output data')
         .withRuntimeOptions({
           data: {
-            exclaim: '!',
-          },
+            exclaim: '!'
+          }
         })
-        .toCompileTo('a!b!c!');
+        .toCompileTo('a!b!c!')
     end
 
     it 'each on implicit context' do
       expectTemplate('{{#each}}{{text}}! {{/each}}cruel world!').toThrow(
         ArgumentError,
         'Expected 1 argument for #each'
-      );
+      )
     end
 
     it 'each on Hash' do
       map = [
         [1, 'one'],
         [2, 'two'],
-        [3, 'three'],
+        [3, 'three']
       ].to_h
 
       expectTemplate('{{#each map}}{{@key}}(i{{@index}}) {{.}} {{/each}}')
         .withInput({ map: map })
-        .toCompileTo('1(i0) one 2(i1) two 3(i2) three ');
+        .toCompileTo('1(i0) one 2(i1) two 3(i2) three ')
 
       expectTemplate('{{#each map}}{{#if @first}}{{.}}{{/if}}{{/each}}')
         .withInput({ map: map })
-        .toCompileTo('one');
+        .toCompileTo('one')
 
       expectTemplate('{{#each map}}{{#if @last}}{{.}}{{/if}}{{/each}}')
         .withInput({ map: map })
-        .toCompileTo('three');
+        .toCompileTo('three')
 
       expectTemplate('{{#each map}}{{.}}{{/each}}not-in-each')
         .withInput({ map: {} })
-        .toCompileTo('not-in-each');
+        .toCompileTo('not-in-each')
     end
 
     it 'each on Set' do
-      set = Set.new([1, 2, 3]);
+      set = Set.new([1, 2, 3])
 
       expectTemplate('{{#each set}}{{@key}}(i{{@index}}) {{.}} {{/each}}')
         .withInput({ set: set })
-        .toCompileTo('0(i0) 1 1(i1) 2 2(i2) 3 ');
+        .toCompileTo('0(i0) 1 1(i1) 2 2(i2) 3 ')
 
       expectTemplate('{{#each set}}{{#if @first}}{{.}}{{/if}}{{/each}}')
         .withInput({ set: set })
-        .toCompileTo('1');
+        .toCompileTo('1')
 
       expectTemplate('{{#each set}}{{#if @last}}{{.}}{{/if}}{{/each}}')
         .withInput({ set: set })
-        .toCompileTo('3');
+        .toCompileTo('3')
 
       expectTemplate('{{#each set}}{{.}}{{/each}}not-in-each')
         .withInput({ set: Set.new })
-        .toCompileTo('not-in-each');
+        .toCompileTo('not-in-each')
     end
 
     if true || global.Symbol&.iterator
@@ -572,7 +572,7 @@ describe 'builtin helpers' do
           attr_accessor :arr
 
           def initialize(arr)
-            self.arr = arr;
+            self.arr = arr
           end
 
           def each
@@ -581,31 +581,31 @@ describe 'builtin helpers' do
 
           include Enumerable
         end
-        string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!';
+        string = '{{#each goodbyes}}{{text}}! {{/each}}cruel {{world}}!'
 
         expectTemplate(string)
           .withInput({
             goodbyes: klass.new([
               { text: 'goodbye' },
               { text: 'Goodbye' },
-              { text: 'GOODBYE' },
+              { text: 'GOODBYE' }
             ]),
-            world: 'world',
+            world: 'world'
           })
           .withMessage(
             'each with array argument iterates over the contents when not empty'
           )
-          .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!');
+          .toCompileTo('goodbye! Goodbye! GOODBYE! cruel world!')
 
         expectTemplate(string)
           .withInput({
             goodbyes: klass.new([]),
-            world: 'world',
+            world: 'world'
           })
           .withMessage(
             'each with array argument ignores the contents when empty'
           )
-          .toCompileTo('cruel world!');
+          .toCompileTo('cruel world!')
       end
     end
   end
@@ -622,32 +622,32 @@ describe 'builtin helpers' do
     it 'should call logger at default level' do
       levelArg, logArg = nil, nil
       handlebarsEnv.log = lambda { |level, arg|
-        levelArg = level;
-        logArg = arg;
-      };
+        levelArg = level
+        logArg = arg
+      }
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .withMessage('log should not display')
-        .toCompileTo('');
-      equals(1, levelArg, 'should call log with 1');
-      equals('whee', logArg, "should call log with 'whee'");
+        .toCompileTo('')
+      equals(1, levelArg, 'should call log with 1')
+      equals('whee', logArg, "should call log with 'whee'")
     end
 
     it 'should call logger at data level' do
       levelArg, logArg = nil, nil
       handlebarsEnv.log = lambda { |level, arg|
-        levelArg = level;
-        logArg = arg;
-      };
+        levelArg = level
+        logArg = arg
+      }
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: '03' } })
         .withCompileOptions({ data: true })
-        .toCompileTo('');
-      equals('03', levelArg);
-      equals('whee', logArg);
+        .toCompileTo('')
+      equals('03', levelArg)
+      equals('whee', logArg)
     end
 
     it 'should output to info' do
@@ -656,7 +656,7 @@ describe 'builtin helpers' do
 
       expectTemplate('{{log blah}}')
         .withInput({ blah: 'whee' })
-        .toCompileTo('');
+        .toCompileTo('')
 
       $stderr = @stderr
       io.rewind
@@ -672,7 +672,7 @@ describe 'builtin helpers' do
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: '03' } })
         .withCompileOptions({ data: true })
-        .toCompileTo('');
+        .toCompileTo('')
 
       $stderr = @stderr
       io.rewind
@@ -682,9 +682,9 @@ describe 'builtin helpers' do
 
     it 'should handle missing logger' do
       skip "no ruby equivalent of this case exists really"
-      called = false;
+      called = false
 
-      console.error = undefined;
+      console.error = undefined
       # console.log = lambda { |log|
       #   equals('whee', log);
       #   called = true;
@@ -695,8 +695,8 @@ describe 'builtin helpers' do
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: '03' } })
         .withCompileOptions({ data: true })
-        .toCompileTo('');
-      equals(true, called);
+        .toCompileTo('')
+      equals(true, called)
     end
 
     it 'should handle string log levels' do
@@ -707,7 +707,7 @@ describe 'builtin helpers' do
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: 'error' } })
         .withCompileOptions({ data: true })
-        .toCompileTo('');
+        .toCompileTo('')
 
       $stderr = @stderr
       io.rewind
@@ -721,7 +721,7 @@ describe 'builtin helpers' do
         .withInput({ blah: 'whee' })
         .withRuntimeOptions({ data: { level: 'ERROR' } })
         .withCompileOptions({ data: true })
-        .toCompileTo('');
+        .toCompileTo('')
 
       $stderr = @stderr
       io.rewind
@@ -735,7 +735,7 @@ describe 'builtin helpers' do
 
       expectTemplate('{{log blah level="error"}}')
         .withInput({ blah: 'whee' })
-        .toCompileTo('');
+        .toCompileTo('')
 
       $stderr = @stderr
       io.rewind
@@ -749,7 +749,7 @@ describe 'builtin helpers' do
 
       expectTemplate('{{log blah level="debug"}}')
         .withInput({ blah: 'whee' })
-        .toCompileTo('');
+        .toCompileTo('')
 
       $stderr = @stderr
       io.rewind
@@ -763,7 +763,7 @@ describe 'builtin helpers' do
 
       expectTemplate('{{log blah "foo" 1}}')
         .withInput({ blah: 'whee' })
-        .toCompileTo('');
+        .toCompileTo('')
 
       $stderr = @stderr
       io.rewind
@@ -775,7 +775,7 @@ describe 'builtin helpers' do
       io = StringIO.new(String.new, "w+")
       $stderr = io
 
-      expectTemplate('{{log}}').withInput({ blah: 'whee' }).toCompileTo('');
+      expectTemplate('{{log}}').withInput({ blah: 'whee' }).toCompileTo('')
 
       $stderr = @stderr
       io.rewind
@@ -788,13 +788,13 @@ describe 'builtin helpers' do
     it 'should lookup arbitrary content' do
       expectTemplate('{{#each goodbyes}}{{lookup ../data .}}{{/each}}')
         .withInput({ goodbyes: [0, 1], data: ['foo', 'bar'] })
-        .toCompileTo('foobar');
+        .toCompileTo('foobar')
     end
 
     it 'should not fail on undefined value' do
       expectTemplate('{{#each goodbyes}}{{lookup ../bar .}}{{/each}}')
         .withInput({ goodbyes: [0, 1], data: ['foo', 'bar'] })
-        .toCompileTo('');
+        .toCompileTo('')
     end
   end
 end

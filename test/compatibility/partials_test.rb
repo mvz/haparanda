@@ -11,48 +11,48 @@ require "test_helper"
 
 describe 'partials' do
   it 'basic partials' do
-    string = 'Dudes: {{#dudes}}{{> dude}}{{/dudes}}';
-    partial = '{{name}} ({{url}}) ';
+    string = 'Dudes: {{#dudes}}{{> dude}}{{/dudes}}'
+    partial = '{{name}} ({{url}}) '
     hash = {
       dudes: [
         { name: 'Yehuda', url: 'http://yehuda' },
-        { name: 'Alan', url: 'http://alan' },
-      ],
-    };
+        { name: 'Alan', url: 'http://alan' }
+      ]
+    }
 
     expectTemplate(string)
       .withInput(hash)
       .withPartials({ dude: partial })
-      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ');
+      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ')
 
     expectTemplate(string)
       .withInput(hash)
       .withPartials({ dude: partial })
       .withRuntimeOptions({ data: false })
       .withCompileOptions({ data: false })
-      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ');
+      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ')
   end
 
   it 'dynamic partials' do
-    string = 'Dudes: {{#dudes}}{{> (partial)}}{{/dudes}}';
-    partial = '{{name}} ({{url}}) ';
+    string = 'Dudes: {{#dudes}}{{> (partial)}}{{/dudes}}'
+    partial = '{{name}} ({{url}}) '
     hash = {
       dudes: [
         { name: 'Yehuda', url: 'http://yehuda' },
-        { name: 'Alan', url: 'http://alan' },
-      ],
-    };
+        { name: 'Alan', url: 'http://alan' }
+      ]
+    }
     helpers = {
       partial: lambda {
-        return 'dude';
-      },
-    };
+        return 'dude'
+      }
+    }
 
     expectTemplate(string)
       .withInput(hash)
       .withHelpers(helpers)
       .withPartials({ dude: partial })
-      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ');
+      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ')
 
     expectTemplate(string)
       .withInput(hash)
@@ -60,7 +60,7 @@ describe 'partials' do
       .withPartials({ dude: partial })
       .withRuntimeOptions({ data: false })
       .withCompileOptions({ data: false })
-      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ');
+      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ')
   end
 
   it 'failing dynamic partials' do
@@ -68,17 +68,17 @@ describe 'partials' do
       .withInput({
         dudes: [
           { name: 'Yehuda', url: 'http://yehuda' },
-          { name: 'Alan', url: 'http://alan' },
-        ],
+          { name: 'Alan', url: 'http://alan' }
+        ]
       })
       .withHelper('partial', lambda {
-        return 'missing';
+        return 'missing'
       })
       .withPartial('dude', '{{name}} ({{url}}) ')
       .toThrow(
         KeyError,
         'The partial "missing" could not be found'
-      );
+      )
   end
 
   it 'partials with context' do
@@ -86,53 +86,53 @@ describe 'partials' do
       .withInput({
         dudes: [
           { name: 'Yehuda', url: 'http://yehuda' },
-          { name: 'Alan', url: 'http://alan' },
-        ],
+          { name: 'Alan', url: 'http://alan' }
+        ]
       })
       .withPartial('dude', '{{#this}}{{name}} ({{url}}) {{/this}}')
       .withMessage('Partials can be passed a context')
-      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ');
+      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ')
   end
 
   it 'partials with no context' do
-    partial = '{{name}} ({{url}}) ';
+    partial = '{{name}} ({{url}}) '
     hash = {
       dudes: [
         { name: 'Yehuda', url: 'http://yehuda' },
-        { name: 'Alan', url: 'http://alan' },
-      ],
-    };
+        { name: 'Alan', url: 'http://alan' }
+      ]
+    }
 
     expectTemplate('Dudes: {{#dudes}}{{>dude}}{{/dudes}}')
       .withInput(hash)
       .withPartial('dude', partial)
       .withCompileOptions({ explicit_partial_context: true })
-      .toCompileTo('Dudes:  ()  () ');
+      .toCompileTo('Dudes:  ()  () ')
 
     expectTemplate('Dudes: {{#dudes}}{{>dude name="foo"}}{{/dudes}}')
       .withInput(hash)
       .withPartial('dude', partial)
       .withCompileOptions({ explicit_partial_context: true })
-      .toCompileTo('Dudes: foo () foo () ');
+      .toCompileTo('Dudes: foo () foo () ')
   end
 
   it 'partials with string context' do
     expectTemplate('Dudes: {{>dude "dudes"}}')
       .withPartial('dude', '{{.}}')
-      .toCompileTo('Dudes: dudes');
+      .toCompileTo('Dudes: dudes')
   end
 
   it 'partials with undefined context' do
     expectTemplate('Dudes: {{>dude dudes}}')
       .withPartial('dude', '{{foo}} Empty')
-      .toCompileTo('Dudes:  Empty');
+      .toCompileTo('Dudes:  Empty')
   end
 
   it 'partials with duplicate parameters' do
     expectTemplate('Dudes: {{>dude dudes foo bar=baz}}').toThrow(
       StandardError,
       'Unsupported number of partial arguments: 2 - 1'
-    );
+    )
   end
 
   it 'partials with parameters' do
@@ -141,12 +141,12 @@ describe 'partials' do
         foo: 'bar',
         dudes: [
           { name: 'Yehuda', url: 'http://yehuda' },
-          { name: 'Alan', url: 'http://alan' },
-        ],
+          { name: 'Alan', url: 'http://alan' }
+        ]
       })
       .withPartial('dude', '{{others.foo}}{{name}} ({{url}}) ')
       .withMessage('Basic partials output based on current context.')
-      .toCompileTo('Dudes: barYehuda (http://yehuda) barAlan (http://alan) ');
+      .toCompileTo('Dudes: barYehuda (http://yehuda) barAlan (http://alan) ')
   end
 
   it 'partial in a partial' do
@@ -154,35 +154,35 @@ describe 'partials' do
       .withInput({
         dudes: [
           { name: 'Yehuda', url: 'http://yehuda' },
-          { name: 'Alan', url: 'http://alan' },
-        ],
+          { name: 'Alan', url: 'http://alan' }
+        ]
       })
       .withPartials({
         dude: '{{name}} {{> url}} ',
-        url: '<a href="{{url}}">{{url}}</a>',
+        url: '<a href="{{url}}">{{url}}</a>'
       })
       .withMessage('Partials are rendered inside of other partials')
       .toCompileTo(
         'Dudes: Yehuda <a href="http://yehuda">http://yehuda</a> Alan <a href="http://alan">http://alan</a> '
-      );
+      )
   end
 
   it 'rendering undefined partial throws an exception' do
     expectTemplate('{{> whatever}}').toThrow(
       KeyError,
       'The partial "whatever" could not be found'
-    );
+    )
   end
 
   it 'registering undefined partial throws an exception' do
     shouldThrow(
       lambda {
-        undef_ = nil;
-        handlebarsEnv.register_partial('undefined_test', undef_);
+        undef_ = nil
+        handlebarsEnv.register_partial('undefined_test', undef_)
       },
       StandardError,
       'Attempting to register a partial called "undefined_test" as nil'
-    );
+    )
   end
 
   it 'rendering template partial in vm mode throws an exception' do
@@ -191,25 +191,25 @@ describe 'partials' do
     expectTemplate('{{> whatever}}').toThrow(
       KeyError,
       'The partial "whatever" could not be found'
-    );
+    )
   end
 
   it 'rendering function partial in vm mode' do
     skip "VM or runtime-only mode is not supported"
 
     function partial(context) {
-      return context.name + ' (' + context.url + ') ';
+      return context.name + ' (' + context.url + ') '
     }
     expectTemplate('Dudes: {{#dudes}}{{> dude}}{{/dudes}}')
       .withInput({
         dudes: [
           { name: 'Yehuda', url: 'http://yehuda' },
-          { name: 'Alan', url: 'http://alan' },
-        ],
+          { name: 'Alan', url: 'http://alan' }
+        ]
       })
       .withPartial('dude', partial)
       .withMessage('Function partials output based in VM.')
-      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ');
+      .toCompileTo('Dudes: Yehuda (http://yehuda) Alan (http://alan) ')
   end
 
   it 'GH-14: a partial preceding a selector' do
@@ -217,7 +217,7 @@ describe 'partials' do
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('dude', '{{name}}')
       .withMessage('Regular selectors can follow a partial')
-      .toCompileTo('Dudes: Jeepers Creepers');
+      .toCompileTo('Dudes: Jeepers Creepers')
   end
 
   it 'Partials with slash paths' do
@@ -225,7 +225,7 @@ describe 'partials' do
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('shared/dude', '{{name}}')
       .withMessage('Partials can use literal paths')
-      .toCompileTo('Dudes: Jeepers');
+      .toCompileTo('Dudes: Jeepers')
   end
 
   it 'Partials with slash and point paths' do
@@ -233,33 +233,33 @@ describe 'partials' do
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('shared/dude.thing', '{{name}}')
       .withMessage('Partials can use literal with points in paths')
-      .toCompileTo('Dudes: Jeepers');
+      .toCompileTo('Dudes: Jeepers')
   end
 
   it 'Global Partials' do
-    handlebarsEnv.register_partial('globalTest', '{{anotherDude}}');
+    handlebarsEnv.register_partial('globalTest', '{{anotherDude}}')
 
     expectTemplate('Dudes: {{> shared/dude}} {{> globalTest}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('shared/dude', '{{name}}')
       .withMessage('Partials can use globals or passed')
-      .toCompileTo('Dudes: Jeepers Creepers');
+      .toCompileTo('Dudes: Jeepers Creepers')
 
-    handlebarsEnv.unregister_partial('globalTest');
-    equals(handlebarsEnv.get_partial('globalTest'), nil);
+    handlebarsEnv.unregister_partial('globalTest')
+    equals(handlebarsEnv.get_partial('globalTest'), nil)
   end
 
   it 'Multiple partial registration' do
     handlebarsEnv.register_partials(
       'shared/dude': '{{name}}',
       globalTest: '{{anotherDude}}'
-    );
+    )
 
     expectTemplate('Dudes: {{> shared/dude}} {{> globalTest}}')
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('notused', 'notused') # trick the test bench into running with partials enabled
       .withMessage('Partials can use globals or passed')
-      .toCompileTo('Dudes: Jeepers Creepers');
+      .toCompileTo('Dudes: Jeepers Creepers')
   end
 
   it 'Partials with integer path' do
@@ -267,7 +267,7 @@ describe 'partials' do
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial(404, '{{name}}')
       .withMessage('Partials can use literal paths')
-      .toCompileTo('Dudes: Jeepers');
+      .toCompileTo('Dudes: Jeepers')
   end
 
   it 'Partials with complex path' do
@@ -275,7 +275,7 @@ describe 'partials' do
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('404/asdf?.bar', '{{name}}')
       .withMessage('Partials can use literal paths')
-      .toCompileTo('Dudes: Jeepers');
+      .toCompileTo('Dudes: Jeepers')
   end
 
   it 'Partials with escaped' do
@@ -283,7 +283,7 @@ describe 'partials' do
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('+404/asdf?.bar', '{{name}}')
       .withMessage('Partials can use literal paths')
-      .toCompileTo('Dudes: Jeepers');
+      .toCompileTo('Dudes: Jeepers')
   end
 
   it 'Partials with string' do
@@ -291,7 +291,7 @@ describe 'partials' do
       .withInput({ name: 'Jeepers', anotherDude: 'Creepers' })
       .withPartial('+404/asdf?.bar', '{{name}}')
       .withMessage('Partials can use literal paths')
-      .toCompileTo('Dudes: Jeepers');
+      .toCompileTo('Dudes: Jeepers')
   end
 
   it 'should handle empty partial' do
@@ -299,35 +299,35 @@ describe 'partials' do
       .withInput({
         dudes: [
           { name: 'Yehuda', url: 'http://yehuda' },
-          { name: 'Alan', url: 'http://alan' },
-        ],
+          { name: 'Alan', url: 'http://alan' }
+        ]
       })
       .withPartial('dude', '')
-      .toCompileTo('Dudes: ');
+      .toCompileTo('Dudes: ')
   end
 
   it 'throw on missing partial' do
     skip "The compiler will always be avaliable"
-    compile = handlebarsEnv.compile;
-    compileWithPartial = CompilerContext.compileWithPartial;
-    handlebarsEnv.compile = undefined;
-    CompilerContext.compileWithPartial = CompilerContext.compile;
+    compile = handlebarsEnv.compile
+    compileWithPartial = CompilerContext.compileWithPartial
+    handlebarsEnv.compile = undefined
+    CompilerContext.compileWithPartial = CompilerContext.compile
     expectTemplate('{{> dude}}')
       .withPartials({ dude: 'fail' })
-      .toThrow(Error, /The partial dude could not be compiled/);
-    handlebarsEnv.compile = compile;
-    CompilerContext.compileWithPartial = compileWithPartial;
+      .toThrow(Error, /The partial dude could not be compiled/)
+    handlebarsEnv.compile = compile
+    CompilerContext.compileWithPartial = compileWithPartial
   end
 
   describe 'partial blocks' do
     it 'should render partial block as default' do
-      expectTemplate('{{#> dude}}success{{/dude}}').toCompileTo('success');
+      expectTemplate('{{#> dude}}success{{/dude}}').toCompileTo('success')
     end
 
     it 'should execute default block with proper context' do
       expectTemplate('{{#> dude context}}{{value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should propagate block parameters to default block' do
@@ -335,43 +335,43 @@ describe 'partials' do
         '{{#with context as |me|}}{{#> dude}}{{me.value}}{{/dude}}{{/with}}'
       )
         .withInput({ context: { value: 'success' } })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should not use partial block if partial exists' do
       expectTemplate('{{#> dude}}fail{{/dude}}')
         .withPartials({ dude: 'success' })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should render block from partial' do
       expectTemplate('{{#> dude}}success{{/dude}}')
         .withPartials({ dude: '{{> @partial-block }}' })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should be able to render the partial-block twice' do
       expectTemplate('{{#> dude}}success{{/dude}}')
         .withPartials({ dude: '{{> @partial-block }} {{> @partial-block }}' })
-        .toCompileTo('success success');
+        .toCompileTo('success success')
     end
 
     it 'should render block from partial with context' do
       expectTemplate('{{#> dude}}{{value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .withPartials({
-          dude: '{{#with context}}{{> @partial-block }}{{/with}}',
+          dude: '{{#with context}}{{> @partial-block }}{{/with}}'
         })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should be able to access the @data frame from a partial-block' do
       expectTemplate('{{#> dude}}in-block: {{@root/value}}{{/dude}}')
         .withInput({ value: 'success' })
         .withPartials({
-          dude: '<code>before-block: {{@root/value}} {{>   @partial-block }}</code>',
+          dude: '<code>before-block: {{@root/value}} {{>   @partial-block }}</code>'
         })
-        .toCompileTo('<code>before-block: success in-block: success</code>');
+        .toCompileTo('<code>before-block: success in-block: success</code>')
     end
 
     it 'should allow the #each-helper to be used along with partial-blocks' do
@@ -379,32 +379,32 @@ describe 'partials' do
         '<template>{{#> list value}}value = {{.}}{{/list}}</template>'
       )
         .withInput({
-          value: ['a', 'b', 'c'],
+          value: ['a', 'b', 'c']
         })
         .withPartials({
-          list: '<list>{{#each .}}<item>{{> @partial-block}}</item>{{/each}}</list>',
+          list: '<list>{{#each .}}<item>{{> @partial-block}}</item>{{/each}}</list>'
         })
         .toCompileTo(
           '<template><list><item>value = a</item><item>value = b</item><item>value = c</item></list></template>'
-        );
+        )
     end
 
     it 'should render block from partial with context (twice)' do
       expectTemplate('{{#> dude}}{{value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .withPartials({
-          dude: '{{#with context}}{{> @partial-block }} {{> @partial-block }}{{/with}}',
+          dude: '{{#with context}}{{> @partial-block }} {{> @partial-block }}{{/with}}'
         })
-        .toCompileTo('success success');
+        .toCompileTo('success success')
     end
 
     it 'should render block from partial with context' do
       expectTemplate('{{#> dude}}{{../context/value}}{{/dude}}')
         .withInput({ context: { value: 'success' } })
         .withPartials({
-          dude: '{{#with context}}{{> @partial-block }}{{/with}}',
+          dude: '{{#with context}}{{> @partial-block }}{{/with}}'
         })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should render block from partial with block params' do
@@ -413,7 +413,7 @@ describe 'partials' do
       )
         .withInput({ context: { value: 'success' } })
         .withPartials({ dude: '{{> @partial-block }}' })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should render nested partial blocks' do
@@ -422,11 +422,11 @@ describe 'partials' do
         .withPartials({
           outer:
             '<outer>{{#> nested}}<outer-block>{{> @partial-block}}</outer-block>{{/nested}}</outer>',
-          nested: '<nested>{{> @partial-block}}</nested>',
+          nested: '<nested>{{> @partial-block}}</nested>'
         })
         .toCompileTo(
           '<template><outer><nested><outer-block>success</outer-block></nested></outer></template>'
-        );
+        )
     end
 
     it 'should render nested partial blocks at different nesting levels' do
@@ -435,11 +435,11 @@ describe 'partials' do
         .withPartials({
           outer:
             '<outer>{{#> nested}}<outer-block>{{> @partial-block}}</outer-block>{{/nested}}{{> @partial-block}}</outer>',
-          nested: '<nested>{{> @partial-block}}</nested>',
+          nested: '<nested>{{> @partial-block}}</nested>'
         })
         .toCompileTo(
           '<template><outer><nested><outer-block>success</outer-block></nested>success</outer></template>'
-        );
+        )
     end
 
     it 'should render nested partial blocks at different nesting levels (twice)' do
@@ -448,11 +448,11 @@ describe 'partials' do
         .withPartials({
           outer:
             '<outer>{{#> nested}}<outer-block>{{> @partial-block}} {{> @partial-block}}</outer-block>{{/nested}}{{> @partial-block}}+{{> @partial-block}}</outer>',
-          nested: '<nested>{{> @partial-block}}</nested>',
+          nested: '<nested>{{> @partial-block}}</nested>'
         })
         .toCompileTo(
           '<template><outer><nested><outer-block>success success</outer-block></nested>success+success</outer></template>'
-        );
+        )
     end
 
     it 'should render nested partial blocks (twice at each level)' do
@@ -461,13 +461,13 @@ describe 'partials' do
         .withPartials({
           outer:
             '<outer>{{#> nested}}<outer-block>{{> @partial-block}} {{> @partial-block}}</outer-block>{{/nested}}</outer>',
-          nested: '<nested>{{> @partial-block}}{{> @partial-block}}</nested>',
+          nested: '<nested>{{> @partial-block}}{{> @partial-block}}</nested>'
         })
         .toCompileTo(
           '<template><outer>' +
             '<nested><outer-block>success success</outer-block><outer-block>success success</outer-block></nested>' +
             '</outer></template>'
-        );
+        )
     end
   end
 
@@ -475,23 +475,23 @@ describe 'partials' do
     it 'should define inline partials for template' do
       expectTemplate(
         '{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}'
-      ).toCompileTo('success');
+      ).toCompileTo('success')
     end
 
     it 'should overwrite multiple partials in the same template' do
       expectTemplate(
         '{{#*inline "myPartial"}}fail{{/inline}}{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}'
-      ).toCompileTo('success');
+      ).toCompileTo('success')
     end
 
     it 'should define inline partials for block' do
       expectTemplate(
         '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}{{/with}}'
-      ).toCompileTo('success');
+      ).toCompileTo('success')
 
       expectTemplate(
         '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{/with}}{{> myPartial}}'
-      ).toThrow(StandardError, /"myPartial" could not/);
+      ).toThrow(StandardError, /"myPartial" could not/)
     end
 
     it 'should override global partials' do
@@ -500,28 +500,28 @@ describe 'partials' do
       )
         .withPartials({
           myPartial: lambda {
-            return 'fail';
-          },
+            return 'fail'
+          }
         })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should override template partials' do
       expectTemplate(
         '{{#*inline "myPartial"}}fail{{/inline}}{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{> myPartial}}{{/with}}'
-      ).toCompileTo('success');
+      ).toCompileTo('success')
     end
 
     it 'should override partials down the entire stack' do
       expectTemplate(
         '{{#with .}}{{#*inline "myPartial"}}success{{/inline}}{{#with .}}{{#with .}}{{> myPartial}}{{/with}}{{/with}}{{/with}}'
-      ).toCompileTo('success');
+      ).toCompileTo('success')
     end
 
     it 'should define inline partials for partial call' do
       expectTemplate('{{#*inline "myPartial"}}success{{/inline}}{{> dude}}')
         .withPartials({ dude: '{{> myPartial }}' })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should define inline partials in partial block call' do
@@ -529,7 +529,7 @@ describe 'partials' do
         '{{#> dude}}{{#*inline "myPartial"}}success{{/inline}}{{/dude}}'
       )
         .withPartials({ dude: '{{> myPartial }}' })
-        .toCompileTo('success');
+        .toCompileTo('success')
     end
 
     it 'should render nested inline partials' do
@@ -539,7 +539,7 @@ describe 'partials' do
           '{{#>outer}}{{value}}{{/outer}}'
       )
         .withInput({ value: 'success' })
-        .toCompileTo('<inner><outer-block>success</outer-block></inner>');
+        .toCompileTo('<inner><outer-block>success</outer-block></inner>')
     end
 
     it 'should render nested inline partials with partial-blocks on different nesting levels' do
@@ -551,7 +551,7 @@ describe 'partials' do
         .withInput({ value: 'success' })
         .toCompileTo(
           '<inner><outer-block>success</outer-block></inner>success'
-        );
+        )
     end
 
     it 'should render nested inline partials (twice at each level)' do
@@ -563,15 +563,15 @@ describe 'partials' do
         .withInput({ value: 'success' })
         .toCompileTo(
           '<inner><outer-block>success success</outer-block><outer-block>success success</outer-block></inner>'
-        );
+        )
     end
   end
 
   it 'should pass compiler flags' do
     env = Haparanda::Compiler.new
-    env.register_partial('partial', '{{foo}}');
-    template = env.compile('{{foo}} {{> partial}}', no_escape: true);
-    equals(template.call({ foo: '<' }), '< <');
+    env.register_partial('partial', '{{foo}}')
+    template = env.compile('{{foo}} {{> partial}}', no_escape: true)
+    equals(template.call({ foo: '<' }), '< <')
   end
 
   describe 'standalone partials' do
@@ -580,11 +580,11 @@ describe 'partials' do
         .withInput({
           dudes: [
             { name: 'Yehuda', url: 'http://yehuda' },
-            { name: 'Alan', url: 'http://alan' },
-          ],
+            { name: 'Alan', url: 'http://alan' }
+          ]
         })
         .withPartial('dude', '{{name}}\n')
-        .toCompileTo('Dudes:\n  Yehuda\n  Alan\n');
+        .toCompileTo('Dudes:\n  Yehuda\n  Alan\n')
     end
 
     it 'nested indented partials' do
@@ -592,16 +592,16 @@ describe 'partials' do
         .withInput({
           dudes: [
             { name: 'Yehuda', url: 'http://yehuda' },
-            { name: 'Alan', url: 'http://alan' },
-          ],
+            { name: 'Alan', url: 'http://alan' }
+          ]
         })
         .withPartials({
           dude: '{{name}}\n {{> url}}',
-          url: '{{url}}!\n',
+          url: '{{url}}!\n'
         })
         .toCompileTo(
           'Dudes:\n  Yehuda\n   http://yehuda!\n  Alan\n   http://alan!\n'
-        );
+        )
     end
 
     it 'prevent nested indented partials' do
@@ -609,17 +609,17 @@ describe 'partials' do
         .withInput({
           dudes: [
             { name: 'Yehuda', url: 'http://yehuda' },
-            { name: 'Alan', url: 'http://alan' },
-          ],
+            { name: 'Alan', url: 'http://alan' }
+          ]
         })
         .withPartials({
           dude: '{{name}}\n {{> url}}',
-          url: '{{url}}!\n',
+          url: '{{url}}!\n'
         })
         .withCompileOptions({ prevent_indent: true })
         .toCompileTo(
           'Dudes:\n  Yehuda\n http://yehuda!\n  Alan\n http://alan!\n'
-        );
+        )
     end
   end
 
@@ -630,14 +630,14 @@ describe 'partials' do
           root: 'yes',
           dudes: [
             { name: 'Yehuda', url: 'http://yehuda' },
-            { name: 'Alan', url: 'http://alan' },
-          ],
+            { name: 'Alan', url: 'http://alan' }
+          ]
         })
         .withPartials({ dude: '{{name}} ({{url}}) {{root}} ' })
         .withCompileOptions({ compat: true })
         .toCompileTo(
           'Dudes: Yehuda (http://yehuda) yes Alan (http://alan) yes '
-        );
+        )
     end
 
     it 'partials can access parents with custom context' do
@@ -646,14 +646,14 @@ describe 'partials' do
           root: 'yes',
           dudes: [
             { name: 'Yehuda', url: 'http://yehuda' },
-            { name: 'Alan', url: 'http://alan' },
-          ],
+            { name: 'Alan', url: 'http://alan' }
+          ]
         })
         .withPartials({ dude: '{{name}} ({{url}}) {{root}} ' })
         .withCompileOptions({ compat: true })
         .toCompileTo(
           'Dudes: Yehuda (http://yehuda) yes Alan (http://alan) yes '
-        );
+        )
     end
 
     it 'partials can access parents without data' do
@@ -662,15 +662,15 @@ describe 'partials' do
           root: 'yes',
           dudes: [
             { name: 'Yehuda', url: 'http://yehuda' },
-            { name: 'Alan', url: 'http://alan' },
-          ],
+            { name: 'Alan', url: 'http://alan' }
+          ]
         })
         .withPartials({ dude: '{{name}} ({{url}}) {{root}} ' })
         .withRuntimeOptions({ data: false })
         .withCompileOptions({ data: false, compat: true })
         .toCompileTo(
           'Dudes: Yehuda (http://yehuda) yes Alan (http://alan) yes '
-        );
+        )
     end
 
     it 'partials inherit compat' do
@@ -679,16 +679,16 @@ describe 'partials' do
           root: 'yes',
           dudes: [
             { name: 'Yehuda', url: 'http://yehuda' },
-            { name: 'Alan', url: 'http://alan' },
-          ],
+            { name: 'Alan', url: 'http://alan' }
+          ]
         })
         .withPartials({
-          dude: '{{#dudes}}{{name}} ({{url}}) {{root}} {{/dudes}}',
+          dude: '{{#dudes}}{{name}} ({{url}}) {{root}} {{/dudes}}'
         })
         .withCompileOptions({ compat: true })
         .toCompileTo(
           'Dudes: Yehuda (http://yehuda) yes Alan (http://alan) yes '
-        );
+        )
     end
   end
 end
