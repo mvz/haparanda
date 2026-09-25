@@ -367,7 +367,7 @@ module Haparanda
     end
 
     # rubocop:todo Metrics/MethodLength
-    # rubocop:todo Metrics/AbcSize
+    # rubocop:todo-next Metrics/AbcSize
     def process_partial_block(expr)
       _, name, context, _hash, partial_block = expr
 
@@ -406,7 +406,6 @@ module Haparanda
         partial_f.call(value)
       end
     end
-    # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
 
     def process_directive_block(expr)

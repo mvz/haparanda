@@ -65,7 +65,7 @@ module Haparanda
     # recurses into the nested items. This way, it ensures the nested process
     # has the original information available.
     # rubocop:todo Metrics/PerceivedComplexity
-    # rubocop:todo Metrics/MethodLength
+    # rubocop:todo-next Metrics/MethodLength
     def strip_whitespace_around_standalone_items(statements) # rubocop:todo Metrics/AbcSize
       before = nil
 
@@ -99,7 +99,6 @@ module Haparanda
         before = item
       end
     end
-    # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/PerceivedComplexity
 
     def collect_whitespace_information(before, item, after)
@@ -114,7 +113,7 @@ module Haparanda
     end
 
     # rubocop:todo Metrics/PerceivedComplexity
-    # rubocop:todo Metrics/CyclomaticComplexity
+    # rubocop:todo-next Metrics/CyclomaticComplexity
     def apply_whitespace_clearing(before, item, after, # rubocop:todo Metrics/MethodLength
                                   before_space, inner_start_space,
                                   inner_end_space, after_space)
@@ -142,7 +141,6 @@ module Haparanda
         end
       end
     end
-    # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/PerceivedComplexity
 
     def first_item(container)

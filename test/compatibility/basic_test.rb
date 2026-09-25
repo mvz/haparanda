@@ -153,7 +153,7 @@ describe 'basic context' do
     undefined = nil
     null = nil
 
-    # rubocop:disable Lint/UnderscorePrefixedVariableName
+    # rubocop:disable-next Lint/UnderscorePrefixedVariableName
     expectTemplate('{{awesome undefined null}}')
       .withInput({
         awesome: lambda { |_undefined, _null, options|
@@ -167,7 +167,6 @@ describe 'basic context' do
         }
       })
       .toCompileTo('true true Haparanda::HandlebarsProcessor::Options')
-    # rubocop:enable Lint/UnderscorePrefixedVariableName
 
     expectTemplate('{{undefined}}')
       .withInput({
